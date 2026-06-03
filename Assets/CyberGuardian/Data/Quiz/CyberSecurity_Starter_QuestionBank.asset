@@ -1,0 +1,135 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00e8a099ac7d28148a627befcc69f1c1, type: 3}
+  m_Name: CyberSecurity_Starter_QuestionBank
+  m_EditorClassIdentifier: Assembly-CSharp::CyberGuardian.QuizQuestionBank
+  questions:
+  - category: 0
+    title: PASSWORD NODE
+    prompt: Apa ciri password yang aman?
+    answers:
+    - Panjang dan unik
+    - Nama sendiri
+    - 123456
+    - Tanggal lahir
+    correctIndex: 0
+    feedback: Benar. Password aman sebaiknya panjang, unik, dan tidak dipakai ulang.
+  - category: 0
+    title: PASSWORD VAULT
+    prompt: Mengapa password manager membantu keamanan akun?
+    answers:
+    - Menyimpan password unik
+    - Membagikan password
+    - Membuat OTP publik
+    - Mematikan 2FA
+    correctIndex: 0
+    feedback: Benar. Password manager membantu membuat dan menyimpan password unik untuk tiap akun.
+  - category: 0
+    title: LOGIN SHIELD
+    prompt: Apa fungsi utama autentikasi dua faktor?
+    answers:
+    - Menambah lapisan verifikasi
+    - Menghapus password
+    - Membuka semua akun
+    - Melemahkan akun
+    correctIndex: 0
+    feedback: Benar. 2FA menambah bukti verifikasi selain password.
+  - category: 1
+    title: MALWARE GATE
+    prompt: Email berisi link login palsu meminta OTP. Apa tindakan aman?
+    answers:
+    - Jangan klik dan laporkan
+    - Bagikan OTP
+    - Login cepat
+    - Forward ke teman
+    correctIndex: 0
+    feedback: Benar. OTP tidak boleh dibagikan dan link harus diverifikasi.
+  - category: 1
+    title: PHISHING FILTER
+    prompt: Tanda umum phishing adalah...
+    answers:
+    - Alamat pengirim mencurigakan
+    - Bahasa selalu sempurna
+    - Tidak pernah ada link
+    - Selalu dari teman
+    correctIndex: 0
+    feedback: Benar. Pengirim, domain, dan permintaan mendesak perlu diperiksa.
+  - category: 1
+    title: FILE SCAN
+    prompt: File lampiran dari sumber tidak dikenal sebaiknya...
+    answers:
+    - Tidak dibuka sembarangan
+    - Langsung dijalankan
+    - Dibagikan ke grup
+    - Diubah namanya saja
+    correctIndex: 0
+    feedback: Benar. Lampiran asing dapat membawa malware.
+  - category: 2
+    title: NETWORK ROUTE
+    prompt: Saat memakai Wi-Fi publik, langkah paling aman adalah...
+    answers:
+    - Pakai koneksi resmi dan proteksi tambahan
+    - Login bank bebas
+    - Matikan firewall
+    - Pakai password sama
+    correctIndex: 0
+    feedback: Benar. Wi-Fi publik berisiko penyadapan, jadi akses sensitif harus hati-hati.
+  - category: 2
+    title: FIREWALL NODE
+    prompt: Firewall digunakan untuk...
+    answers:
+    - Membantu menyaring koneksi
+    - Membuat virus
+    - Menghapus backup
+    - Membuka semua port
+    correctIndex: 0
+    feedback: Benar. Firewall membantu mengontrol koneksi masuk dan keluar.
+  - category: 2
+    title: UPDATE PATCH
+    prompt: Mengapa update sistem penting?
+    answers:
+    - Menutup celah keamanan
+    - Melepas proteksi
+    - Membagikan data
+    - Mematikan enkripsi
+    correctIndex: 0
+    feedback: Benar. Update sering membawa patch untuk celah keamanan.
+  - category: 3
+    title: PRIVACY CORE
+    prompt: Data apa yang tidak boleh dibagikan sembarangan?
+    answers:
+    - NIK, OTP, password, alamat
+    - Warna favorit
+    - Genre game
+    - Nama panggilan
+    correctIndex: 0
+    feedback: Benar. Data pribadi dapat dipakai untuk penipuan atau pengambilalihan akun.
+  - category: 3
+    title: DATA MINIMIZE
+    prompt: Prinsip minimisasi data berarti...
+    answers:
+    - Hanya minta data yang perlu
+    - Kumpulkan semua data
+    - Sebar data cadangan
+    - Simpan tanpa batas
+    correctIndex: 0
+    feedback: Benar. Data yang dikumpulkan sebaiknya sesuai kebutuhan.
+  - category: 3
+    title: SOCIAL TRACE
+    prompt: Sebelum membagikan foto kartu identitas, sebaiknya...
+    answers:
+    - Jangan bagikan sembarangan
+    - Unggah ke publik
+    - Kirim ke komentar
+    - Jadikan foto profil
+    correctIndex: 0
+    feedback: Benar. Dokumen identitas berisi data sensitif.

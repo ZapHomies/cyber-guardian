@@ -3,7 +3,7 @@
 --- !u!129 &1
 PlayerSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 28
+  serializedVersion: 30
   productGUID: 9e56cf1c70fa45a408469458598e6848
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
@@ -54,7 +54,7 @@ PlayerSettings:
   mipStripping: 0
   numberOfMipsStripped: 0
   numberOfMipsStrippedPerMipmapLimitGroup: {}
-  m_StackTraceTypes: 010000000100000001000000010000000100000001000000
+  m_StackTraceTypes: {_typeName: int, _data: 010000000100000001000000010000000100000001000000}
   iosShowActivityIndicatorOnLoading: -1
   androidShowActivityIndicatorOnLoading: -1
   iosUseCustomAppBackgroundBehavior: 0
@@ -65,10 +65,15 @@ PlayerSettings:
   useOSAutorotation: 1
   use32BitDisplayBuffer: 1
   preserveFramebufferAlpha: 0
+  adjustIOSFPSUsingThermalState: 1
+  thermalStateSeriousIOSFPS: 30
+  thermalStateCriticalIOSFPS: 15
   disableDepthAndStencilBuffers: 0
   androidStartInFullscreen: 1
   androidRenderOutsideSafeArea: 1
   androidUseSwappy: 0
+  androidRequestedVisibleInsets: 0
+  androidSystemBarsBehavior: 2
   androidDisplayOptions: 1
   androidBlitType: 0
   androidResizeableActivity: 1
@@ -83,6 +88,7 @@ PlayerSettings:
   defaultIsNativeResolution: 1
   macRetinaSupport: 1
   runInBackground: 0
+  callOnDisableOnAssetBundleUnload: 1
   muteOtherAudioSources: 0
   Prepare IOS For Recording: 0
   Force IOS Speakers When Recording: 0
@@ -157,7 +163,7 @@ PlayerSettings:
   allowHDRDisplaySupport: 0
   useHDRDisplay: 0
   hdrBitDepth: 0
-  m_ColorGamuts: 00000000
+  m_ColorGamuts: {_typeName: int, _data: 00000000}
   targetPixelDensity: 30
   resolutionScalingMode: 0
   resetResolutionOnWindowResize: 0
@@ -175,7 +181,7 @@ PlayerSettings:
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
   AndroidBundleVersionCode: 1
-  AndroidMinSdkVersion: 25
+  AndroidMinSdkVersion: 26
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
   AndroidPreferredDataLocation: 1
@@ -200,6 +206,7 @@ PlayerSettings:
   tvOSTargetOSVersionString: 15.0
   VisionOSSdkVersion: 0
   VisionOSTargetOSVersionString: 1.0
+  xcodeProjectType: 0
   uIPrerenderedIcon: 0
   uIRequiresPersistentWiFi: 0
   uIRequiresFullScreen: 1
@@ -267,7 +274,6 @@ PlayerSettings:
   useCustomGradleSettingsTemplate: 0
   useCustomProguardFile: 0
   AndroidTargetArchitectures: 2
-  AndroidAllowedArchitectures: -13
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
   AndroidKeystoreName: 
@@ -529,12 +535,11 @@ PlayerSettings:
   m_BuildTargetGraphicsJobMode: []
   m_BuildTargetGraphicsAPIs:
   - m_BuildTarget: iOSSupport
-    m_APIs: 10000000
+    m_APIs: {_typeName: int, _data: 10000000}
     m_Automatic: 1
   - m_BuildTarget: AndroidPlayer
-    m_APIs: 150000000b000000
+    m_APIs: {_typeName: int, _data: 150000000b000000}
     m_Automatic: 0
-  m_BuildTargetVRSettings: []
   m_DefaultShaderChunkSizeInMB: 16
   m_DefaultShaderChunkCount: 0
   openGLRequireES31: 0
@@ -558,10 +563,10 @@ PlayerSettings:
   m_BuildTargetDefaultTextureCompressionFormat:
   - serializedVersion: 3
     m_BuildTarget: Android
-    m_Formats: 03000000
+    m_Formats: {_typeName: int, _data: 03000000}
   - serializedVersion: 3
     m_BuildTarget: WebGL
-    m_Formats: 05000000
+    m_Formats: {_typeName: int, _data: 05000000}
   playModeTestRunnerEnabled: 0
   runPlayModeTestAsEditModeTest: 0
   actionOnDotNetUnhandledException: 1
@@ -719,6 +724,8 @@ PlayerSettings:
   switchMicroSleepForYieldTime: 25
   switchRamDiskSpaceSize: 12
   switchUpgradedPlayerSettingsToNMETA: 0
+  switchCaStoreSource: 0
+  switchCaStoreFilePath: 
   ps4NPAgeRating: 12
   ps4NPTitleSecret: 
   ps4NPTrophyPackPath: 
@@ -827,13 +834,16 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   webEnableSubmoduleStrippingCompatibility: 0
-  scriptingDefineSymbols: {}
+  webProgressiveAssetLoading: 0
+  scriptingDefineSymbols:
+    Standalone: SENTIS_ANALYTICS_ENABLED;APP_UI_EDITOR_ONLY
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
     Android: 1
   il2cppCompilerConfiguration: {}
   il2cppCodeGeneration: {}
+  il2cppLTOMode: {}
   il2cppStacktraceInformation: {}
   managedStrippingLevel:
     Android: 1
@@ -859,6 +869,7 @@ PlayerSettings:
   scriptingRuntimeVersion: 1
   gcIncremental: 1
   gcWBarrierValidation: 0
+  managedCodeVariant: {}
   apiCompatibilityLevelPerPlatform: {}
   editorAssembliesCompatibilityLevel: 1
   m_RenderingPath: 1
@@ -918,7 +929,6 @@ PlayerSettings:
   XboxOneXTitleMemory: 8
   XboxOneOverrideIdentityName: 
   XboxOneOverrideIdentityPublisher: 
-  vrEditorSettings: {}
   cloudServicesEnabled: {}
   luminIcon:
     m_Name: 
@@ -934,19 +944,19 @@ PlayerSettings:
   hmiPlayerDataPath: 
   hmiForceSRGBBlit: 1
   embeddedLinuxEnableGamepadInput: 0
-  hmiCpuConfiguration: 
+  hmiCpuConfiguration: {_typeName: int, _data: }
   hmiLogStartupTiming: 0
   qnxGraphicConfPath: 
   apiCompatibilityLevel: 6
   captureStartupLogs: {}
-  activeInputHandler: 1
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 
+  cloudProjectId: 8775945d-ef63-4c9d-9bf8-92a24995c651
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
-  organizationId: 
+  projectName: My project
+  organizationId: wafdazafa7
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

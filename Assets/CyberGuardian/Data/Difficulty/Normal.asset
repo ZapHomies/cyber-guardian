@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9cb9469366ad4147a5a4b377b141139, type: 3}
+  m_Name: Normal
+  m_EditorClassIdentifier: Assembly-CSharp::CyberGuardian.DifficultyProfile
+  displayName: Normal
+  startingTime: 87
+  startingScore: 1200
+  startingTokens: 15
+  startingShield: 100
+  startingVirusStrength: 20
+  requiredRouteOrbs: 7
+  correctScoreReward: 75
+  correctTokenReward: 1
+  correctShieldReward: 6
+  wrongShieldDamage: 15
+  wrongVirusGain: 12
+  routeScoreReward: 250
+  routeVirusDamage: 30
