@@ -25,6 +25,7 @@ namespace CyberGuardian
         public List<CyberGuardianBossShieldBlock> bossBlocks = new List<CyberGuardianBossShieldBlock>();
         public Camera gameplayCamera;
         public Transform bossProjectileSpawn;
+        public Transform[] bossProjectileSpawns;
         public Transform slingshotProjectile;
         public Rigidbody2D slingshotBody;
         public Collider2D slingshotCollider;
@@ -59,6 +60,11 @@ namespace CyberGuardian
         public Text gameOverScoreText;
         public Button gameOverRetryButton;
         public Button gameOverMenuButton;
+        public GameObject readyPanel;
+        public Image readyDimImage;
+        public Text readyTitleText;
+        public Text readyCountdownText;
+        public Image[] readyPulseImages;
 
         public GameObject quizModal;
         public Text quizTitleText;
@@ -82,6 +88,10 @@ namespace CyberGuardian
         public float slingshotMaxPull = 2.35f;
         public float slingshotPower = 8.8f;
         public float projectileMaxFlightTime = 4.8f;
+        public bool aerialBossEncounter;
+        public float bossAttackIntervalScale = 1f;
+        public int bossVolleyCount = 1;
+        public float bossProjectileSpeedBonus;
         public Vector2 cameraMin = new Vector2(-8f, -3.4f);
         public Vector2 cameraMax = new Vector2(78f, 5.4f);
         public Vector3 startingRecoveryPoint = new Vector3(-8f, 0.65f, 0f);
@@ -121,8 +131,11 @@ namespace CyberGuardian
         private float projectileFlightTimer;
         private bool defeatSequenceStarted;
         private bool paused;
+        private bool introCountdownActive = true;
+        private bool resumedFromCheckpoint;
+        private int bossAttackPatternIndex;
 
-        public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen && !paused;
+        public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen && !paused && !introCountdownActive;
 
         private void Awake()
         {
@@ -139,6 +152,8 @@ namespace CyberGuardian
                 player.game = this;
                 currentRecoveryPoint = player.transform.position + Vector3.up * 0.2f;
             }
+
+            resumedFromCheckpoint = TryApplySavedContinue();
 
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -178,13 +193,19 @@ namespace CyberGuardian
                 storyPanel.SetActive(false);
             }
 
+            if (readyPanel != null)
+            {
+                readyPanel.SetActive(false);
+            }
+
             SetStatus("ADVENTURE MODE: A/D MOVE, SPACE JUMP, J MELEE, SHIFT BOOST");
             RefreshHud();
+            StartCoroutine(ReadyCountdownSequence());
         }
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+            if (!introCountdownActive && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P)))
             {
                 TogglePause();
             }
@@ -218,6 +239,89 @@ namespace CyberGuardian
             if (player != null && player.transform.position.y < -8f)
             {
                 RecoverPlayerFromAbyss();
+            }
+        }
+
+        private IEnumerator ReadyCountdownSequence()
+        {
+            introCountdownActive = true;
+            Time.timeScale = 1f;
+            if (readyPanel != null)
+            {
+                readyPanel.SetActive(true);
+            }
+
+            SetStatus("MISSION BOOT SEQUENCE");
+            string title = resumedFromCheckpoint ? "CHECKPOINT RESTORED" : "ARE YOU READY?";
+            yield return AnimateReadyStep(title, string.Empty, 0.85f);
+            yield return AnimateReadyStep(title, "3", 0.58f);
+            yield return AnimateReadyStep(title, "2", 0.58f);
+            yield return AnimateReadyStep(title, "1", 0.58f);
+            yield return AnimateReadyStep("GO!", "RUN", 0.48f);
+
+            introCountdownActive = false;
+            if (readyPanel != null)
+            {
+                readyPanel.SetActive(false);
+            }
+
+            SetStatus("ADVENTURE MODE: A/D MOVE, SPACE JUMP, J MELEE, SHIFT BOOST");
+        }
+
+        private IEnumerator AnimateReadyStep(string title, string countdown, float duration)
+        {
+            if (readyTitleText != null)
+            {
+                readyTitleText.text = title;
+            }
+
+            if (readyCountdownText != null)
+            {
+                readyCountdownText.text = countdown;
+            }
+
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / Mathf.Max(0.01f, duration));
+                float pulse = Mathf.Sin(t * Mathf.PI);
+
+                if (readyDimImage != null)
+                {
+                    readyDimImage.color = new Color(0f, 0f, 0f, Mathf.Lerp(0.42f, 0.66f, pulse));
+                }
+
+                if (readyTitleText != null)
+                {
+                    readyTitleText.color = new Color(1f, 1f, 1f, Mathf.Lerp(0.72f, 1f, pulse));
+                    readyTitleText.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.94f, 1.03f, pulse);
+                }
+
+                if (readyCountdownText != null)
+                {
+                    readyCountdownText.color = new Color(0.38f, 0.97f, 1f, Mathf.Lerp(0.70f, 1f, pulse));
+                    readyCountdownText.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.82f, 1.22f, pulse);
+                }
+
+                if (readyPulseImages != null)
+                {
+                    for (int i = 0; i < readyPulseImages.Length; i++)
+                    {
+                        Image image = readyPulseImages[i];
+                        if (image == null)
+                        {
+                            continue;
+                        }
+
+                        float phase = Mathf.Repeat(t + i * 0.18f, 1f);
+                        Color color = image.color;
+                        color.a = Mathf.Sin(phase * Mathf.PI) * 0.72f;
+                        image.color = color;
+                    }
+                }
+
+                yield return null;
             }
         }
 
@@ -469,6 +573,7 @@ namespace CyberGuardian
                 if (!string.IsNullOrEmpty(nextSceneName))
                 {
                     SetStatus("LEVEL CLEAR - OPENING NEXT SECTOR");
+                    SaveProgressForScene(nextSceneName, GetNextSceneStartPoint(), true);
                     Invoke(nameof(LoadNextScene), 1.35f);
                 }
             }
@@ -495,6 +600,7 @@ namespace CyberGuardian
         public void SetRecoveryPoint(Vector3 point)
         {
             currentRecoveryPoint = point;
+            SaveProgress(currentRecoveryPoint);
             SetStatus("RECOVERY NODE SYNCED");
         }
 
@@ -785,6 +891,12 @@ namespace CyberGuardian
 
         private void HandleBossAttack()
         {
+            if (aerialBossEncounter)
+            {
+                HandleAerialBossAttack();
+                return;
+            }
+
             if (quizOpen || bossProjectilePrefab == null || bossProjectileSpawn == null || player == null)
             {
                 return;
@@ -828,6 +940,96 @@ namespace CyberGuardian
 
             PlaySfx(bossShotSfx);
             SetStatus("BOSS ATTACK THROUGH AN OPEN GAP - DODGE");
+        }
+
+        private void HandleAerialBossAttack()
+        {
+            if (quizOpen || bossProjectilePrefab == null || player == null)
+            {
+                return;
+            }
+
+            bossFireTimer -= Time.deltaTime;
+            if (bossFireTimer > 0f)
+            {
+                return;
+            }
+
+            float pressure = GetDifficultyPressure();
+            float lowHealthPressure = 1f - bossHealth / 100f;
+            float interval = Mathf.Lerp(1.35f, 0.68f, Mathf.Clamp01(pressure + lowHealthPressure * 0.45f));
+            bossFireTimer = Mathf.Max(0.38f, interval * Mathf.Max(0.35f, bossAttackIntervalScale));
+
+            int volley = Mathf.Max(2, bossVolleyCount + Mathf.RoundToInt(lowHealthPressure * 2f));
+            float speed = Mathf.Lerp(7.4f, 10.6f, pressure) + bossProjectileSpeedBonus + lowHealthPressure * 1.15f;
+            int damage = GetBossProjectileDamage() + 2;
+            int pattern = bossAttackPatternIndex++ % 4;
+
+            if (pattern == 0)
+            {
+                Transform port = GetBossSpawnPort(0);
+                Vector2 spawn = port != null ? (Vector2)port.position : (Vector2)bossProjectileSpawn.position;
+                for (int i = 0; i < volley; i++)
+                {
+                    float yOffset = (i - (volley - 1) * 0.5f) * 0.46f;
+                    Vector2 target = (Vector2)player.transform.position + new Vector2(Random.Range(-0.25f, 0.25f), 0.22f + yOffset);
+                    SpawnBossProjectile(spawn + new Vector2(0f, yOffset * 0.18f), target, speed, damage);
+                }
+
+                SetStatus("AIR BOSS VOLLEY: DODGE THE MALWARE BURST");
+            }
+            else if (pattern == 1)
+            {
+                int rainCount = volley + 3;
+                for (int i = 0; i < rainCount; i++)
+                {
+                    float x = Mathf.Lerp(bossArenaMinX + 0.9f, bossArenaMaxX - 0.9f, rainCount <= 1 ? 0.5f : i / (float)(rainCount - 1));
+                    Vector2 spawn = new Vector2(x + Random.Range(-0.45f, 0.45f), cameraMax.y + 1.35f);
+                    Vector2 target = new Vector2(x + Random.Range(-0.8f, 0.8f), player.transform.position.y - 0.4f);
+                    SpawnBossProjectile(spawn, target, speed * 0.92f, Mathf.Max(5, damage - 2));
+                }
+
+                SetStatus("AIR BOSS PACKET RAIN: WATCH THE SKY");
+            }
+            else if (pattern == 2)
+            {
+                for (int i = 0; i < Mathf.Max(3, volley); i++)
+                {
+                    Transform port = GetBossSpawnPort(i);
+                    Vector2 spawn = port != null ? (Vector2)port.position : new Vector2(bossArenaMaxX + 2f, 4.4f + i * 0.35f);
+                    Vector2 target = (Vector2)player.transform.position + new Vector2(Random.Range(-1.0f, 1.0f), Random.Range(-0.4f, 1.1f));
+                    SpawnBossProjectile(spawn, target, speed * (0.85f + i * 0.05f), damage);
+                }
+
+                SetStatus("AIR BOSS SWEEP: MULTI-PORT ATTACK");
+            }
+            else
+            {
+                Vector2 leftSpawn = new Vector2(bossArenaMinX + 0.4f, cameraMax.y + 0.8f);
+                Vector2 rightSpawn = new Vector2(bossArenaMaxX - 0.4f, cameraMax.y + 0.8f);
+                for (int i = 0; i < volley + 1; i++)
+                {
+                    float t = i / (float)Mathf.Max(1, volley);
+                    Vector2 targetLeft = new Vector2(Mathf.Lerp(bossArenaMaxX - 0.9f, bossArenaMinX + 0.8f, t), player.transform.position.y + Random.Range(-0.45f, 0.85f));
+                    Vector2 targetRight = new Vector2(Mathf.Lerp(bossArenaMinX + 0.9f, bossArenaMaxX - 0.8f, t), player.transform.position.y + Random.Range(-0.45f, 0.85f));
+                    SpawnBossProjectile(leftSpawn, targetLeft, speed * 0.78f, Mathf.Max(5, damage - 3));
+                    SpawnBossProjectile(rightSpawn, targetRight, speed * 0.78f, Mathf.Max(5, damage - 3));
+                }
+
+                SetStatus("AIR BOSS CROSS-STORM: FIND THE SAFE GAP");
+            }
+
+            PlaySfx(bossShotSfx);
+        }
+
+        private Transform GetBossSpawnPort(int index)
+        {
+            if (bossProjectileSpawns != null && bossProjectileSpawns.Length > 0)
+            {
+                return bossProjectileSpawns[Mathf.Abs(index) % bossProjectileSpawns.Length];
+            }
+
+            return bossProjectileSpawn;
         }
 
         private void SpawnBossProjectile(Vector2 spawnPosition, Vector2 targetPosition, float speed, int damage)
@@ -1282,6 +1484,81 @@ namespace CyberGuardian
             score = Mathf.Clamp(score + Mathf.Max(0, amount), 0, MaxScore);
         }
 
+        private bool TryApplySavedContinue()
+        {
+            if (PlayerPrefs.GetInt(CyberGuardianMainMenu.ResumeRequestedKey, 0) != 1)
+            {
+                return false;
+            }
+
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.ResumeRequestedKey, 0);
+            if (!CyberGuardianMainMenu.HasSavedProgress())
+            {
+                PlayerPrefs.Save();
+                return false;
+            }
+
+            string savedScene = PlayerPrefs.GetString(CyberGuardianMainMenu.SaveSceneKey, string.Empty);
+            if (savedScene != SceneManager.GetActiveScene().name)
+            {
+                PlayerPrefs.Save();
+                return false;
+            }
+
+            currentRecoveryPoint = new Vector3(
+                PlayerPrefs.GetFloat(CyberGuardianMainMenu.SaveXKey, currentRecoveryPoint.x),
+                PlayerPrefs.GetFloat(CyberGuardianMainMenu.SaveYKey, currentRecoveryPoint.y),
+                PlayerPrefs.GetFloat(CyberGuardianMainMenu.SaveZKey, currentRecoveryPoint.z));
+
+            playerHealth = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.SaveHealthKey, playerHealth), 1, 100);
+            boostEnergy = Mathf.Clamp(PlayerPrefs.GetFloat(CyberGuardianMainMenu.SaveBoostKey, boostEnergy), 0f, 100f);
+            score = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.SaveScoreKey, score), 0, MaxScore);
+
+            if (player != null)
+            {
+                player.transform.position = currentRecoveryPoint;
+                Rigidbody2D body = player.GetComponent<Rigidbody2D>();
+                if (body != null)
+                {
+                    body.linearVelocity = Vector2.zero;
+                    body.angularVelocity = 0f;
+                }
+            }
+
+            PlayerPrefs.Save();
+            return true;
+        }
+
+        private void SaveProgress(Vector3 recoveryPoint)
+        {
+            SaveProgressForScene(SceneManager.GetActiveScene().name, recoveryPoint, false);
+        }
+
+        private void SaveProgressForScene(string sceneName, Vector3 recoveryPoint, bool requestResume)
+        {
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                return;
+            }
+
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.SaveExistsKey, 1);
+            PlayerPrefs.SetString(CyberGuardianMainMenu.SaveSceneKey, sceneName);
+            PlayerPrefs.SetFloat(CyberGuardianMainMenu.SaveXKey, recoveryPoint.x);
+            PlayerPrefs.SetFloat(CyberGuardianMainMenu.SaveYKey, recoveryPoint.y);
+            PlayerPrefs.SetFloat(CyberGuardianMainMenu.SaveZKey, recoveryPoint.z);
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.SaveHealthKey, Mathf.Clamp(playerHealth, 1, 100));
+            PlayerPrefs.SetFloat(CyberGuardianMainMenu.SaveBoostKey, Mathf.Clamp(boostEnergy, 0f, 100f));
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.SaveScoreKey, Mathf.Clamp(score, 0, MaxScore));
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.DifficultyKey, currentDifficultyIndex);
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.ResumeRequestedKey, requestResume ? 1 : 0);
+            PlayerPrefs.Save();
+        }
+
+        private Vector3 GetNextSceneStartPoint()
+        {
+            return new Vector3(-8f, 0.95f, 0f);
+        }
+
         private int GetCorrectScoreReward()
         {
             return activeDifficulty != null ? Mathf.Max(10, activeDifficulty.correctScoreReward) : 100;
@@ -1340,7 +1617,7 @@ namespace CyberGuardian
 
         private void TogglePause()
         {
-            if (mode == GameMode.Defeat || mode == GameMode.Victory || quizOpen)
+            if (introCountdownActive || mode == GameMode.Defeat || mode == GameMode.Victory || quizOpen)
             {
                 return;
             }
@@ -1370,6 +1647,11 @@ namespace CyberGuardian
         private void ReturnToMenu()
         {
             Time.timeScale = 1f;
+            if (mode != GameMode.Defeat)
+            {
+                SaveProgress(currentRecoveryPoint);
+            }
+
             SceneManager.LoadScene(menuSceneName);
         }
 

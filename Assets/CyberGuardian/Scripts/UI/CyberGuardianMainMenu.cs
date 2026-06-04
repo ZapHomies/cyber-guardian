@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -11,6 +12,15 @@ namespace CyberGuardian
     public sealed class CyberGuardianMainMenu : MonoBehaviour
     {
         public const string DifficultyKey = "CyberGuardianDifficulty";
+        public const string SaveExistsKey = "CyberGuardianSaveExists";
+        public const string SaveSceneKey = "CyberGuardianSaveScene";
+        public const string SaveXKey = "CyberGuardianSaveX";
+        public const string SaveYKey = "CyberGuardianSaveY";
+        public const string SaveZKey = "CyberGuardianSaveZ";
+        public const string SaveHealthKey = "CyberGuardianSaveHealth";
+        public const string SaveBoostKey = "CyberGuardianSaveBoost";
+        public const string SaveScoreKey = "CyberGuardianSaveScore";
+        public const string ResumeRequestedKey = "CyberGuardianResumeRequested";
 
         public string gameplaySceneName = "CyberGuardian_Level01";
         public Text selectedDifficultyText;
@@ -27,14 +37,25 @@ namespace CyberGuardian
         public GameObject settingsPanel;
         public GameObject creditsPanel;
         public Image[] difficultyHighlights;
+        public GameObject startTransitionOverlay;
+        public Image startTransitionFade;
+        public Image startTransitionCircuit;
+        public Text startTransitionText;
+        public Image[] startTransitionFx;
+        public float startTransitionDuration = 2.25f;
 
         private readonly string[] difficultyNames = { "Easy", "Normal", "Hard" };
         private int selectedDifficulty = 1;
+        private bool startingGame;
+        private string pendingSceneName = string.Empty;
+        private string pendingTransitionIntro = "SYNCING CYBER GUARDIAN";
+        private string pendingTransitionLoad = "ENTERING DATA FOREST";
 
         private void Awake()
         {
             selectedDifficulty = Mathf.Clamp(PlayerPrefs.GetInt(DifficultyKey, 1), 0, 2);
             WireButtons();
+            HidePanels();
             Refresh();
         }
 
@@ -43,13 +64,13 @@ namespace CyberGuardian
             if (startButton != null)
             {
                 startButton.onClick.RemoveAllListeners();
-                startButton.onClick.AddListener(StartGame);
+                startButton.onClick.AddListener(StartNewGame);
             }
 
             if (continueButton != null)
             {
                 continueButton.onClick.RemoveAllListeners();
-                continueButton.onClick.AddListener(StartGame);
+                continueButton.onClick.AddListener(ContinueGame);
             }
 
             WireDifficultyButton(easyButton, 0);
@@ -103,16 +124,7 @@ namespace CyberGuardian
 
         private void ShowOnlyPanel(GameObject panel)
         {
-            if (settingsPanel != null)
-            {
-                settingsPanel.SetActive(false);
-            }
-
-            if (creditsPanel != null)
-            {
-                creditsPanel.SetActive(false);
-            }
-
+            HidePanels();
             panel.SetActive(true);
         }
 
@@ -124,12 +136,154 @@ namespace CyberGuardian
             Refresh();
         }
 
-        private void StartGame()
+        private void StartNewGame()
         {
+            if (startingGame)
+            {
+                return;
+            }
+
             PlayerPrefs.SetInt(DifficultyKey, selectedDifficulty);
+            ClearSavedProgress();
+            PlayerPrefs.SetInt(ResumeRequestedKey, 0);
             PlayerPrefs.Save();
             Time.timeScale = 1f;
-            SceneManager.LoadScene(gameplaySceneName);
+            BeginSceneLoad(gameplaySceneName, "SYNCING CYBER GUARDIAN", "ENTERING DATA FOREST");
+        }
+
+        private void ContinueGame()
+        {
+            if (startingGame || !HasSavedProgress())
+            {
+                return;
+            }
+
+            string sceneName = PlayerPrefs.GetString(SaveSceneKey, gameplaySceneName);
+            if (string.IsNullOrEmpty(sceneName))
+            {
+                sceneName = gameplaySceneName;
+            }
+
+            PlayerPrefs.SetInt(ResumeRequestedKey, 1);
+            PlayerPrefs.Save();
+            Time.timeScale = 1f;
+            BeginSceneLoad(sceneName, "RESTORING CHECKPOINT", "REOPENING SECURE ROUTE");
+        }
+
+        private void BeginSceneLoad(string sceneName, string intro, string load)
+        {
+            pendingSceneName = string.IsNullOrEmpty(sceneName) ? gameplaySceneName : sceneName;
+            pendingTransitionIntro = intro;
+            pendingTransitionLoad = load;
+            StartCoroutine(StartGameTransition());
+        }
+
+        private IEnumerator StartGameTransition()
+        {
+            startingGame = true;
+            SetButtonsInteractable(false);
+            HidePanels();
+
+            if (startTransitionOverlay == null)
+            {
+                SceneManager.LoadScene(pendingSceneName);
+                yield break;
+            }
+
+            startTransitionOverlay.SetActive(true);
+            float duration = Mathf.Max(0.35f, startTransitionDuration);
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float smooth = Mathf.SmoothStep(0f, 1f, t);
+
+                if (startTransitionFade != null)
+                {
+                    startTransitionFade.color = new Color(0f, 0f, 0f, Mathf.Lerp(0f, 0.92f, smooth));
+                }
+
+                if (startTransitionCircuit != null)
+                {
+                    startTransitionCircuit.color = new Color(0.20f, 0.95f, 1f, Mathf.Lerp(0f, 0.24f, Mathf.Sin(t * Mathf.PI)));
+                }
+
+                if (startTransitionText != null)
+                {
+                    startTransitionText.text = t < 0.52f ? pendingTransitionIntro : pendingTransitionLoad;
+                    startTransitionText.color = new Color(1f, 1f, 1f, Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(t * 1.75f)));
+                    startTransitionText.rectTransform.localScale = Vector3.one * Mathf.Lerp(0.92f, 1.05f, Mathf.Sin(t * Mathf.PI));
+                }
+
+                AnimateTransitionEffects(t);
+                yield return null;
+            }
+
+            SceneManager.LoadScene(pendingSceneName);
+        }
+
+        private void AnimateTransitionEffects(float t)
+        {
+            if (startTransitionFx == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < startTransitionFx.Length; i++)
+            {
+                Image effect = startTransitionFx[i];
+                if (effect == null)
+                {
+                    continue;
+                }
+
+                float phase = Mathf.Repeat(t * 1.85f + i * 0.16f, 1f);
+                RectTransform rect = effect.rectTransform;
+                float direction = i % 2 == 0 ? 1f : -1f;
+                rect.anchoredPosition = new Vector2(Mathf.Lerp(-1080f, 1080f, phase) * direction, rect.anchoredPosition.y);
+                Color color = effect.color;
+                color.a = Mathf.Sin(phase * Mathf.PI) * 0.75f;
+                effect.color = color;
+            }
+        }
+
+        private void SetButtonsInteractable(bool interactable)
+        {
+            Button[] buttons =
+            {
+                startButton,
+                continueButton,
+                easyButton,
+                normalButton,
+                hardButton,
+                settingsButton,
+                creditsButton,
+                quitButton,
+                settingsBackButton,
+                creditsBackButton
+            };
+
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                if (buttons[i] != null)
+                {
+                    buttons[i].interactable = interactable;
+                }
+            }
+        }
+
+        private void HidePanels()
+        {
+            if (settingsPanel != null)
+            {
+                settingsPanel.SetActive(false);
+            }
+
+            if (creditsPanel != null)
+            {
+                creditsPanel.SetActive(false);
+            }
         }
 
         private void QuitGame()
@@ -143,19 +297,14 @@ namespace CyberGuardian
 
         private void Refresh()
         {
-            if (settingsPanel != null)
-            {
-                settingsPanel.SetActive(false);
-            }
-
-            if (creditsPanel != null)
-            {
-                creditsPanel.SetActive(false);
-            }
-
             if (selectedDifficultyText != null)
             {
                 selectedDifficultyText.text = "DIFFICULTY: " + difficultyNames[selectedDifficulty].ToUpperInvariant();
+            }
+
+            if (continueButton != null)
+            {
+                continueButton.interactable = HasSavedProgress() && !startingGame;
             }
 
             if (difficultyHighlights == null)
@@ -174,6 +323,24 @@ namespace CyberGuardian
                     ? new Color(0.12f, 0.92f, 1f, 1f)
                     : new Color(0.03f, 0.12f, 0.15f, 0.96f);
             }
+        }
+
+        public static bool HasSavedProgress()
+        {
+            return PlayerPrefs.GetInt(SaveExistsKey, 0) == 1 && !string.IsNullOrEmpty(PlayerPrefs.GetString(SaveSceneKey, string.Empty));
+        }
+
+        public static void ClearSavedProgress()
+        {
+            PlayerPrefs.SetInt(SaveExistsKey, 0);
+            PlayerPrefs.SetInt(ResumeRequestedKey, 0);
+            PlayerPrefs.DeleteKey(SaveSceneKey);
+            PlayerPrefs.DeleteKey(SaveXKey);
+            PlayerPrefs.DeleteKey(SaveYKey);
+            PlayerPrefs.DeleteKey(SaveZKey);
+            PlayerPrefs.DeleteKey(SaveHealthKey);
+            PlayerPrefs.DeleteKey(SaveBoostKey);
+            PlayerPrefs.DeleteKey(SaveScoreKey);
         }
     }
 }
