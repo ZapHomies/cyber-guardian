@@ -22,7 +22,11 @@ namespace CyberGuardian
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-            if (game != null && other.GetComponent<CyberGuardianPlayerController>() != null)
+            if (other.GetComponent<CyberGuardianBossShieldBlock>() != null)
+            {
+                Destroy(gameObject);
+            }
+            else if (game != null && other.GetComponent<CyberGuardianPlayerController>() != null)
             {
                 game.DamagePlayer(damage, "Boss packet attack");
                 Destroy(gameObject);

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -35,6 +34,7 @@ namespace CyberGuardian
         public GameObject bossProjectilePrefab;
         public GameObject meleeFlash;
         public Sprite deathShardSprite;
+        public string nextSceneName = string.Empty;
 
         public Text healthText;
         public Text bossText;
@@ -166,6 +166,11 @@ namespace CyberGuardian
             RegenerateBoost();
             UpdateCamera();
 
+            if (mode == GameMode.Adventure && player != null && player.transform.position.x >= bossArenaMinX - 0.35f)
+            {
+                EnterBossMode();
+            }
+
             if (mode == GameMode.BossSlingshot)
             {
                 ClampPlayerToBossArena();
@@ -199,7 +204,7 @@ namespace CyberGuardian
 
             bossFireTimer = 1.25f;
             ResetSlingshotProjectile();
-            SetStatus("BOSS MODE: DRAG PATCH CORE TO BREAK QUIZ BLOCKS");
+            SetStatus("BOSS MODE: CLICK OR DRAG ANYWHERE TO PULL PATCH CORE");
             RefreshHud();
         }
 
@@ -411,6 +416,12 @@ namespace CyberGuardian
                 {
                     player.InBossMode = false;
                 }
+
+                if (!string.IsNullOrEmpty(nextSceneName))
+                {
+                    SetStatus("LEVEL CLEAR - OPENING NEXT SECTOR");
+                    Invoke(nameof(LoadNextScene), 1.35f);
+                }
             }
         }
 
@@ -540,22 +551,28 @@ namespace CyberGuardian
             }
 
             Vector2 rest = GetSlingshotRestPosition();
+            if (!slingshotProjectile.gameObject.activeSelf)
+            {
+                slingshotProjectile.gameObject.SetActive(true);
+            }
+
             if (!draggingSlingshot)
             {
                 slingshotProjectile.position = rest;
             }
 
             Vector3 mouse = Input.mousePosition;
-            mouse.z = Mathf.Abs((gameplayCamera != null ? gameplayCamera.transform.position.z : -10f));
-            Vector2 mouseWorld = gameplayCamera != null ? gameplayCamera.ScreenToWorldPoint(mouse) : Camera.main.ScreenToWorldPoint(mouse);
+            Camera activeCamera = gameplayCamera != null ? gameplayCamera : Camera.main;
+            if (activeCamera == null)
+            {
+                return;
+            }
+
+            mouse.z = Mathf.Abs(activeCamera.transform.position.z);
+            Vector2 mouseWorld = activeCamera.ScreenToWorldPoint(mouse);
 
             if (Input.GetMouseButtonDown(0))
             {
-                if (IsPointerOverUi())
-                {
-                    return;
-                }
-
                 CyberGuardianBossShieldBlock targetedBlock = GetClosestActiveQuizBlock(mouseWorld, 0.92f);
                 if (targetedBlock != null)
                 {
@@ -564,20 +581,13 @@ namespace CyberGuardian
                 }
 
                 draggingSlingshot = true;
+                UpdateScreenWideSlingshotPull(rest, mouseWorld);
                 SetStatus("AIMING PATCH CORE - RELEASE TO FIRE");
             }
 
             if (draggingSlingshot && Input.GetMouseButton(0))
             {
-                Vector2 offset = mouseWorld - rest;
-                if (offset.magnitude > slingshotMaxPull)
-                {
-                    offset = offset.normalized * slingshotMaxPull;
-                }
-
-                Vector2 projectilePosition = rest + offset;
-                slingshotProjectile.position = projectilePosition;
-                UpdateSlingshotLines(rest, projectilePosition, GetLaunchVelocity(offset));
+                UpdateScreenWideSlingshotPull(rest, mouseWorld);
             }
 
             if (draggingSlingshot && Input.GetMouseButtonUp(0))
@@ -586,18 +596,12 @@ namespace CyberGuardian
                 Vector2 offset = (Vector2)slingshotProjectile.position - rest;
                 if (offset.magnitude < 0.25f)
                 {
-                    ResetSlingshotProjectile();
-                    SetStatus("PULL FARTHER TO CHARGE PATCH CORE");
-                    return;
+                    offset = GetScreenWidePullOffset(rest, mouseWorld);
+                    slingshotProjectile.position = rest + offset;
                 }
 
                 FireSlingshot(GetLaunchVelocity(offset));
             }
-        }
-
-        private bool IsPointerOverUi()
-        {
-            return EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
         }
 
         private CyberGuardianBossShieldBlock GetClosestActiveQuizBlock(Vector2 point, float maxDistance)
@@ -623,6 +627,26 @@ namespace CyberGuardian
             return closest;
         }
 
+        private void UpdateScreenWideSlingshotPull(Vector2 rest, Vector2 mouseWorld)
+        {
+            Vector2 offset = GetScreenWidePullOffset(rest, mouseWorld);
+            Vector2 projectilePosition = rest + offset;
+            slingshotProjectile.position = projectilePosition;
+            UpdateSlingshotLines(rest, projectilePosition, GetLaunchVelocity(offset));
+        }
+
+        private Vector2 GetScreenWidePullOffset(Vector2 rest, Vector2 mouseWorld)
+        {
+            Vector2 aimDirection = mouseWorld - rest;
+            if (aimDirection.sqrMagnitude < 0.04f)
+            {
+                aimDirection = Vector2.right * (player != null ? player.FacingDirection : 1);
+            }
+
+            float pull = Mathf.Clamp(aimDirection.magnitude * 0.35f, 0.75f, slingshotMaxPull);
+            return -aimDirection.normalized * pull;
+        }
+
         private void HandleBossAttack()
         {
             if (quizOpen || bossProjectilePrefab == null || bossProjectileSpawn == null || player == null)
@@ -640,21 +664,33 @@ namespace CyberGuardian
             float fireY = player.transform.position.y + 0.35f;
             if (IsBossLineBlocked(fireY))
             {
-                SetStatus("BOSS SHOT BLOCKED BY QUIZ WALL");
+                Vector2 breachSpawn = new Vector2(
+                    Mathf.Clamp(player.transform.position.x + Random.Range(-1.8f, 1.8f), bossArenaMinX + 0.65f, bossArenaMaxX - 0.65f),
+                    cameraMax.y + 0.85f);
+                Vector2 breachTarget = (Vector2)player.transform.position + new Vector2(Random.Range(-0.35f, 0.35f), 0.12f);
+                SpawnBossProjectile(breachSpawn, breachTarget, 6.2f, 8);
+                PlaySfx(bossShotSfx);
+                SetStatus("BOSS BREACH PACKET FROM ABOVE - KEEP MOVING");
                 return;
             }
 
-            GameObject shot = Instantiate(bossProjectilePrefab, bossProjectileSpawn.position, Quaternion.identity);
+            SpawnBossProjectile(bossProjectileSpawn.position, (Vector2)player.transform.position + new Vector2(0f, 0.35f), 7.0f, 12);
+            PlaySfx(bossShotSfx);
+            SetStatus("BOSS ATTACK THROUGH AN OPEN GAP - DODGE");
+        }
+
+        private void SpawnBossProjectile(Vector2 spawnPosition, Vector2 targetPosition, float speed, int damage)
+        {
+            GameObject shot = Instantiate(bossProjectilePrefab, spawnPosition, Quaternion.identity);
             CyberGuardianBossProjectile projectile = shot.GetComponent<CyberGuardianBossProjectile>();
             if (projectile != null)
             {
                 projectile.game = this;
-                Vector2 direction = ((Vector2)player.transform.position + new Vector2(0f, 0.35f) - (Vector2)bossProjectileSpawn.position).normalized;
-                projectile.velocity = direction * 7.0f;
+                Vector2 direction = (targetPosition - spawnPosition).normalized;
+                projectile.velocity = direction * speed;
+                projectile.damage = damage;
+                projectile.lifetime = 4.2f;
             }
-
-            PlaySfx(bossShotSfx);
-            SetStatus("BOSS ATTACK THROUGH AN OPEN GAP - DODGE");
         }
 
         private bool IsBossLineBlocked(float y)
@@ -804,6 +840,12 @@ namespace CyberGuardian
             projectileInFlight = true;
             projectileFlightTimer = 0f;
             HideSlingshotLines();
+            if (slingshotProjectile != null && !slingshotProjectile.gameObject.activeSelf)
+            {
+                slingshotProjectile.gameObject.SetActive(true);
+                slingshotProjectile.position = GetSlingshotRestPosition();
+            }
+
             if (slingshotBody != null)
             {
                 slingshotBody.simulated = true;
@@ -1082,6 +1124,14 @@ namespace CyberGuardian
         {
             Time.timeScale = 1f;
             SceneManager.LoadScene(menuSceneName);
+        }
+
+        private void LoadNextScene()
+        {
+            if (!string.IsNullOrEmpty(nextSceneName))
+            {
+                SceneManager.LoadScene(nextSceneName);
+            }
         }
 
         private void PlaySfx(AudioClip clip)

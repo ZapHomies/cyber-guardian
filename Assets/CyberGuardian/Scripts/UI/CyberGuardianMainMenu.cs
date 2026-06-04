@@ -15,10 +15,17 @@ namespace CyberGuardian
         public string gameplaySceneName = "CyberGuardian_Level01";
         public Text selectedDifficultyText;
         public Button startButton;
+        public Button continueButton;
         public Button easyButton;
         public Button normalButton;
         public Button hardButton;
+        public Button settingsButton;
+        public Button creditsButton;
         public Button quitButton;
+        public Button settingsBackButton;
+        public Button creditsBackButton;
+        public GameObject settingsPanel;
+        public GameObject creditsPanel;
         public Image[] difficultyHighlights;
 
         private readonly string[] difficultyNames = { "Easy", "Normal", "Hard" };
@@ -39,9 +46,20 @@ namespace CyberGuardian
                 startButton.onClick.AddListener(StartGame);
             }
 
+            if (continueButton != null)
+            {
+                continueButton.onClick.RemoveAllListeners();
+                continueButton.onClick.AddListener(StartGame);
+            }
+
             WireDifficultyButton(easyButton, 0);
             WireDifficultyButton(normalButton, 1);
             WireDifficultyButton(hardButton, 2);
+
+            WirePanelButton(settingsButton, settingsPanel);
+            WirePanelButton(creditsButton, creditsPanel);
+            WireCloseButton(settingsBackButton, settingsPanel);
+            WireCloseButton(creditsBackButton, creditsPanel);
 
             if (quitButton != null)
             {
@@ -59,6 +77,43 @@ namespace CyberGuardian
 
             button.onClick.RemoveAllListeners();
             button.onClick.AddListener(() => SelectDifficulty(index));
+        }
+
+        private void WirePanelButton(Button button, GameObject panel)
+        {
+            if (button == null || panel == null)
+            {
+                return;
+            }
+
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => ShowOnlyPanel(panel));
+        }
+
+        private void WireCloseButton(Button button, GameObject panel)
+        {
+            if (button == null || panel == null)
+            {
+                return;
+            }
+
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(() => panel.SetActive(false));
+        }
+
+        private void ShowOnlyPanel(GameObject panel)
+        {
+            if (settingsPanel != null)
+            {
+                settingsPanel.SetActive(false);
+            }
+
+            if (creditsPanel != null)
+            {
+                creditsPanel.SetActive(false);
+            }
+
+            panel.SetActive(true);
         }
 
         private void SelectDifficulty(int index)
@@ -88,6 +143,16 @@ namespace CyberGuardian
 
         private void Refresh()
         {
+            if (settingsPanel != null)
+            {
+                settingsPanel.SetActive(false);
+            }
+
+            if (creditsPanel != null)
+            {
+                creditsPanel.SetActive(false);
+            }
+
             if (selectedDifficultyText != null)
             {
                 selectedDifficultyText.text = "DIFFICULTY: " + difficultyNames[selectedDifficulty].ToUpperInvariant();

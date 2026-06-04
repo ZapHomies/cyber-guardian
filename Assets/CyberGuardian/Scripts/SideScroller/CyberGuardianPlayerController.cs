@@ -34,6 +34,10 @@ namespace CyberGuardian
 
         public bool InBossMode { get; set; }
         public int FacingDirection => facingRight ? 1 : -1;
+        public float HorizontalInput { get; private set; }
+        public bool IsGroundedForAnimation { get; private set; }
+        public bool IsBoosting { get; private set; }
+        public Vector2 Velocity => body != null ? body.linearVelocity : Vector2.zero;
 
         private void Awake()
         {
@@ -58,6 +62,9 @@ namespace CyberGuardian
 
                 jumpBufferCounter = 0f;
                 boostTimer = 0f;
+                HorizontalInput = 0f;
+                IsBoosting = false;
+                IsGroundedForAnimation = IsGrounded();
                 return;
             }
 
@@ -68,6 +75,7 @@ namespace CyberGuardian
                     + (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) ? 1f : 0f);
             }
 
+            HorizontalInput = Mathf.Clamp(horizontal, -1f, 1f);
             if (Mathf.Abs(horizontal) > 0.05f)
             {
                 facingRight = horizontal > 0f;
@@ -75,6 +83,7 @@ namespace CyberGuardian
             }
 
             bool grounded = IsGrounded();
+            IsGroundedForAnimation = grounded;
             coyoteCounter = grounded ? coyoteTime : Mathf.Max(0f, coyoteCounter - Time.deltaTime);
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
             {
@@ -102,6 +111,8 @@ namespace CyberGuardian
             {
                 body.linearVelocity = new Vector2(horizontal * runSpeed, body.linearVelocity.y);
             }
+
+            IsBoosting = boostTimer > 0f;
 
             if (jumpBufferCounter > 0f && coyoteCounter > 0f)
             {
