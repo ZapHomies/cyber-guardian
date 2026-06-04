@@ -7,7 +7,7 @@ namespace CyberGuardian
     {
         public string displayName = "Normal";
         [Min(15f)] public float startingTime = 87f;
-        [Min(0)] public int startingScore = 1200;
+        [Min(0)] public int startingScore = 100;
         [Min(0)] public int startingTokens = 15;
         [Range(1, 100)] public int startingShield = 100;
         [Range(0, 100)] public int startingVirusStrength = 20;

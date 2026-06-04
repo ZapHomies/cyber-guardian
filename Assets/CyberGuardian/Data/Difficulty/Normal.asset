@@ -14,15 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CyberGuardian.DifficultyProfile
   displayName: Normal
   startingTime: 87
-  startingScore: 1200
+  startingScore: 100
   startingTokens: 15
   startingShield: 100
-  startingVirusStrength: 20
+  startingVirusStrength: 25
   requiredRouteOrbs: 7
-  correctScoreReward: 75
+  correctScoreReward: 8
   correctTokenReward: 1
   correctShieldReward: 6
-  wrongShieldDamage: 15
+  wrongShieldDamage: 12
   wrongVirusGain: 12
   routeScoreReward: 250
   routeVirusDamage: 30

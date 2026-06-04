@@ -106,8 +106,8 @@ namespace CyberGuardian
                 }
 
                 difficultyHighlights[i].color = i == selectedDifficulty
-                    ? new Color(0.38f, 0.87f, 0.55f, 1f)
-                    : new Color(0.18f, 0.38f, 0.44f, 1f);
+                    ? new Color(0.12f, 0.92f, 1f, 1f)
+                    : new Color(0.03f, 0.12f, 0.15f, 0.96f);
             }
         }
     }
