@@ -19,7 +19,7 @@ namespace CyberGuardian
 
         private void TryHitTarget(Collider2D other)
         {
-            if (game == null)
+            if (game == null || other == null || other.GetComponent<CyberGuardianPlayerController>() != null)
             {
                 return;
             }
@@ -36,6 +36,11 @@ namespace CyberGuardian
             {
                 game.ProjectileHitBoss();
                 return;
+            }
+
+            if (!other.isTrigger)
+            {
+                game.ProjectileHitSolid();
             }
         }
     }

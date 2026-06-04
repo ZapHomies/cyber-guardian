@@ -41,12 +41,20 @@ namespace CyberGuardian
         public Text scoreText;
         public Text modeText;
         public Text statusText;
+        public GameObject storyPanel;
+        public Text storyTitleText;
+        public Text storyBodyText;
         public Image playerHealthFill;
         public Image bossHealthFill;
         public Image boostEnergyFill;
         public GameObject bossHudGroup;
+        public Button pauseButton;
         public Button menuButton;
         public Button resetButton;
+        public GameObject pauseModal;
+        public Button pauseResumeButton;
+        public Button pauseRetryButton;
+        public Button pauseMenuButton;
         public GameObject gameOverModal;
         public Text gameOverScoreText;
         public Button gameOverRetryButton;
@@ -94,8 +102,11 @@ namespace CyberGuardian
             new Color(0.78f, 0.35f, 1f, 1f)
         };
 
+        private const int MaxScore = 999999;
+
         private GameMode mode = GameMode.Adventure;
         private CyberGuardianBossShieldBlock activeQuizBlock;
+        private DifficultyProfile activeDifficulty;
         private int currentDifficultyIndex = 1;
         private int playerHealth;
         private int bossHealth;
@@ -109,14 +120,15 @@ namespace CyberGuardian
         private bool projectileInFlight;
         private float projectileFlightTimer;
         private bool defeatSequenceStarted;
+        private bool paused;
 
-        public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen;
+        public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen && !paused;
 
         private void Awake()
         {
             currentDifficultyIndex = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.DifficultyKey, 1), 0, 2);
-            GetActiveDifficulty();
-            playerHealth = 100;
+            activeDifficulty = GetActiveDifficulty();
+            playerHealth = activeDifficulty != null ? activeDifficulty.startingShield : 100;
             bossHealth = 100;
             score = 0;
             boostEnergy = 100f;
@@ -156,12 +168,32 @@ namespace CyberGuardian
                 gameOverModal.SetActive(false);
             }
 
+            if (pauseModal != null)
+            {
+                pauseModal.SetActive(false);
+            }
+
+            if (storyPanel != null)
+            {
+                storyPanel.SetActive(false);
+            }
+
             SetStatus("ADVENTURE MODE: A/D MOVE, SPACE JUMP, J MELEE, SHIFT BOOST");
             RefreshHud();
         }
 
         private void Update()
         {
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+            {
+                TogglePause();
+            }
+
+            if (paused)
+            {
+                return;
+            }
+
             invulnerabilityTimer = Mathf.Max(0f, invulnerabilityTimer - Time.deltaTime);
             RegenerateBoost();
             UpdateCamera();
@@ -238,7 +270,7 @@ namespace CyberGuardian
         public void EnemyDefeated(CyberGuardianEnemy enemy)
         {
             enemies.Remove(enemy);
-            score = Mathf.Min(999, score + 5);
+            AddScore(50);
             PlaySfx(hitSfx);
             SetStatus("Threat deleted. Keep moving.");
             RefreshHud();
@@ -271,6 +303,7 @@ namespace CyberGuardian
             }
 
             defeatSequenceStarted = true;
+            SetPaused(false);
             mode = GameMode.Defeat;
             quizOpen = false;
             draggingSlingshot = false;
@@ -393,6 +426,22 @@ namespace CyberGuardian
             OpenBlockQuiz(block);
         }
 
+        public void PlayerProjectileHitShieldBlock(CyberGuardianBossShieldBlock block)
+        {
+            if (block == null || block.cleared)
+            {
+                return;
+            }
+
+            if (mode != GameMode.BossSlingshot)
+            {
+                SetStatus("QUIZ FIREWALL NEEDS BOSS SLINGSHOT MODE");
+                return;
+            }
+
+            OpenBlockQuiz(block);
+        }
+
         public void ProjectileHitBoss()
         {
             if (!projectileInFlight || mode != GameMode.BossSlingshot)
@@ -402,8 +451,8 @@ namespace CyberGuardian
 
             projectileInFlight = false;
             projectileFlightTimer = 0f;
-            bossHealth = Mathf.Max(0, bossHealth - 18);
-            score = Mathf.Min(999, score + 20);
+            bossHealth = Mathf.Max(0, bossHealth - GetBossHitDamage());
+            AddScore(GetBossHitScoreReward());
             PlaySfx(hitSfx);
             SetStatus(bossHealth <= 0 ? "BOSS PURGED - LEVEL CLEAR" : "BOSS HIT. OPEN MORE ANGLES.");
             ResetSlingshotProjectile();
@@ -482,6 +531,69 @@ namespace CyberGuardian
             return true;
         }
 
+        public void ApplyPowerUp(CyberGuardianPowerUp powerUp)
+        {
+            if (powerUp == null || mode == GameMode.Defeat || mode == GameMode.Victory)
+            {
+                return;
+            }
+
+            switch (powerUp.type)
+            {
+                case CyberGuardianPowerUpType.Health:
+                    playerHealth = Mathf.Min(100, playerHealth + Mathf.Max(1, powerUp.amount));
+                    AddScore(75);
+                    PlaySfx(shieldSfx);
+                    SetStatus("HEALTH PATCH INSTALLED");
+                    break;
+                case CyberGuardianPowerUpType.Boost:
+                    boostEnergy = Mathf.Min(100f, boostEnergy + Mathf.Max(1, powerUp.amount));
+                    AddScore(60);
+                    PlaySfx(shieldSfx);
+                    SetStatus("BOOST CACHE RESTORED");
+                    break;
+                case CyberGuardianPowerUpType.Firewall:
+                    invulnerabilityTimer = Mathf.Max(invulnerabilityTimer, Mathf.Max(2f, powerUp.amount * 0.1f));
+                    playerHealth = Mathf.Min(100, playerHealth + 8);
+                    AddScore(100);
+                    PlaySfx(shieldSfx);
+                    SetStatus("TEMP FIREWALL ACTIVE");
+                    break;
+                case CyberGuardianPowerUpType.Overclock:
+                    boostEnergy = 100f;
+                    invulnerabilityTimer = Mathf.Max(invulnerabilityTimer, 1.25f);
+                    AddScore(125);
+                    PlaySfx(shieldSfx);
+                    SetStatus("OVERCLOCK SKILL READY");
+                    break;
+            }
+
+            RefreshHud();
+        }
+
+        public void ShowStory(string title, string body, float duration)
+        {
+            if (storyPanel == null)
+            {
+                SetStatus(title + ": " + body);
+                return;
+            }
+
+            if (storyTitleText != null)
+            {
+                storyTitleText.text = title;
+            }
+
+            if (storyBodyText != null)
+            {
+                storyBodyText.text = body;
+            }
+
+            storyPanel.SetActive(true);
+            CancelInvoke(nameof(HideStoryPanel));
+            Invoke(nameof(HideStoryPanel), Mathf.Max(1f, duration));
+        }
+
         private void RegenerateBoost()
         {
             if (mode == GameMode.Defeat || mode == GameMode.Victory || quizOpen)
@@ -490,7 +602,7 @@ namespace CyberGuardian
             }
 
             float previous = boostEnergy;
-            boostEnergy = Mathf.Min(100f, boostEnergy + 28f * Time.deltaTime);
+            boostEnergy = Mathf.Min(100f, boostEnergy + GetBoostRegenPerSecond() * Time.deltaTime);
             if (!Mathf.Approximately(previous, boostEnergy))
             {
                 RefreshHud();
@@ -499,6 +611,12 @@ namespace CyberGuardian
 
         private void WireUi()
         {
+            if (pauseButton != null)
+            {
+                pauseButton.onClick.RemoveAllListeners();
+                pauseButton.onClick.AddListener(TogglePause);
+            }
+
             if (menuButton != null)
             {
                 menuButton.onClick.RemoveAllListeners();
@@ -508,13 +626,31 @@ namespace CyberGuardian
             if (resetButton != null)
             {
                 resetButton.onClick.RemoveAllListeners();
-                resetButton.onClick.AddListener(() => SceneManager.LoadScene(SceneManager.GetActiveScene().name));
+                resetButton.onClick.AddListener(ReloadCurrentScene);
+            }
+
+            if (pauseResumeButton != null)
+            {
+                pauseResumeButton.onClick.RemoveAllListeners();
+                pauseResumeButton.onClick.AddListener(() => SetPaused(false));
+            }
+
+            if (pauseRetryButton != null)
+            {
+                pauseRetryButton.onClick.RemoveAllListeners();
+                pauseRetryButton.onClick.AddListener(ReloadCurrentScene);
+            }
+
+            if (pauseMenuButton != null)
+            {
+                pauseMenuButton.onClick.RemoveAllListeners();
+                pauseMenuButton.onClick.AddListener(ReturnToMenu);
             }
 
             if (gameOverRetryButton != null)
             {
                 gameOverRetryButton.onClick.RemoveAllListeners();
-                gameOverRetryButton.onClick.AddListener(() => SceneManager.LoadScene(SceneManager.GetActiveScene().name));
+                gameOverRetryButton.onClick.AddListener(ReloadCurrentScene);
             }
 
             if (gameOverMenuButton != null)
@@ -660,21 +796,36 @@ namespace CyberGuardian
                 return;
             }
 
-            bossFireTimer = Mathf.Lerp(2.0f, 0.85f, 1f - bossHealth / 100f);
+            float pressure = GetDifficultyPressure();
+            float lowHealthPressure = 1f - bossHealth / 100f;
+            bossFireTimer = Mathf.Lerp(Mathf.Lerp(2.15f, 1.55f, pressure), Mathf.Lerp(1.05f, 0.62f, pressure), lowHealthPressure);
             float fireY = player.transform.position.y + 0.35f;
+            int projectileDamage = GetBossProjectileDamage();
+            float projectileSpeed = Mathf.Lerp(6.2f, 8.4f, pressure);
             if (IsBossLineBlocked(fireY))
             {
                 Vector2 breachSpawn = new Vector2(
-                    Mathf.Clamp(player.transform.position.x + Random.Range(-1.8f, 1.8f), bossArenaMinX + 0.65f, bossArenaMaxX - 0.65f),
+                    Mathf.Clamp(player.transform.position.x + Random.Range(-2.0f, 2.0f), bossArenaMinX + 0.65f, bossArenaMaxX - 0.65f),
                     cameraMax.y + 0.85f);
                 Vector2 breachTarget = (Vector2)player.transform.position + new Vector2(Random.Range(-0.35f, 0.35f), 0.12f);
-                SpawnBossProjectile(breachSpawn, breachTarget, 6.2f, 8);
+                SpawnBossProjectile(breachSpawn, breachTarget, projectileSpeed, Mathf.Max(6, projectileDamage - 3));
+                if (pressure > 0.72f && bossHealth < 70)
+                {
+                    SpawnBossProjectile(breachSpawn + new Vector2(1.2f, 0.15f), breachTarget + new Vector2(-0.7f, 0f), projectileSpeed * 0.92f, Mathf.Max(5, projectileDamage - 5));
+                }
+
                 PlaySfx(bossShotSfx);
                 SetStatus("BOSS BREACH PACKET FROM ABOVE - KEEP MOVING");
                 return;
             }
 
-            SpawnBossProjectile(bossProjectileSpawn.position, (Vector2)player.transform.position + new Vector2(0f, 0.35f), 7.0f, 12);
+            Vector2 directTarget = (Vector2)player.transform.position + new Vector2(0f, 0.35f);
+            SpawnBossProjectile(bossProjectileSpawn.position, directTarget, projectileSpeed + 0.55f, projectileDamage);
+            if (pressure > 0.58f && bossHealth < 55)
+            {
+                SpawnBossProjectile((Vector2)bossProjectileSpawn.position + new Vector2(0f, -0.32f), directTarget + new Vector2(0f, -0.48f), projectileSpeed, Mathf.Max(5, projectileDamage - 4));
+            }
+
             PlaySfx(bossShotSfx);
             SetStatus("BOSS ATTACK THROUGH AN OPEN GAP - DODGE");
         }
@@ -771,8 +922,8 @@ namespace CyberGuardian
             if (choice == question.correctIndex)
             {
                 activeQuizBlock.ClearBlock();
-                playerHealth = Mathf.Min(100, playerHealth + 4);
-                score = Mathf.Min(999, score + 8);
+                playerHealth = Mathf.Min(100, playerHealth + GetCorrectHealthReward());
+                AddScore(GetCorrectScoreReward());
                 PlaySfx(shieldSfx);
                 if (feedbackText != null)
                 {
@@ -784,7 +935,7 @@ namespace CyberGuardian
             else
             {
                 activeQuizBlock.PulseWrong();
-                DamagePlayer(12, "wrong answer");
+                DamagePlayer(GetWrongAnswerDamage(), "wrong answer");
                 bossFireTimer = Mathf.Min(bossFireTimer, 0.35f);
                 if (feedbackText != null)
                 {
@@ -806,7 +957,7 @@ namespace CyberGuardian
         {
             if (quizOpen)
             {
-                DamagePlayer(6, "skipped quiz");
+                DamagePlayer(Mathf.Max(4, GetWrongAnswerDamage() / 2), "skipped quiz");
             }
 
             CloseQuiz();
@@ -851,6 +1002,11 @@ namespace CyberGuardian
                 slingshotBody.simulated = true;
                 slingshotBody.linearVelocity = velocity;
                 slingshotBody.angularVelocity = -450f;
+            }
+
+            if (player != null)
+            {
+                player.TriggerFireAnimation(0.42f);
             }
 
             if (slingshotCollider != null)
@@ -1030,14 +1186,18 @@ namespace CyberGuardian
             else
             {
                 bool bossView = mode == GameMode.BossSlingshot || mode == GameMode.Victory;
-                float facingLead = player.FacingDirection >= 0 ? 3.1f : -1.6f;
+                float facingLead = player.FacingDirection >= 0 ? 3.25f : -1.85f;
+                float verticalLead = Mathf.Clamp(player.Velocity.y * 0.16f, -0.62f, 1.18f);
                 float targetX = bossView ? bossArenaCenterX : player.transform.position.x + facingLead;
-                float targetY = bossView ? Mathf.Lerp(player.transform.position.y + 1.1f, 2.25f, 0.35f) : player.transform.position.y + 1.15f;
+                float targetY = bossView
+                    ? Mathf.Lerp(player.transform.position.y + 1.0f + verticalLead * 0.45f, 2.25f, 0.25f)
+                    : player.transform.position.y + 1.05f + verticalLead;
                 target = new Vector3(Mathf.Clamp(targetX, cameraMin.x, cameraMax.x), Mathf.Clamp(targetY, cameraMin.y, cameraMax.y), -10f);
             }
 
-            gameplayCamera.transform.position = Vector3.Lerp(gameplayCamera.transform.position, target, Time.deltaTime * 4.5f);
-            gameplayCamera.orthographicSize = Mathf.Lerp(gameplayCamera.orthographicSize, targetSize, Time.deltaTime * 3.8f);
+            float followSpeed = player.IsBoosting ? 7.2f : 5.2f;
+            gameplayCamera.transform.position = Vector3.Lerp(gameplayCamera.transform.position, target, Time.deltaTime * followSpeed);
+            gameplayCamera.orthographicSize = Mathf.Lerp(gameplayCamera.orthographicSize, targetSize, Time.deltaTime * 4.1f);
         }
 
         private void RefreshHud()
@@ -1109,6 +1269,64 @@ namespace CyberGuardian
             }
         }
 
+        private void HideStoryPanel()
+        {
+            if (storyPanel != null)
+            {
+                storyPanel.SetActive(false);
+            }
+        }
+
+        private void AddScore(int amount)
+        {
+            score = Mathf.Clamp(score + Mathf.Max(0, amount), 0, MaxScore);
+        }
+
+        private int GetCorrectScoreReward()
+        {
+            return activeDifficulty != null ? Mathf.Max(10, activeDifficulty.correctScoreReward) : 100;
+        }
+
+        private int GetCorrectHealthReward()
+        {
+            return activeDifficulty != null ? Mathf.Max(2, activeDifficulty.correctShieldReward) : 6;
+        }
+
+        private int GetWrongAnswerDamage()
+        {
+            return activeDifficulty != null ? Mathf.Max(4, activeDifficulty.wrongShieldDamage) : 12;
+        }
+
+        private int GetBossHitDamage()
+        {
+            return activeDifficulty != null ? Mathf.Clamp(activeDifficulty.routeVirusDamage, 16, 32) : 22;
+        }
+
+        private int GetBossHitScoreReward()
+        {
+            return activeDifficulty != null ? Mathf.Max(120, activeDifficulty.routeScoreReward) : 600;
+        }
+
+        private int GetBossProjectileDamage()
+        {
+            return Mathf.RoundToInt(Mathf.Lerp(9f, 16f, GetDifficultyPressure()));
+        }
+
+        private float GetBoostRegenPerSecond()
+        {
+            return Mathf.Lerp(34f, 22f, GetDifficultyPressure());
+        }
+
+        private float GetDifficultyPressure()
+        {
+            if (activeDifficulty == null)
+            {
+                return 0.45f;
+            }
+
+            return Mathf.Clamp01(Mathf.InverseLerp(10f, 35f, activeDifficulty.startingVirusStrength));
+        }
+
         private DifficultyProfile GetActiveDifficulty()
         {
             if (difficultyProfiles != null && difficultyProfiles.Length > 0)
@@ -1118,6 +1336,35 @@ namespace CyberGuardian
             }
 
             return null;
+        }
+
+        private void TogglePause()
+        {
+            if (mode == GameMode.Defeat || mode == GameMode.Victory || quizOpen)
+            {
+                return;
+            }
+
+            SetPaused(!paused);
+        }
+
+        private void SetPaused(bool value)
+        {
+            paused = value && mode != GameMode.Defeat && mode != GameMode.Victory;
+            Time.timeScale = paused ? 0f : 1f;
+            if (pauseModal != null)
+            {
+                pauseModal.SetActive(paused);
+            }
+
+            SetStatus(paused ? "PAUSED" : (mode == GameMode.BossSlingshot ? "BOSS MODE: CLICK OR DRAG ANYWHERE TO PULL PATCH CORE" : "ADVENTURE MODE"));
+            RefreshHud();
+        }
+
+        private void ReloadCurrentScene()
+        {
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         private void ReturnToMenu()

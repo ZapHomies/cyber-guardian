@@ -11,11 +11,16 @@ namespace CyberGuardian
         public float speed = 1.8f;
         public float patrolDistance = 2.4f;
         public Transform visualRoot;
+        public bool flipVisualRootWithDirection = true;
 
         private SpriteRenderer spriteRenderer;
         private Vector3 origin;
         private Vector3 baseVisualScale;
+        private float attackAnimationTimer;
         private int direction = 1;
+
+        public int FacingDirection => direction;
+        public bool IsAttackingForAnimation => attackAnimationTimer > 0f;
 
         private void Awake()
         {
@@ -31,11 +36,21 @@ namespace CyberGuardian
 
         private void Update()
         {
+            attackAnimationTimer = Mathf.Max(0f, attackAnimationTimer - Time.deltaTime);
+            if (game != null && game.player != null)
+            {
+                Vector2 delta = game.player.transform.position - transform.position;
+                if (Mathf.Abs(delta.x) < 1.15f && Mathf.Abs(delta.y) < 0.85f)
+                {
+                    attackAnimationTimer = Mathf.Max(attackAnimationTimer, 0.22f);
+                }
+            }
+
             transform.position += Vector3.right * direction * speed * Time.deltaTime;
             if (Mathf.Abs(transform.position.x - origin.x) > patrolDistance)
             {
                 direction *= -1;
-                if (visualRoot != null)
+                if (visualRoot != null && flipVisualRootWithDirection)
                 {
                     visualRoot.localScale = new Vector3(Mathf.Abs(baseVisualScale.x) * direction, baseVisualScale.y, baseVisualScale.z);
                 }
@@ -75,6 +90,7 @@ namespace CyberGuardian
         {
             if (game != null && collision.collider.GetComponent<CyberGuardianPlayerController>() != null)
             {
+                attackAnimationTimer = Mathf.Max(attackAnimationTimer, 0.36f);
                 game.DamagePlayer(touchDamage, "Enemy contact");
             }
         }

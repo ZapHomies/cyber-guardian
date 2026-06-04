@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace CyberGuardian
 {
@@ -20,14 +21,22 @@ namespace CyberGuardian
         public float boostCost = 26f;
         public float meleeRange = 1.25f;
         public int meleeDamage = 1;
+        public GameObject adventureProjectilePrefab;
+        public Transform projectileSpawn;
+        public float rangedProjectileSpeed = 12.5f;
+        public float rangedAttackCooldown = 0.36f;
+        public int rangedDamage = 1;
         public Transform visualRoot;
+        public bool flipVisualRootWithFacing = true;
 
         private Rigidbody2D body;
         private SpriteRenderer spriteRenderer;
         private float meleeCooldown;
+        private float rangedCooldown;
         private float coyoteCounter;
         private float jumpBufferCounter;
         private float boostTimer;
+        private float attackAnimationTimer;
         private float boostDirection = 1f;
         private Vector3 baseVisualScale;
         private bool facingRight = true;
@@ -37,6 +46,7 @@ namespace CyberGuardian
         public float HorizontalInput { get; private set; }
         public bool IsGroundedForAnimation { get; private set; }
         public bool IsBoosting { get; private set; }
+        public bool IsAttackingForAnimation => meleeCooldown > 0f || attackAnimationTimer > 0f;
         public Vector2 Velocity => body != null ? body.linearVelocity : Vector2.zero;
 
         private void Awake()
@@ -62,12 +72,16 @@ namespace CyberGuardian
 
                 jumpBufferCounter = 0f;
                 boostTimer = 0f;
+                attackAnimationTimer = 0f;
+                rangedCooldown = 0f;
                 HorizontalInput = 0f;
                 IsBoosting = false;
                 IsGroundedForAnimation = IsGrounded();
                 return;
             }
 
+            attackAnimationTimer = Mathf.Max(0f, attackAnimationTimer - Time.deltaTime);
+            rangedCooldown = Mathf.Max(0f, rangedCooldown - Time.deltaTime);
             float horizontal = Input.GetAxisRaw("Horizontal");
             if (Mathf.Abs(horizontal) < 0.05f)
             {
@@ -125,6 +139,7 @@ namespace CyberGuardian
             if (!InBossMode && meleeCooldown <= 0f && Input.GetKeyDown(KeyCode.J))
             {
                 meleeCooldown = 0.32f;
+                TriggerFireAnimation(0.24f);
                 Vector2 center = (Vector2)transform.position + new Vector2(FacingDirection * 0.92f, 0.12f);
                 game.PlayerMelee(center, meleeRange, meleeDamage);
                 if (spriteRenderer != null)
@@ -133,6 +148,41 @@ namespace CyberGuardian
                     CancelInvoke(nameof(RestoreColor));
                     Invoke(nameof(RestoreColor), 0.10f);
                 }
+            }
+
+            bool pointerOverUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+            if (!InBossMode && rangedCooldown <= 0f && (Input.GetKeyDown(KeyCode.L) || (Input.GetMouseButtonDown(0) && !pointerOverUi)))
+            {
+                FireAdventureProjectile();
+            }
+        }
+
+        public void TriggerFireAnimation(float duration)
+        {
+            attackAnimationTimer = Mathf.Max(attackAnimationTimer, duration);
+        }
+
+        private void FireAdventureProjectile()
+        {
+            if (adventureProjectilePrefab == null || game == null)
+            {
+                return;
+            }
+
+            rangedCooldown = rangedAttackCooldown;
+            TriggerFireAnimation(0.28f);
+            Vector3 spawnPosition = projectileSpawn != null
+                ? transform.position + new Vector3(Mathf.Abs(projectileSpawn.localPosition.x) * FacingDirection, projectileSpawn.localPosition.y, 0f)
+                : transform.position + new Vector3(0.62f * FacingDirection, 0.42f, 0f);
+            GameObject shot = Instantiate(adventureProjectilePrefab, spawnPosition, Quaternion.identity);
+            shot.SetActive(true);
+            CyberGuardianPlayerProjectile2D projectile = shot.GetComponent<CyberGuardianPlayerProjectile2D>();
+            if (projectile != null)
+            {
+                projectile.game = game;
+                projectile.damage = rangedDamage;
+                projectile.velocity = new Vector2(FacingDirection * rangedProjectileSpeed, 0.15f);
+                projectile.lifetime = 1.55f;
             }
         }
 
@@ -159,7 +209,7 @@ namespace CyberGuardian
                 return;
             }
 
-            float xScale = Mathf.Abs(baseVisualScale.x) * FacingDirection;
+            float xScale = Mathf.Abs(baseVisualScale.x) * (flipVisualRootWithFacing ? FacingDirection : 1f);
             visualRoot.localScale = new Vector3(xScale, baseVisualScale.y, baseVisualScale.z);
         }
 
