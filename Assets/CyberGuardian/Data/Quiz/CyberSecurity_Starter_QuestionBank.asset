@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CyberGuardian.QuizQuestionBank
   questions:
   - category: 0
-    title: PASSWORD NODE
+    title: NODE PASSWORD
     prompt: Apa ciri password yang aman?
     answers:
     - Panjang dan unik
@@ -24,7 +24,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Password aman sebaiknya panjang, unik, dan tidak dipakai ulang.
   - category: 0
-    title: PASSWORD VAULT
+    title: BRANKAS PASSWORD
     prompt: Mengapa password manager membantu keamanan akun?
     answers:
     - Menyimpan password unik
@@ -34,7 +34,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Password manager membantu membuat dan menyimpan password unik untuk tiap akun.
   - category: 0
-    title: LOGIN SHIELD
+    title: PERISAI LOGIN
     prompt: Apa fungsi utama autentikasi dua faktor?
     answers:
     - Menambah lapisan verifikasi
@@ -44,7 +44,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. 2FA menambah bukti verifikasi selain password.
   - category: 1
-    title: MALWARE GATE
+    title: GERBANG MALWARE
     prompt: Email berisi link login palsu meminta OTP. Apa tindakan aman?
     answers:
     - Jangan klik dan laporkan
@@ -54,7 +54,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. OTP tidak boleh dibagikan dan link harus diverifikasi.
   - category: 1
-    title: PHISHING FILTER
+    title: FILTER PHISHING
     prompt: Tanda umum phishing adalah...
     answers:
     - Alamat pengirim mencurigakan
@@ -64,7 +64,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Pengirim, domain, dan permintaan mendesak perlu diperiksa.
   - category: 1
-    title: FILE SCAN
+    title: PEMINDAI FILE
     prompt: File lampiran dari sumber tidak dikenal sebaiknya...
     answers:
     - Tidak dibuka sembarangan
@@ -74,7 +74,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Lampiran asing dapat membawa malware.
   - category: 2
-    title: NETWORK ROUTE
+    title: RUTE JARINGAN
     prompt: Saat memakai Wi-Fi publik, langkah paling aman adalah...
     answers:
     - Pakai koneksi resmi dan proteksi tambahan
@@ -84,7 +84,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Wi-Fi publik berisiko penyadapan, jadi akses sensitif harus hati-hati.
   - category: 2
-    title: FIREWALL NODE
+    title: NODE FIREWALL
     prompt: Firewall digunakan untuk...
     answers:
     - Membantu menyaring koneksi
@@ -94,7 +94,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Firewall membantu mengontrol koneksi masuk dan keluar.
   - category: 2
-    title: UPDATE PATCH
+    title: PATCH PEMBARUAN
     prompt: Mengapa update sistem penting?
     answers:
     - Menutup celah keamanan
@@ -104,7 +104,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Update sering membawa patch untuk celah keamanan.
   - category: 3
-    title: PRIVACY CORE
+    title: INTI PRIVASI
     prompt: Data apa yang tidak boleh dibagikan sembarangan?
     answers:
     - NIK, OTP, password, alamat
@@ -114,7 +114,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Data pribadi dapat dipakai untuk penipuan atau pengambilalihan akun.
   - category: 3
-    title: DATA MINIMIZE
+    title: MINIMISASI DATA
     prompt: Prinsip minimisasi data berarti...
     answers:
     - Hanya minta data yang perlu
@@ -124,7 +124,7 @@ MonoBehaviour:
     correctIndex: 0
     feedback: Benar. Data yang dikumpulkan sebaiknya sesuai kebutuhan.
   - category: 3
-    title: SOCIAL TRACE
+    title: JEJAK SOSIAL
     prompt: Sebelum membagikan foto kartu identitas, sebaiknya...
     answers:
     - Jangan bagikan sembarangan

@@ -23,6 +23,7 @@ namespace CyberGuardian
         public const string ResumeRequestedKey = "CyberGuardianResumeRequested";
 
         public string gameplaySceneName = "CyberGuardian_Level01";
+        public string difficultySceneName = "CyberGuardian_PilihKesulitan";
         public Text selectedDifficultyText;
         public Button startButton;
         public Button continueButton;
@@ -44,12 +45,12 @@ namespace CyberGuardian
         public Image[] startTransitionFx;
         public float startTransitionDuration = 2.25f;
 
-        private readonly string[] difficultyNames = { "Easy", "Normal", "Hard" };
+        private readonly string[] difficultyNames = { "Mudah", "Normal", "Sulit" };
         private int selectedDifficulty = 1;
         private bool startingGame;
         private string pendingSceneName = string.Empty;
-        private string pendingTransitionIntro = "SYNCING CYBER GUARDIAN";
-        private string pendingTransitionLoad = "ENTERING DATA FOREST";
+        private string pendingTransitionIntro = "MENYIAPKAN CYBER GUARDIAN";
+        private string pendingTransitionLoad = "MEMBUKA JALUR AMAN";
 
         private void Awake()
         {
@@ -144,11 +145,10 @@ namespace CyberGuardian
             }
 
             PlayerPrefs.SetInt(DifficultyKey, selectedDifficulty);
-            ClearSavedProgress();
             PlayerPrefs.SetInt(ResumeRequestedKey, 0);
             PlayerPrefs.Save();
             Time.timeScale = 1f;
-            BeginSceneLoad(gameplaySceneName, "SYNCING CYBER GUARDIAN", "ENTERING DATA FOREST");
+            BeginSceneLoad(difficultySceneName, "MEMBUKA PANEL MISI", "PILIH TINGKAT KESULITAN");
         }
 
         private void ContinueGame()
@@ -167,7 +167,7 @@ namespace CyberGuardian
             PlayerPrefs.SetInt(ResumeRequestedKey, 1);
             PlayerPrefs.Save();
             Time.timeScale = 1f;
-            BeginSceneLoad(sceneName, "RESTORING CHECKPOINT", "REOPENING SECURE ROUTE");
+            BeginSceneLoad(sceneName, "MEMULIHKAN CHECKPOINT", "MEMBUKA ULANG JALUR AMAN");
         }
 
         private void BeginSceneLoad(string sceneName, string intro, string load)
@@ -299,7 +299,7 @@ namespace CyberGuardian
         {
             if (selectedDifficultyText != null)
             {
-                selectedDifficultyText.text = "DIFFICULTY: " + difficultyNames[selectedDifficulty].ToUpperInvariant();
+                selectedDifficultyText.text = "KESULITAN: " + difficultyNames[selectedDifficulty].ToUpperInvariant();
             }
 
             if (continueButton != null)

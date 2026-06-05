@@ -98,10 +98,10 @@ namespace CyberGuardian
 
         private static readonly QuizQuestion[] FallbackQuestions =
         {
-            new QuizQuestion(CyberQuestionCategory.Password, "PASSWORD GATE", "Password yang baik sebaiknya...", new[] { "Panjang, unik, dan sulit ditebak", "Sama untuk semua akun", "Berisi tanggal lahir", "Dibagikan ke teman" }, 0, "Benar. Password perlu panjang, unik, dan tidak dipakai ulang."),
-            new QuizQuestion(CyberQuestionCategory.Malware, "MALWARE BLOCK", "Lampiran asing dari email tidak dikenal sebaiknya...", new[] { "Tidak dibuka sembarangan", "Langsung dijalankan", "Dibagikan ulang", "Diubah namanya saja" }, 0, "Benar. Lampiran asing bisa membawa malware."),
-            new QuizQuestion(CyberQuestionCategory.Network, "NETWORK WALL", "Firewall membantu kita untuk...", new[] { "Menyaring koneksi berbahaya", "Membuka semua port", "Membuat virus", "Mematikan update" }, 0, "Benar. Firewall membantu mengontrol koneksi masuk dan keluar."),
-            new QuizQuestion(CyberQuestionCategory.Privacy, "PRIVACY LOCK", "Data yang tidak boleh dibagikan sembarangan adalah...", new[] { "OTP, password, NIK", "Genre game favorit", "Warna kesukaan", "Nama panggilan" }, 0, "Benar. Data sensitif dapat dipakai untuk penipuan.")
+            new QuizQuestion(CyberQuestionCategory.Password, "GERBANG PASSWORD", "Password yang baik sebaiknya...", new[] { "Panjang, unik, dan sulit ditebak", "Sama untuk semua akun", "Berisi tanggal lahir", "Dibagikan ke teman" }, 0, "Benar. Password perlu panjang, unik, dan tidak dipakai ulang."),
+            new QuizQuestion(CyberQuestionCategory.Malware, "BLOK MALWARE", "Lampiran asing dari email tidak dikenal sebaiknya...", new[] { "Tidak dibuka sembarangan", "Langsung dijalankan", "Dibagikan ulang", "Diubah namanya saja" }, 0, "Benar. Lampiran asing bisa membawa malware."),
+            new QuizQuestion(CyberQuestionCategory.Network, "DINDING JARINGAN", "Firewall membantu kita untuk...", new[] { "Menyaring koneksi berbahaya", "Membuka semua port", "Membuat virus", "Mematikan update" }, 0, "Benar. Firewall membantu mengontrol koneksi masuk dan keluar."),
+            new QuizQuestion(CyberQuestionCategory.Privacy, "KUNCI PRIVASI", "Data yang tidak boleh dibagikan sembarangan adalah...", new[] { "OTP, password, NIK", "Genre game favorit", "Warna kesukaan", "Nama panggilan" }, 0, "Benar. Data sensitif dapat dipakai untuk penipuan.")
         };
 
         private readonly Color[] categoryColors =
@@ -198,7 +198,7 @@ namespace CyberGuardian
                 readyPanel.SetActive(false);
             }
 
-            SetStatus("ADVENTURE MODE: A/D MOVE, SPACE JUMP, J MELEE, SHIFT BOOST");
+            SetStatus("MODE PETUALANGAN: A/D GERAK, SPACE LOMPAT, J SERANG, SHIFT ENERGI");
             RefreshHud();
             StartCoroutine(ReadyCountdownSequence());
         }
@@ -251,13 +251,13 @@ namespace CyberGuardian
                 readyPanel.SetActive(true);
             }
 
-            SetStatus("MISSION BOOT SEQUENCE");
-            string title = resumedFromCheckpoint ? "CHECKPOINT RESTORED" : "ARE YOU READY?";
+            SetStatus("URUTAN BOOT MISI");
+            string title = resumedFromCheckpoint ? "CHECKPOINT DIPULIHKAN" : "SIAP?";
             yield return AnimateReadyStep(title, string.Empty, 0.85f);
             yield return AnimateReadyStep(title, "3", 0.58f);
             yield return AnimateReadyStep(title, "2", 0.58f);
             yield return AnimateReadyStep(title, "1", 0.58f);
-            yield return AnimateReadyStep("GO!", "RUN", 0.48f);
+            yield return AnimateReadyStep("MULAI!", "LARI", 0.48f);
 
             introCountdownActive = false;
             if (readyPanel != null)
@@ -265,7 +265,7 @@ namespace CyberGuardian
                 readyPanel.SetActive(false);
             }
 
-            SetStatus("ADVENTURE MODE: A/D MOVE, SPACE JUMP, J MELEE, SHIFT BOOST");
+            SetStatus("MODE PETUALANGAN: A/D GERAK, SPACE LOMPAT, J SERANG, SHIFT ENERGI");
         }
 
         private IEnumerator AnimateReadyStep(string title, string countdown, float duration)
@@ -340,7 +340,7 @@ namespace CyberGuardian
 
             bossFireTimer = 1.25f;
             ResetSlingshotProjectile();
-            SetStatus("BOSS MODE: CLICK OR DRAG ANYWHERE TO PULL PATCH CORE");
+            SetStatus("MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH");
             RefreshHud();
         }
 
@@ -376,8 +376,64 @@ namespace CyberGuardian
             enemies.Remove(enemy);
             AddScore(50);
             PlaySfx(hitSfx);
-            SetStatus("Threat deleted. Keep moving.");
+            SetStatus("Ancaman dihapus. Terus bergerak.");
             RefreshHud();
+        }
+
+        private static string TranslateDamageSource(string source)
+        {
+            if (string.IsNullOrEmpty(source))
+            {
+                return "ancaman";
+            }
+
+            string normalized = source.ToLowerInvariant();
+            if (normalized.Contains("boss packet"))
+            {
+                return "serangan paket bos";
+            }
+
+            if (normalized.Contains("enemy"))
+            {
+                return "kontak musuh";
+            }
+
+            if (normalized.Contains("wrong") || normalized.Contains("jawaban salah"))
+            {
+                return "jawaban salah";
+            }
+
+            if (normalized.Contains("skipped") || normalized.Contains("dilewati"))
+            {
+                return "kuis dilewati";
+            }
+
+            if (normalized.Contains("saw"))
+            {
+                return "gergaji jebakan";
+            }
+
+            if (normalized.Contains("laser"))
+            {
+                return "laser jebakan";
+            }
+
+            if (normalized.Contains("spike"))
+            {
+                return "duri jebakan";
+            }
+
+            if (normalized.Contains("glitch"))
+            {
+                return "ranjau glitch";
+            }
+
+            if (normalized.Contains("crusher") || normalized.Contains("crushing"))
+            {
+                return "blok penghancur";
+            }
+
+            return "jebakan";
         }
 
         public void DamagePlayer(int damage, string source)
@@ -390,7 +446,7 @@ namespace CyberGuardian
             invulnerabilityTimer = 0.75f;
             playerHealth = Mathf.Max(0, playerHealth - damage);
             PlaySfx(wrongSfx);
-            SetStatus(playerHealth <= 0 ? "SYSTEM BREACH - GAME OVER" : "DAMAGE FROM " + source.ToUpperInvariant());
+            SetStatus(playerHealth <= 0 ? "SISTEM JEBOL - PERMAINAN BERAKHIR" : "TERKENA " + TranslateDamageSource(source).ToUpperInvariant());
             RefreshHud();
 
             if (playerHealth <= 0)
@@ -436,7 +492,7 @@ namespace CyberGuardian
                 }
             }
 
-            SetStatus("SYSTEM BREACH - GUARDIAN DESTROYED");
+            SetStatus("SISTEM JEBOL - GUARDIAN HANCUR");
             StartCoroutine(DefeatSequence(source));
         }
 
@@ -508,7 +564,7 @@ namespace CyberGuardian
         {
             if (gameOverScoreText != null)
             {
-                gameOverScoreText.text = "SCORE " + score.ToString("0");
+                gameOverScoreText.text = "SKOR " + score.ToString("0");
             }
 
             if (gameOverModal != null)
@@ -539,7 +595,7 @@ namespace CyberGuardian
 
             if (mode != GameMode.BossSlingshot)
             {
-                SetStatus("QUIZ FIREWALL NEEDS BOSS SLINGSHOT MODE");
+                SetStatus("KUIS FIREWALL HARUS DIBUKA DI MODE BOS");
                 return;
             }
 
@@ -558,7 +614,7 @@ namespace CyberGuardian
             bossHealth = Mathf.Max(0, bossHealth - GetBossHitDamage());
             AddScore(GetBossHitScoreReward());
             PlaySfx(hitSfx);
-            SetStatus(bossHealth <= 0 ? "BOSS PURGED - LEVEL CLEAR" : "BOSS HIT. OPEN MORE ANGLES.");
+            SetStatus(bossHealth <= 0 ? "BOS DIBERSIHKAN - LEVEL SELESAI" : "BOS TERKENA. BUKA SUDUT SERANGAN LAIN.");
             ResetSlingshotProjectile();
             RefreshHud();
 
@@ -572,7 +628,7 @@ namespace CyberGuardian
 
                 if (!string.IsNullOrEmpty(nextSceneName))
                 {
-                    SetStatus("LEVEL CLEAR - OPENING NEXT SECTOR");
+                    SetStatus("LEVEL SELESAI - MEMBUKA SEKTOR BERIKUTNYA");
                     SaveProgressForScene(nextSceneName, GetNextSceneStartPoint(), true);
                     Invoke(nameof(LoadNextScene), 1.35f);
                 }
@@ -588,7 +644,7 @@ namespace CyberGuardian
 
             projectileInFlight = false;
             projectileFlightTimer = 0f;
-            SetStatus("PATCH LOST. TARGET A QUIZ BLOCK OR OPEN BOSS GAP.");
+            SetStatus("PATCH HILANG. BIDIK BLOK KUIS ATAU CELAH BOS.");
             ResetSlingshotProjectile();
         }
 
@@ -601,7 +657,7 @@ namespace CyberGuardian
         {
             currentRecoveryPoint = point;
             SaveProgress(currentRecoveryPoint);
-            SetStatus("RECOVERY NODE SYNCED");
+            SetStatus("NODE PEMULIHAN TERSINKRON");
         }
 
         public void RecoverPlayerFromAbyss()
@@ -620,7 +676,7 @@ namespace CyberGuardian
 
             player.transform.position = currentRecoveryPoint;
             boostEnergy = Mathf.Min(100f, boostEnergy + 18f);
-            SetStatus("RECOVERED FROM CODE ABYSS - FIND ANOTHER ROUTE");
+            SetStatus("PULIH DARI JURANG KODE - CARI RUTE LAIN");
             RefreshHud();
         }
 
@@ -632,7 +688,7 @@ namespace CyberGuardian
             }
 
             boostEnergy = Mathf.Max(0f, boostEnergy - cost);
-            SetStatus("BOOST BURST: FAST MOVE CHARGED");
+            SetStatus("ENERGI AKTIF: GERAK CEPAT TERPAKAI");
             RefreshHud();
             return true;
         }
@@ -650,27 +706,27 @@ namespace CyberGuardian
                     playerHealth = Mathf.Min(100, playerHealth + Mathf.Max(1, powerUp.amount));
                     AddScore(75);
                     PlaySfx(shieldSfx);
-                    SetStatus("HEALTH PATCH INSTALLED");
+                    SetStatus("PATCH KESEHATAN TERPASANG");
                     break;
                 case CyberGuardianPowerUpType.Boost:
                     boostEnergy = Mathf.Min(100f, boostEnergy + Mathf.Max(1, powerUp.amount));
                     AddScore(60);
                     PlaySfx(shieldSfx);
-                    SetStatus("BOOST CACHE RESTORED");
+                    SetStatus("CACHE ENERGI DIPULIHKAN");
                     break;
                 case CyberGuardianPowerUpType.Firewall:
                     invulnerabilityTimer = Mathf.Max(invulnerabilityTimer, Mathf.Max(2f, powerUp.amount * 0.1f));
                     playerHealth = Mathf.Min(100, playerHealth + 8);
                     AddScore(100);
                     PlaySfx(shieldSfx);
-                    SetStatus("TEMP FIREWALL ACTIVE");
+                    SetStatus("FIREWALL SEMENTARA AKTIF");
                     break;
                 case CyberGuardianPowerUpType.Overclock:
                     boostEnergy = 100f;
                     invulnerabilityTimer = Mathf.Max(invulnerabilityTimer, 1.25f);
                     AddScore(125);
                     PlaySfx(shieldSfx);
-                    SetStatus("OVERCLOCK SKILL READY");
+                    SetStatus("KEMAMPUAN OVERCLOCK SIAP");
                     break;
             }
 
@@ -824,7 +880,7 @@ namespace CyberGuardian
 
                 draggingSlingshot = true;
                 UpdateScreenWideSlingshotPull(rest, mouseWorld);
-                SetStatus("AIMING PATCH CORE - RELEASE TO FIRE");
+                SetStatus("MEMBIDIK INTI PATCH - LEPAS UNTUK MENEMBAK");
             }
 
             if (draggingSlingshot && Input.GetMouseButton(0))
@@ -927,7 +983,7 @@ namespace CyberGuardian
                 }
 
                 PlaySfx(bossShotSfx);
-                SetStatus("BOSS BREACH PACKET FROM ABOVE - KEEP MOVING");
+                SetStatus("PAKET SERANGAN BOS DARI ATAS - TERUS BERGERAK");
                 return;
             }
 
@@ -939,7 +995,7 @@ namespace CyberGuardian
             }
 
             PlaySfx(bossShotSfx);
-            SetStatus("BOSS ATTACK THROUGH AN OPEN GAP - DODGE");
+            SetStatus("BOS MENYERANG LEWAT CELAH - HINDARI");
         }
 
         private void HandleAerialBossAttack()
@@ -976,7 +1032,7 @@ namespace CyberGuardian
                     SpawnBossProjectile(spawn + new Vector2(0f, yOffset * 0.18f), target, speed, damage);
                 }
 
-                SetStatus("AIR BOSS VOLLEY: DODGE THE MALWARE BURST");
+                SetStatus("SERANGAN BERUNTUN BOS UDARA: HINDARI LEDAKAN MALWARE");
             }
             else if (pattern == 1)
             {
@@ -989,7 +1045,7 @@ namespace CyberGuardian
                     SpawnBossProjectile(spawn, target, speed * 0.92f, Mathf.Max(5, damage - 2));
                 }
 
-                SetStatus("AIR BOSS PACKET RAIN: WATCH THE SKY");
+                SetStatus("HUJAN PAKET BOS UDARA: AWASI ATAS");
             }
             else if (pattern == 2)
             {
@@ -1001,7 +1057,7 @@ namespace CyberGuardian
                     SpawnBossProjectile(spawn, target, speed * (0.85f + i * 0.05f), damage);
                 }
 
-                SetStatus("AIR BOSS SWEEP: MULTI-PORT ATTACK");
+                SetStatus("SAPUAN BOS UDARA: SERANGAN MULTI-PORT");
             }
             else
             {
@@ -1016,7 +1072,7 @@ namespace CyberGuardian
                     SpawnBossProjectile(rightSpawn, targetRight, speed * 0.78f, Mathf.Max(5, damage - 3));
                 }
 
-                SetStatus("AIR BOSS CROSS-STORM: FIND THE SAFE GAP");
+                SetStatus("BADAI SILANG BOS UDARA: CARI CELAH AMAN");
             }
 
             PlaySfx(bossShotSfx);
@@ -1101,7 +1157,7 @@ namespace CyberGuardian
                 quizModal.SetActive(true);
             }
 
-            SetStatus("ANSWER TO DESTROY THIS BOSS SHIELD BLOCK");
+            SetStatus("JAWAB UNTUK MENGHANCURKAN BLOK PERISAI BOS");
             RefreshHud();
         }
 
@@ -1132,16 +1188,16 @@ namespace CyberGuardian
                     feedbackText.text = question.feedback;
                 }
 
-                SetStatus("BLOCK DESTROYED. A NEW ATTACK GAP EXISTS.");
+                SetStatus("BLOK HANCUR. CELAH SERANGAN BARU TERBUKA.");
             }
             else
             {
                 activeQuizBlock.PulseWrong();
-                DamagePlayer(GetWrongAnswerDamage(), "wrong answer");
+                DamagePlayer(GetWrongAnswerDamage(), "jawaban salah");
                 bossFireTimer = Mathf.Min(bossFireTimer, 0.35f);
                 if (feedbackText != null)
                 {
-                    feedbackText.text = "Jawaban salah. Shield melemah dan boss mendapat peluang menyerang.";
+                    feedbackText.text = "Jawaban salah. Perisai melemah dan bos mendapat peluang menyerang.";
                 }
             }
 
@@ -1159,7 +1215,7 @@ namespace CyberGuardian
         {
             if (quizOpen)
             {
-                DamagePlayer(Mathf.Max(4, GetWrongAnswerDamage() / 2), "skipped quiz");
+                DamagePlayer(Mathf.Max(4, GetWrongAnswerDamage() / 2), "quiz dilewati");
             }
 
             CloseQuiz();
@@ -1217,7 +1273,7 @@ namespace CyberGuardian
             }
 
             PlaySfx(bossShotSfx);
-            SetStatus("PATCH CORE LAUNCHED");
+            SetStatus("INTI PATCH DITEMBAKKAN");
         }
 
         private void FirePatchAt(Vector2 target)
@@ -1411,7 +1467,7 @@ namespace CyberGuardian
 
             if (bossText != null)
             {
-                bossText.text = "BOSS";
+                bossText.text = "BOS";
             }
 
             if (scoreText != null)
@@ -1421,7 +1477,7 @@ namespace CyberGuardian
 
             if (modeText != null)
             {
-                modeText.text = "BOOST";
+                modeText.text = "ENERGI";
             }
 
             if (playerHealthFill != null)
@@ -1634,7 +1690,7 @@ namespace CyberGuardian
                 pauseModal.SetActive(paused);
             }
 
-            SetStatus(paused ? "PAUSED" : (mode == GameMode.BossSlingshot ? "BOSS MODE: CLICK OR DRAG ANYWHERE TO PULL PATCH CORE" : "ADVENTURE MODE"));
+            SetStatus(paused ? "JEDA" : (mode == GameMode.BossSlingshot ? "MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH" : "MODE PETUALANGAN"));
             RefreshHud();
         }
 

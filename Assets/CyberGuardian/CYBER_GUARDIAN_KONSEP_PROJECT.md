@@ -22,7 +22,7 @@ Player mengendalikan manusia berbentuk Cyber Guardian yang masuk ke jaringan kom
 ## 3. Genre dan Target
 
 - Platform: PC.
-- Engine: Unity.
+- Engine: Unity 6.4 `6000.4.8f1`.
 - Genre utama: 2D side-scrolling action platformer.
 - Gaya visual: cyber horror, dunia dalam komputer, neon cyan/magenta, circuit board, server ruins, data abyss.
 - Mode boss: slingshot physics dengan trajectory indicator.
@@ -69,6 +69,7 @@ Catatan desain: boost bar adalah energy untuk bergerak cepat di darat maupun uda
 Scene yang sudah ada di project:
 
 - `Assets/CyberGuardian/Scenes/CyberGuardian_MainMenu.unity`
+- `Assets/CyberGuardian/Scenes/CyberGuardian_PilihKesulitan.unity`
 - `Assets/CyberGuardian/Scenes/CyberGuardian_Level01.unity`
 - `Assets/CyberGuardian/Scenes/CyberGuardian_Level02.unity`
 - `Assets/CyberGuardian/Scenes/CyberGuardian_Level03.unity`
@@ -79,7 +80,9 @@ Scene dibuat/diregenerasi lewat:
 
 Menu Unity yang dipakai builder:
 
-- `Cyber Guardian/Build Main Menu And Level 01`
+- `Cyber Guardian/Bangun Semua Scene Game`
+
+Catatan Unity 6.4: dependency `com.unity.modules.physicscore2d`, `com.unity.modules.timelinefoundation`, dan versi `com.unity.cinemachine` yang tidak tersedia untuk project ini sudah dilepas dari package manifest. Physics 2D tetap memakai modul bawaan Unity, bukan package bernama `physicscore2d`.
 
 Catatan: nama menu lama seperti `Open Layout Reference` tidak diperlukan untuk versi game sekarang dan tidak boleh menjadi bagian UI utama.
 
@@ -96,31 +99,35 @@ Konsep main menu:
 - Tombol difficulty dihapus jika tidak punya fungsi nyata di build.
 - Tombol `Continue` wajib ada untuk melanjutkan checkpoint.
 
-Tombol utama yang disarankan:
+Tombol utama yang dipakai:
 
-- `Start`
-- `Continue`
-- `Settings`
-- `Credits`
-- `Exit`
+- `MULAI`
+- `LANJUTKAN`
+- `PENGATURAN`
+- `KREDIT`
+- `KELUAR`
 
-Transisi saat `Start`:
+Alur saat `MULAI`:
 
 1. Video/menu melakukan slow transition.
 2. Visual effect cyber/glitch/scanline muncul halus.
-3. Masuk ke scene Level 01.
-4. Muncul pop-up `ARE YOU READY?`.
-5. Countdown `3`, `2`, `1`, `GO`.
+3. Masuk ke scene `CyberGuardian_PilihKesulitan`.
+4. Player memilih `MUDAH`, `NORMAL`, atau `SULIT`.
+5. Game masuk ke Level 01/Hutan Data.
+6. Muncul pop-up `SIAP?`.
+7. Countdown `3`, `2`, `1`, `MULAI!`.
+
+Catatan bahasa: semua teks yang terlihat pemain harus memakai Bahasa Indonesia. Istilah game/teknis yang masih dipakai harus terasa natural, misalnya `bos`, `kuis`, `blok`, `perisai`, `energi`, `skor`, dan `checkpoint`.
 
 ## 9. HUD Main Game
 
 Layout HUD yang diinginkan:
 
-- Kiri atas: HP bar.
-- Tepat di bawah HP bar: boost energy bar, hampir menyatu seperti HUD fighting game.
-- Atas tengah: score besar dan rapi.
+- Kiri atas: bar HP.
+- Tepat di bawah bar HP: bar energi/boost, hampir menyatu seperti HUD fighting game.
+- Atas tengah/kanan bersih: skor besar dan tombol menu.
 - Kanan atas: area bersih, hanya tombol menu/pause dan score jika diperlukan.
-- Boss HP bar: tersembunyi saat adventure, tampil hanya saat boss encounter.
+- Bar HP bos: tersembunyi saat adventure, tampil hanya saat boss encounter.
 - Alert/story: overlay teks jelas, muncul-hilang sepanjang permainan, tanpa frame besar.
 - Game over: kamera zoom ke karakter, animasi hancur/shatter, lalu pop-up game over muncul.
 
@@ -305,11 +312,11 @@ Script terkait:
 
 Power-up yang cocok untuk versi awal:
 
-- `Shield Patch`: memulihkan HP/shield.
-- `Boost Cache`: mengisi boost energy.
-- `Score Data`: menambah score.
-- `Firewall Key`: membuka jalur aman.
-- `Patch Core`: memperkuat projectile sementara.
+- `Patch Kesehatan`: memulihkan HP/perisai.
+- `Cache Energi`: mengisi energi boost.
+- `Data Skor`: menambah skor.
+- `Kunci Firewall`: membuka jalur aman.
+- `Inti Patch`: memperkuat projectile sementara.
 
 Skill player:
 
@@ -376,7 +383,7 @@ Difficulty profile berada di:
 - `Assets/CyberGuardian/Data/Difficulty/Normal.asset`
 - `Assets/CyberGuardian/Data/Difficulty/Hard.asset`
 
-Fungsi difficulty:
+Fungsi pilihan kesulitan:
 
 - Starting shield/HP.
 - Damage jawaban salah.
@@ -384,7 +391,7 @@ Fungsi difficulty:
 - Kecepatan/tekanan boss.
 - Reward quiz.
 
-Catatan UI: jika tombol difficulty di main menu tidak mengubah profile, tombol harus dihapus. Jika ingin dipakai, tombol harus jelas mengganti Easy/Normal/Hard dan menyimpan ke PlayerPrefs.
+Alur UI saat ini: tombol difficulty tidak berada di main menu. Tombol `MULAI` membuka scene `CyberGuardian_PilihKesulitan`, lalu pilihan `MUDAH`, `NORMAL`, atau `SULIT` disimpan ke `PlayerPrefs` sebelum Level 01 dimulai.
 
 ## 19. Story Utama
 
@@ -547,14 +554,15 @@ Saat ingin memperbarui scene dari script builder:
 
 1. Buka Unity project `C:\Users\Wafda\My project`.
 2. Tunggu import selesai.
-3. Jalankan menu `Cyber Guardian/Build Main Menu And Level 01`.
+3. Jalankan menu `Cyber Guardian/Bangun Semua Scene Game`.
 4. Cek scene:
    - `CyberGuardian_MainMenu`
+   - `CyberGuardian_PilihKesulitan`
    - `CyberGuardian_Level01`
    - `CyberGuardian_Level02`
    - `CyberGuardian_Level03`
 5. Play dari main menu.
-6. Tes start, continue, countdown, movement, boost, attack, quiz, boss, game over, dan next scene.
+6. Tes `MULAI`, pilih kesulitan, `LANJUTKAN`, countdown, movement, boost/energi, attack, kuis, bos, sistem jebol, dan next scene.
 
 ## 24. Known Risk dan Hal yang Perlu Diverifikasi
 
@@ -575,4 +583,3 @@ Setiap perubahan baru harus dicek terhadap 5 pertanyaan:
 3. Apakah UI lebih rapi dan tidak menutupi gameplay?
 4. Apakah asset foreground, enemy, trap, dan background mudah dibedakan?
 5. Apakah fitur bisa diregenerasi dari script builder tanpa manual scene setup yang mudah hilang?
-

@@ -14,6 +14,7 @@ namespace CyberGuardian.Editor
     public static class CyberGuardianGameBuilder
     {
         private const string MainMenuScenePath = "Assets/CyberGuardian/Scenes/CyberGuardian_MainMenu.unity";
+        private const string DifficultyScenePath = "Assets/CyberGuardian/Scenes/CyberGuardian_PilihKesulitan.unity";
         private const string LevelScenePath = "Assets/CyberGuardian/Scenes/CyberGuardian_Level01.unity";
         private const string Level02ScenePath = "Assets/CyberGuardian/Scenes/CyberGuardian_Level02.unity";
         private const string Level03ScenePath = "Assets/CyberGuardian/Scenes/CyberGuardian_Level03.unity";
@@ -85,7 +86,7 @@ namespace CyberGuardian.Editor
             public Sprite QuizBlock;
         }
 
-        [MenuItem("Cyber Guardian/Build Main Menu And Level 01")]
+        [MenuItem("Cyber Guardian/Bangun Semua Scene Game")]
         public static void BuildGameScenes()
         {
             Directory.CreateDirectory(ToAbsolutePath("Assets/CyberGuardian/Scenes"));
@@ -122,13 +123,14 @@ namespace CyberGuardian.Editor
             GameObject bossProjectilePrefab = EnsureBossProjectilePrefab(circleSprite, sparkSprite);
 
             BuildMainMenuScene(panelSprite, circleSprite, rockTileSprite, metalCrateSprite, dataMossSprite, sawBladeSprite, dataBlobSprite, horrorSprites, virusSprite, frameSprite, buttonSprite, circuitSprite, font);
+            BuildDifficultySelectScene(panelSprite, horrorSprites, frameSprite, buttonSprite, circuitSprite, font);
             BuildLevelScene(squareSprite, circleSprite, panelSprite, rockTileSprite, metalCrateSprite, dataMossSprite, sawBladeSprite, dataBlobSprite, horrorSprites, virusSprite, virusAltSprite, projectileSprite, sparkSprite, crosshairSprite, frameSprite, buttonSprite, circuitSprite, questionBank, difficulties, font, bossProjectilePrefab, meleeSfx, hitSfx, bossShotSfx, shieldSfx, wrongSfx);
             BuildLevel02Scene(squareSprite, circleSprite, panelSprite, rockTileSprite, metalCrateSprite, dataMossSprite, sawBladeSprite, dataBlobSprite, horrorSprites, virusSprite, virusAltSprite, projectileSprite, sparkSprite, crosshairSprite, frameSprite, buttonSprite, circuitSprite, questionBank, difficulties, font, bossProjectilePrefab, meleeSfx, hitSfx, bossShotSfx, shieldSfx, wrongSfx);
             BuildLevel03Scene(squareSprite, circleSprite, panelSprite, rockTileSprite, metalCrateSprite, dataMossSprite, sawBladeSprite, dataBlobSprite, horrorSprites, virusSprite, virusAltSprite, projectileSprite, sparkSprite, crosshairSprite, frameSprite, buttonSprite, circuitSprite, questionBank, difficulties, font, bossProjectilePrefab, meleeSfx, hitSfx, bossShotSfx, shieldSfx, wrongSfx);
             SetBuildScenes();
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("Cyber Guardian side-scroller main menu and Levels 01-03 built.");
+            Debug.Log("Cyber Guardian side-scroller main menu, difficulty select, and Levels 01-03 built.");
         }
 
         private static void BuildMainMenuScene(Sprite panelSprite, Sprite circleSprite, Sprite rockTileSprite, Sprite metalCrateSprite, Sprite dataMossSprite, Sprite sawBladeSprite, Sprite dataBlobSprite, CyberHorrorAssetSprites horrorSprites, Sprite virusSprite, Sprite frameSprite, Sprite buttonSprite, Sprite circuitSprite, Font font)
@@ -155,21 +157,72 @@ namespace CyberGuardian.Editor
 
             AddStretchImage("Circuit Dark Overlay", canvasObject.transform, new Color(0f, 0f, 0f, 0.50f), panelSprite);
             AddText("Title", canvasObject.transform, new Vector2(0f, -238f), new Vector2(900f, 88f), "CYBER GUARDIAN", 66, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Subtitle", canvasObject.transform, new Vector2(0f, -298f), new Vector2(720f, 34f), "SIDE-SCROLLER QUIZ DEFENSE", 23, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Subtitle", canvasObject.transform, new Vector2(0f, -298f), new Vector2(720f, 34f), "AKSI CYBER DAN KUIS KEAMANAN", 23, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
 
             CyberGuardianMainMenu menu = new GameObject("Cyber Guardian Main Menu Controller").AddComponent<CyberGuardianMainMenu>();
             menu.gameplaySceneName = "CyberGuardian_Level01";
+            menu.difficultySceneName = "CyberGuardian_PilihKesulitan";
 
-            menu.creditsButton = AddButton("Credits Button", canvasObject.transform, new Vector2(-760f, -382f), new Vector2(290f, 54f), "CREDITS", 18, font, Hex("08181D"), Color.white, activeButton, out _, false);
-            menu.continueButton = AddButton("Continue Button", canvasObject.transform, new Vector2(-380f, -430f), new Vector2(300f, 58f), "CONTINUE", 19, font, Hex("08181D"), Color.white, activeButton, out _, false);
-            menu.startButton = AddButton("Start Button", canvasObject.transform, new Vector2(0f, -468f), new Vector2(318f, 64f), "PLAY", 27, font, Hex("08181D"), Color.white, activeButton, out _, false);
-            menu.settingsButton = AddButton("Settings Button", canvasObject.transform, new Vector2(380f, -430f), new Vector2(300f, 58f), "SETTINGS", 19, font, Hex("08181D"), Color.white, activeButton, out _, false);
-            menu.quitButton = AddButton("Quit Button", canvasObject.transform, new Vector2(760f, -382f), new Vector2(290f, 54f), "EXIT", 19, font, Hex("160810"), Color.white, dangerButton, out _, false);
+            menu.creditsButton = AddButton("Credits Button", canvasObject.transform, new Vector2(-760f, -382f), new Vector2(290f, 54f), "KREDIT", 18, font, Hex("08181D"), Color.white, activeButton, out _, false);
+            menu.continueButton = AddButton("Continue Button", canvasObject.transform, new Vector2(-380f, -430f), new Vector2(300f, 58f), "LANJUTKAN", 19, font, Hex("08181D"), Color.white, activeButton, out _, false);
+            menu.startButton = AddButton("Start Button", canvasObject.transform, new Vector2(0f, -468f), new Vector2(318f, 64f), "MULAI", 27, font, Hex("08181D"), Color.white, activeButton, out _, false);
+            menu.settingsButton = AddButton("Settings Button", canvasObject.transform, new Vector2(380f, -430f), new Vector2(300f, 58f), "PENGATURAN", 18, font, Hex("08181D"), Color.white, activeButton, out _, false);
+            menu.quitButton = AddButton("Quit Button", canvasObject.transform, new Vector2(760f, -382f), new Vector2(290f, 54f), "KELUAR", 19, font, Hex("160810"), Color.white, dangerButton, out _, false);
 
             BuildMenuInfoPanels(canvasObject.transform, menu, panelFrame, activeButton, font);
             BuildMenuStartTransition(canvasObject.transform, menu, panelFrame, circuitSprite, font);
 
             EditorSceneManager.SaveScene(scene, MainMenuScenePath);
+        }
+
+        private static void BuildDifficultySelectScene(Sprite panelSprite, CyberHorrorAssetSprites horrorSprites, Sprite frameSprite, Sprite buttonSprite, Sprite circuitSprite, Font font)
+        {
+            Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
+            scene.name = "CyberGuardian_PilihKesulitan";
+
+            CreateCamera("07171D", 5.4f, new Vector3(0f, 0.35f, -10f));
+            EnsureEventSystem();
+
+            GameObject canvasObject = CreateCanvas("Cyber Guardian Pilih Kesulitan");
+            AddStretchImage("Background", canvasObject.transform, Hex("061317"), panelSprite);
+            if (circuitSprite != null)
+            {
+                Image circuit = AddStretchImage("Circuit Texture", canvasObject.transform, new Color(0.2f, 0.95f, 1f, 0.20f), circuitSprite);
+                circuit.type = Image.Type.Tiled;
+                circuit.pixelsPerUnitMultiplier = 0.28f;
+            }
+
+            AddStretchImage("Dark Overlay", canvasObject.transform, new Color(0f, 0f, 0f, 0.46f), panelSprite);
+
+            Sprite panelFrame = horrorSprites != null && horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : (frameSprite != null ? frameSprite : panelSprite);
+            Sprite activeButton = horrorSprites != null && horrorSprites.UiButtonCyan != null ? horrorSprites.UiButtonCyan : (buttonSprite != null ? buttonSprite : panelSprite);
+            Sprite dangerButton = horrorSprites != null && horrorSprites.UiButtonMagenta != null ? horrorSprites.UiButtonMagenta : activeButton;
+
+            CyberGuardianDifficultySelect select = new GameObject("Cyber Guardian Difficulty Select Controller").AddComponent<CyberGuardianDifficultySelect>();
+            select.gameplaySceneName = "CyberGuardian_Level01";
+            select.menuSceneName = "CyberGuardian_MainMenu";
+
+            AddText("Title", canvasObject.transform, new Vector2(0f, 244f), new Vector2(920f, 72f), "PILIH KESULITAN", 50, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Subtitle", canvasObject.transform, new Vector2(0f, 190f), new Vector2(900f, 42f), "Setiap pilihan mengubah perisai awal, kerusakan jebakan, dan tekanan bos.", 20, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+
+            AddDifficultyCard(canvasObject.transform, panelFrame, activeButton, font, new Vector2(-430f, -12f), "MUDAH", "Perisai lebih tebal. Cocok untuk belajar kontrol, kuis, dan pola bos.", Hex("61F7FF"), out select.easyButton);
+            AddDifficultyCard(canvasObject.transform, panelFrame, activeButton, font, new Vector2(0f, -40f), "NORMAL", "Tantangan seimbang untuk petualangan utama Cyber Guardian.", Hex("7DFF9B"), out select.normalButton);
+            AddDifficultyCard(canvasObject.transform, panelFrame, dangerButton, font, new Vector2(430f, -12f), "SULIT", "Musuh lebih menekan, jawaban salah lebih berbahaya, bos lebih agresif.", Hex("FF3B88"), out select.hardButton);
+
+            select.detailText = AddText("Detail", canvasObject.transform, new Vector2(0f, -244f), new Vector2(1040f, 48f), "Pilih tingkat kesulitan sebelum memasuki Hutan Data.", 19, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            select.backButton = AddButton("Back Button", canvasObject.transform, new Vector2(0f, -336f), new Vector2(250f, 56f), "KEMBALI", 18, font, Hex("08181D"), Color.white, activeButton, out _, false);
+
+            BuildDifficultyStartTransition(canvasObject.transform, select, panelFrame, circuitSprite, font);
+
+            EditorSceneManager.SaveScene(scene, DifficultyScenePath);
+        }
+
+        private static void AddDifficultyCard(Transform parent, Sprite panelSprite, Sprite buttonSprite, Font font, Vector2 position, string title, string body, Color accent, out Button button)
+        {
+            GameObject card = AddPanel(title + " Card", parent, position, new Vector2(348f, 256f), new Color(0f, 0f, 0f, 0.78f), panelSprite, 0.92f).gameObject;
+            AddText(title + " Title", card.transform, new Vector2(0f, 78f), new Vector2(280f, 42f), title, 30, accent, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText(title + " Body", card.transform, new Vector2(0f, 6f), new Vector2(286f, 82f), body, 16, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            button = AddButton(title + " Button", card.transform, new Vector2(0f, -84f), new Vector2(218f, 54f), "PILIH", 17, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
         }
 
         private static void CreateMainMenuVideoBackground(Transform parent, Sprite fallbackSprite)
@@ -233,28 +286,24 @@ namespace CyberGuardian.Editor
             GameObject settingsPanel = CreateOverlayPanel("Settings Overlay", parent);
             AddStretchImage("Settings Dim", settingsPanel.transform, new Color(0f, 0f, 0f, 0.58f), panelSprite);
             AddPanel("Settings Window", settingsPanel.transform, new Vector2(0f, 0f), new Vector2(680f, 420f), Color.black, panelSprite, 0.92f);
-            AddText("Settings Title", settingsPanel.transform, new Vector2(0f, 150f), new Vector2(520f, 48f), "SETTINGS", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Difficulty Header", settingsPanel.transform, new Vector2(0f, 92f), new Vector2(386f, 28f), "DIFFICULTY", 17, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            menu.selectedDifficultyText = AddText("Selected Difficulty", settingsPanel.transform, new Vector2(0f, 62f), new Vector2(420f, 30f), "DIFFICULTY: NORMAL", 16, Hex("D7EFEF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            menu.easyButton = AddButton("Easy Button", settingsPanel.transform, new Vector2(-152f, 12f), new Vector2(120f, 42f), "EASY", 14, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
-            menu.normalButton = AddButton("Normal Button", settingsPanel.transform, new Vector2(0f, 12f), new Vector2(140f, 42f), "NORMAL", 14, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
-            menu.hardButton = AddButton("Hard Button", settingsPanel.transform, new Vector2(152f, 12f), new Vector2(120f, 42f), "HARD", 14, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
-            menu.difficultyHighlights = new[] { menu.easyButton.targetGraphic as Image, menu.normalButton.targetGraphic as Image, menu.hardButton.targetGraphic as Image };
-            AddText("Settings Audio", settingsPanel.transform, new Vector2(0f, -48f), new Vector2(500f, 34f), "AUDIO: ENABLED", 20, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Settings Control", settingsPanel.transform, new Vector2(0f, -92f), new Vector2(580f, 34f), "MOVE: A/D  JUMP: SPACE  ATTACK: J  BOOST: SHIFT", 17, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Settings Note", settingsPanel.transform, new Vector2(0f, -132f), new Vector2(580f, 34f), "QUIZ BLOCKS OPEN CYBER PATHS DURING BOSS FIGHTS", 16, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            menu.settingsBackButton = AddButton("Settings Back Button", settingsPanel.transform, new Vector2(0f, -178f), new Vector2(220f, 52f), "BACK", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            AddText("Settings Title", settingsPanel.transform, new Vector2(0f, 146f), new Vector2(520f, 48f), "PENGATURAN", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Settings Audio", settingsPanel.transform, new Vector2(0f, 74f), new Vector2(500f, 34f), "AUDIO: AKTIF", 20, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Settings Control", settingsPanel.transform, new Vector2(0f, 22f), new Vector2(600f, 34f), "GERAK: A/D   LOMPAT: SPACE   SERANG: J   ENERGI: SHIFT", 17, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Settings Ranged", settingsPanel.transform, new Vector2(0f, -30f), new Vector2(600f, 34f), "TEMBAK: L ATAU KLIK KIRI   PAUSE: P / ESC", 17, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Settings Note", settingsPanel.transform, new Vector2(0f, -88f), new Vector2(580f, 46f), "Blok kuis membuka jalur serangan saat melawan bos.", 16, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Settings Difficulty Note", settingsPanel.transform, new Vector2(0f, -138f), new Vector2(580f, 34f), "Kesulitan dipilih setelah tombol MULAI.", 16, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            menu.settingsBackButton = AddButton("Settings Back Button", settingsPanel.transform, new Vector2(0f, -184f), new Vector2(220f, 52f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
             menu.settingsPanel = settingsPanel;
             settingsPanel.SetActive(false);
 
             GameObject creditsPanel = CreateOverlayPanel("Credits Overlay", parent);
             AddStretchImage("Credits Dim", creditsPanel.transform, new Color(0f, 0f, 0f, 0.58f), panelSprite);
             AddPanel("Credits Window", creditsPanel.transform, new Vector2(0f, 0f), new Vector2(680f, 350f), Color.black, panelSprite, 0.92f);
-            AddText("Credits Title", creditsPanel.transform, new Vector2(0f, 112f), new Vector2(540f, 48f), "CREDITS", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Credits Line A", creditsPanel.transform, new Vector2(0f, 44f), new Vector2(560f, 34f), "CYBER GUARDIAN PROTOTYPE", 20, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Credits Line B", creditsPanel.transform, new Vector2(0f, -4f), new Vector2(560f, 34f), "UNITY SCENE BUILDER + PROCEDURAL CYBER UI ASSETS", 17, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Credits Line C", creditsPanel.transform, new Vector2(0f, -52f), new Vector2(560f, 34f), "THEME: CYBERSECURITY QUIZ SIDE-SCROLLER", 17, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            menu.creditsBackButton = AddButton("Credits Back Button", creditsPanel.transform, new Vector2(0f, -130f), new Vector2(220f, 52f), "BACK", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            AddText("Credits Title", creditsPanel.transform, new Vector2(0f, 112f), new Vector2(540f, 48f), "KREDIT", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Credits Line A", creditsPanel.transform, new Vector2(0f, 44f), new Vector2(560f, 34f), "PROTOTYPE CYBER GUARDIAN", 20, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Credits Line B", creditsPanel.transform, new Vector2(0f, -4f), new Vector2(560f, 34f), "PEMBANGUN ADEGAN UNITY DAN ASSET UI CYBER", 17, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Credits Line C", creditsPanel.transform, new Vector2(0f, -52f), new Vector2(560f, 34f), "TEMA: PETUALANGAN SAMPING DAN KUIS KEAMANAN CYBER", 17, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            menu.creditsBackButton = AddButton("Credits Back Button", creditsPanel.transform, new Vector2(0f, -130f), new Vector2(220f, 52f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
             menu.creditsPanel = creditsPanel;
             creditsPanel.SetActive(false);
         }
@@ -272,7 +321,7 @@ namespace CyberGuardian.Editor
                 menu.startTransitionCircuit = circuit;
             }
 
-            menu.startTransitionText = AddText("Start Transition Text", transitionPanel.transform, new Vector2(0f, 28f), new Vector2(920f, 88f), "LINKING TO DATA FOREST", 36, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            menu.startTransitionText = AddText("Start Transition Text", transitionPanel.transform, new Vector2(0f, 28f), new Vector2(920f, 88f), "MEMBUKA PILIHAN KESULITAN", 36, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             menu.startTransitionText.color = new Color(1f, 1f, 1f, 0f);
 
             Image[] effects = new Image[8];
@@ -289,6 +338,39 @@ namespace CyberGuardian.Editor
             menu.startTransitionOverlay = transitionPanel;
             menu.startTransitionFade = fade;
             menu.startTransitionFx = effects;
+            transitionPanel.SetActive(false);
+        }
+
+        private static void BuildDifficultyStartTransition(Transform parent, CyberGuardianDifficultySelect select, Sprite panelSprite, Sprite circuitSprite, Font font)
+        {
+            GameObject transitionPanel = CreateOverlayPanel("Difficulty Start Transition Overlay", parent);
+            Image fade = AddStretchImage("Difficulty Start Transition Fade", transitionPanel.transform, new Color(0f, 0f, 0f, 0f), panelSprite);
+            fade.raycastTarget = true;
+            if (circuitSprite != null)
+            {
+                Image circuit = AddStretchImage("Difficulty Start Circuit Sweep", transitionPanel.transform, new Color(0.20f, 0.95f, 1f, 0.0f), circuitSprite);
+                circuit.type = Image.Type.Tiled;
+                circuit.pixelsPerUnitMultiplier = 0.26f;
+                select.startTransitionCircuit = circuit;
+            }
+
+            select.startTransitionText = AddText("Difficulty Start Transition Text", transitionPanel.transform, new Vector2(0f, 28f), new Vector2(920f, 88f), "MASUK KE HUTAN DATA", 36, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            select.startTransitionText.color = new Color(1f, 1f, 1f, 0f);
+
+            Image[] effects = new Image[8];
+            for (int i = 0; i < effects.Length; i++)
+            {
+                float y = -210f + i * 60f;
+                float x = i % 2 == 0 ? -1080f : 1080f;
+                Image scanline = AddImage("Difficulty Start Scanline " + i, transitionPanel.transform, new Vector2(x, y), new Vector2(520f, 7f), i % 2 == 0 ? Hex("61F7FF") : Hex("FF3B88"), panelSprite);
+                scanline.raycastTarget = false;
+                scanline.color = new Color(scanline.color.r, scanline.color.g, scanline.color.b, 0f);
+                effects[i] = scanline;
+            }
+
+            select.startTransitionOverlay = transitionPanel;
+            select.startTransitionFade = fade;
+            select.startTransitionFx = effects;
             transitionPanel.SetActive(false);
         }
 
@@ -660,15 +742,15 @@ namespace CyberGuardian.Editor
 
         private static void BuildLevel03StoryZones(Transform parent, CyberGuardianSideScrollerGame game)
         {
-            CreateStoryZone("L03 Story Start", parent, game, new Vector2(-6.2f, 1.1f), new Vector2(2.0f, 4.4f), "SCENE 03: CLOUD CORE UPLINK", "The guardian reaches the cloud layer where stolen sessions, exposed APIs, and weak access tokens are being merged into one giant malware mind.");
-            CreateStoryZone("L03 Story Tokens", parent, game, new Vector2(29.4f, 2.7f), new Vector2(2.0f, 6.8f), "SESSION TOKENS", "A session token is like a temporary key. If attackers steal it, they may bypass passwords, so secure apps protect tokens, expire them, and never leak them in logs.");
-            CreateStoryZone("L03 Story API", parent, game, new Vector2(76.2f, 4.6f), new Vector2(2.0f, 7.0f), "API GATEWAY", "APIs need authentication, rate limits, validation, and monitoring. One open endpoint can become a tunnel into the whole system.");
-            CreateStoryZone("L03 Story Incident", parent, game, new Vector2(126.0f, -1.4f), new Vector2(2.0f, 6.6f), "INCIDENT RESPONSE", "When an attack is detected, defenders isolate affected systems, preserve evidence, rotate secrets, patch the entry point, and communicate clearly.");
-            CreateStoryZone("L03 Story SIEM", parent, game, new Vector2(153.2f, 3.8f), new Vector2(2.0f, 7.2f), "SIEM SPINE", "A SIEM connects alerts from endpoints, servers, and networks. Correlation helps defenders see a campaign instead of scattered noise.");
-            CreateStoryZone("L03 Story Phishing", parent, game, new Vector2(194.4f, 1.4f), new Vector2(2.0f, 7.0f), "SOCIAL ENGINEERING", "Not every attack starts with code. Phishing manipulates trust, urgency, and fear, so slow down and verify before entering secrets.");
-            CreateStoryZone("L03 Story Backups", parent, game, new Vector2(229.5f, 5.4f), new Vector2(2.0f, 7.2f), "BACKUP MIRROR", "Backups must be tested, separated, and protected. A backup that malware can delete is not a recovery plan.");
-            CreateStoryZone("L03 Story Encryption", parent, game, new Vector2(263.8f, 1.6f), new Vector2(2.0f, 7.0f), "ENCRYPTION STAIR", "Encryption protects data in transit and at rest, but keys must be managed carefully. A leaked key turns strong encryption into an unlocked door.");
-            CreateStoryZone("L03 Story Boss", parent, game, new Vector2(329.0f, 1.5f), new Vector2(2.0f, 6.2f), "BOSS: DIGITAL OVERLORD", "The airborne boss is protected by orbiting quiz blocks. Each correct answer removes part of its rotating shield and opens a timed firing lane.");
+            CreateStoryZone("L03 Story Start", parent, game, new Vector2(-6.2f, 1.1f), new Vector2(2.0f, 4.4f), "ADEGAN 03: UPLINK INTI CLOUD", "Cyber Guardian mencapai lapisan cloud tempat session curian, API terbuka, dan token akses lemah digabung menjadi satu pikiran malware raksasa.");
+            CreateStoryZone("L03 Story Tokens", parent, game, new Vector2(29.4f, 2.7f), new Vector2(2.0f, 6.8f), "TOKEN SESSION", "Token session seperti kunci sementara. Jika dicuri, penyerang bisa melewati password, jadi aplikasi aman harus melindungi token, memberi masa berlaku, dan tidak membocorkannya di log.");
+            CreateStoryZone("L03 Story API", parent, game, new Vector2(76.2f, 4.6f), new Vector2(2.0f, 7.0f), "GERBANG API", "API perlu autentikasi, batas akses, validasi, dan monitoring. Satu endpoint terbuka bisa menjadi terowongan menuju seluruh sistem.");
+            CreateStoryZone("L03 Story Incident", parent, game, new Vector2(126.0f, -1.4f), new Vector2(2.0f, 6.6f), "RESPONS INSIDEN", "Saat serangan terdeteksi, defender mengisolasi sistem terdampak, menyimpan bukti, mengganti secret, menambal celah masuk, dan berkomunikasi jelas.");
+            CreateStoryZone("L03 Story SIEM", parent, game, new Vector2(153.2f, 3.8f), new Vector2(2.0f, 7.2f), "TULANG PUNGGUNG SIEM", "SIEM menghubungkan alert dari endpoint, server, dan jaringan. Korelasi membantu defender melihat pola serangan, bukan sekadar noise yang terpisah.");
+            CreateStoryZone("L03 Story Phishing", parent, game, new Vector2(194.4f, 1.4f), new Vector2(2.0f, 7.0f), "REKAYASA SOSIAL", "Tidak semua serangan dimulai dari kode. Phishing memanfaatkan rasa percaya, panik, dan tergesa-gesa, jadi perlambat langkah dan verifikasi sebelum memasukkan secret.");
+            CreateStoryZone("L03 Story Backups", parent, game, new Vector2(229.5f, 5.4f), new Vector2(2.0f, 7.2f), "CERMIN BACKUP", "Backup harus diuji, dipisahkan, dan dilindungi. Backup yang bisa dihapus malware bukan rencana pemulihan yang aman.");
+            CreateStoryZone("L03 Story Encryption", parent, game, new Vector2(263.8f, 1.6f), new Vector2(2.0f, 7.0f), "TANGGA ENKRIPSI", "Enkripsi melindungi data saat dikirim dan disimpan, tetapi kuncinya harus dijaga. Kunci yang bocor membuat enkripsi kuat terasa seperti pintu terbuka.");
+            CreateStoryZone("L03 Story Boss", parent, game, new Vector2(329.0f, 1.5f), new Vector2(2.0f, 6.2f), "BOS: DIGITAL OVERLORD", "Bos udara ini dilindungi blok kuis yang mengorbit. Setiap jawaban benar menghapus bagian perisai dan membuka jalur tembakan singkat.");
         }
 
         private static void BuildLevel03PowerUps(Transform parent, CyberGuardianSideScrollerGame game, Sprite circleSprite)
@@ -1053,24 +1135,24 @@ namespace CyberGuardian.Editor
         {
             if (level2)
             {
-                CreateStoryZone("L02 Story Start", parent, game, new Vector2(-6.0f, 0.8f), new Vector2(2.0f, 4.0f), "SCENE 02: SERVER RUNS", "Malware has learned your route. In real security, attackers adapt too, so defenders rotate passwords, patch systems, and never trust one layer of protection.");
-                CreateStoryZone("L02 Story Split Route", parent, game, new Vector2(54.0f, 0.6f), new Vector2(2.0f, 6.6f), "ROUTE WARNING", "Some platforms collapse after contact. Treat suspicious links the same way: inspect first, because one careless click can drop you into a fake login route.");
-                CreateStoryZone("L02 Story Audit Trail", parent, game, new Vector2(108.0f, 1.2f), new Vector2(2.0f, 6.2f), "AUDIT TRAIL", "Good systems keep logs. If something strange happens, logs help identify the source, timeline, and affected accounts before damage spreads.");
-                CreateStoryZone("L02 Story Zero Day", parent, game, new Vector2(123.0f, 2.1f), new Vector2(2.0f, 6.8f), "ZERO-DAY FIREWALL", "A zero-day is an unknown vulnerability. Your best defense is layered security: updates, least privilege, backups, and careful behavior.");
-                CreateStoryZone("L02 Story Privilege", parent, game, new Vector2(151.5f, 2.2f), new Vector2(2.0f, 6.8f), "LEAST PRIVILEGE", "Do not give every app administrator access. Least privilege limits the damage when one account or program is compromised.");
-                CreateStoryZone("L02 Story Telemetry", parent, game, new Vector2(195.0f, 2.4f), new Vector2(2.0f, 6.8f), "SECURITY LOGS", "Telemetry turns chaos into evidence. When alerts connect to logs, defenders can find the entry point and close it faster.");
-                CreateStoryZone("L02 Story Backup", parent, game, new Vector2(238.0f, 1.1f), new Vector2(2.0f, 7.0f), "BACKUP ROUTE", "Backups are recovery armor. If malware encrypts data, clean backups keep the mission alive without paying the attacker.");
-                CreateStoryZone("L02 Story Boss Gate", parent, game, new Vector2(263.0f, 1.1f), new Vector2(2.0f, 5.4f), "BOSS: DATA REAPER", "The shield grid is denser here. Break quiz blocks, dodge breach packets, and use overclock caches before the final gap closes.");
+                CreateStoryZone("L02 Story Start", parent, game, new Vector2(-6.0f, 0.8f), new Vector2(2.0f, 4.0f), "ADEGAN 02: RERUNTUHAN SERVER", "Malware sudah mempelajari rute kamu. Dalam keamanan nyata, penyerang juga beradaptasi, jadi defender perlu mengganti password, menambal sistem, dan tidak bergantung pada satu lapis proteksi.");
+                CreateStoryZone("L02 Story Split Route", parent, game, new Vector2(54.0f, 0.6f), new Vector2(2.0f, 6.6f), "PERINGATAN RUTE", "Beberapa platform runtuh setelah disentuh. Perlakukan link mencurigakan dengan cara yang sama: periksa dulu, karena satu klik ceroboh bisa menjatuhkanmu ke halaman login palsu.");
+                CreateStoryZone("L02 Story Audit Trail", parent, game, new Vector2(108.0f, 1.2f), new Vector2(2.0f, 6.2f), "JEJAK AUDIT", "Sistem yang baik menyimpan log. Jika ada kejadian aneh, log membantu menemukan sumber, waktu kejadian, dan akun terdampak sebelum kerusakan menyebar.");
+                CreateStoryZone("L02 Story Zero Day", parent, game, new Vector2(123.0f, 2.1f), new Vector2(2.0f, 6.8f), "FIREWALL ZERO-DAY", "Zero-day adalah celah yang belum dikenal. Pertahanan terbaik adalah keamanan berlapis: update, hak akses minimal, backup, dan perilaku hati-hati.");
+                CreateStoryZone("L02 Story Privilege", parent, game, new Vector2(151.5f, 2.2f), new Vector2(2.0f, 6.8f), "HAK AKSES MINIMAL", "Jangan memberi akses administrator ke semua aplikasi. Least privilege membatasi kerusakan saat satu akun atau program disusupi.");
+                CreateStoryZone("L02 Story Telemetry", parent, game, new Vector2(195.0f, 2.4f), new Vector2(2.0f, 6.8f), "LOG KEAMANAN", "Telemetry mengubah kekacauan menjadi bukti. Saat alert tersambung ke log, defender bisa menemukan titik masuk dan menutupnya lebih cepat.");
+                CreateStoryZone("L02 Story Backup", parent, game, new Vector2(238.0f, 1.1f), new Vector2(2.0f, 7.0f), "RUTE BACKUP", "Backup adalah armor pemulihan. Jika malware mengenkripsi data, backup bersih menjaga misi tetap hidup tanpa membayar penyerang.");
+                CreateStoryZone("L02 Story Boss Gate", parent, game, new Vector2(263.0f, 1.1f), new Vector2(2.0f, 5.4f), "BOS: DATA REAPER", "Grid perisai di sini lebih rapat. Hancurkan blok kuis, hindari paket serangan, dan pakai cache overclock sebelum celah terakhir tertutup.");
                 return;
             }
 
-            CreateStoryZone("L01 Story Start", parent, game, new Vector2(-6.5f, 0.9f), new Vector2(2.0f, 4.0f), "SCENE 01: DATA FOREST", "A human cyber guardian enters infected memory. Every malware beast represents unsafe downloads, unknown attachments, and files that should be scanned before opening.");
-            CreateStoryZone("L01 Story Fork", parent, game, new Vector2(8.0f, -0.2f), new Vector2(2.0f, 6.0f), "FIRST ROUTE CHOICE", "The lower road hides power, but its platforms are unstable. In cybersecurity, shortcuts often look rewarding but can lead to phishing, malware, or stolen credentials.");
-            CreateStoryZone("L01 Story Password", parent, game, new Vector2(34.0f, 0.2f), new Vector2(2.0f, 6.0f), "PASSWORD LESSON", "A strong password is long, unique, and protected by two-factor authentication. Reusing one password turns one breach into many breaches.");
-            CreateStoryZone("L01 Story Patch Vault", parent, game, new Vector2(86.0f, 1.0f), new Vector2(2.0f, 6.0f), "PATCH VAULT", "Updates are not just new features. They close known security holes, so delaying patches gives malware more time to exploit the system.");
-            CreateStoryZone("L01 Story Integrity", parent, game, new Vector2(126.0f, 1.4f), new Vector2(2.0f, 6.4f), "FILE INTEGRITY", "Checksums help confirm a file has not been changed. If the value is wrong, the file may be corrupted or malicious.");
-            CreateStoryZone("L01 Story MFA", parent, game, new Vector2(194.4f, 2.3f), new Vector2(2.0f, 6.8f), "MULTI-FACTOR ACCESS", "A password is one lock. Multi-factor authentication adds another lock, so stolen passwords alone are not enough.");
-            CreateStoryZone("L01 Story Boss Gate", parent, game, new Vector2(212.4f, 1.0f), new Vector2(2.0f, 5.4f), "BOSS: FIREWALL VIRUS", "The boss shield is a quiz wall. Answer correctly to remove blocks, create a clean attack path, and prove the system is secure.");
+            CreateStoryZone("L01 Story Start", parent, game, new Vector2(-6.5f, 0.9f), new Vector2(2.0f, 4.0f), "ADEGAN 01: HUTAN DATA", "Cyber Guardian manusia memasuki memori yang terinfeksi. Setiap malware beast mewakili unduhan tidak aman, lampiran asing, dan file yang harus dipindai sebelum dibuka.");
+            CreateStoryZone("L01 Story Fork", parent, game, new Vector2(8.0f, -0.2f), new Vector2(2.0f, 6.0f), "PILIHAN RUTE PERTAMA", "Jalur bawah menyimpan power, tetapi platformnya tidak stabil. Dalam keamanan cyber, jalan pintas sering tampak menguntungkan tetapi bisa membawa phishing, malware, atau kredensial curian.");
+            CreateStoryZone("L01 Story Password", parent, game, new Vector2(34.0f, 0.2f), new Vector2(2.0f, 6.0f), "PELAJARAN PASSWORD", "Password kuat harus panjang, unik, dan dilindungi autentikasi dua faktor. Memakai ulang satu password membuat satu kebocoran berubah menjadi banyak kebocoran.");
+            CreateStoryZone("L01 Story Patch Vault", parent, game, new Vector2(86.0f, 1.0f), new Vector2(2.0f, 6.0f), "RUANG PATCH", "Update bukan hanya fitur baru. Update menutup celah keamanan yang sudah diketahui, jadi menunda patch memberi malware lebih banyak waktu untuk menyerang sistem.");
+            CreateStoryZone("L01 Story Integrity", parent, game, new Vector2(126.0f, 1.4f), new Vector2(2.0f, 6.4f), "INTEGRITAS FILE", "Checksum membantu memastikan file tidak berubah. Jika nilainya salah, file bisa rusak atau berbahaya.");
+            CreateStoryZone("L01 Story MFA", parent, game, new Vector2(194.4f, 2.3f), new Vector2(2.0f, 6.8f), "AKSES MULTI-FAKTOR", "Password adalah satu kunci. Autentikasi multi-faktor menambah kunci lain, sehingga password curian saja tidak cukup.");
+            CreateStoryZone("L01 Story Boss Gate", parent, game, new Vector2(212.4f, 1.0f), new Vector2(2.0f, 5.4f), "BOS: FIREWALL VIRUS", "Perisai bos adalah dinding kuis. Jawab dengan benar untuk menghapus blok, membuat jalur serangan bersih, dan membuktikan sistem aman.");
         }
 
         private static void CreateStoryZone(string name, Transform parent, CyberGuardianSideScrollerGame game, Vector2 position, Vector2 size, string title, string body)
@@ -1502,13 +1584,13 @@ namespace CyberGuardian.Editor
             game.healthText = AddText("HP Icon", canvasObject.transform, new Vector2(-960f, 522f), new Vector2(62f, 36f), "HP", 22, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.playerHealthFill = AddCyberBar(canvasObject.transform, new Vector2(-690f, 522f), new Vector2(440f, 40f), Hex("FF2F83"), barBack, horrorSprites.UiHpBarFill != null ? horrorSprites.UiHpBarFill : panelSprite);
 
-            AddText("Boost Label", canvasObject.transform, new Vector2(-960f, 470f), new Vector2(86f, 26f), "BOOST", 13, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Boost Label", canvasObject.transform, new Vector2(-960f, 470f), new Vector2(86f, 26f), "ENERGI", 13, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.boostEnergyFill = AddCyberBar(canvasObject.transform, new Vector2(-690f, 470f), new Vector2(440f, 34f), Hex("16E8FF"), barBack, horrorSprites.UiBoostBarFill != null ? horrorSprites.UiBoostBarFill : panelSprite);
-            game.modeText = AddText("Mode Text", canvasObject.transform, new Vector2(-466f, 470f), new Vector2(74f, 24f), "BOOST", 11, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.statusText = AddText("Status Text", canvasObject.transform, new Vector2(-700f, 426f), new Vector2(560f, 28f), "ADVENTURE MODE", 13, Hex("B7F7FF"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
+            game.modeText = AddText("Mode Text", canvasObject.transform, new Vector2(-466f, 470f), new Vector2(74f, 24f), "ENERGI", 11, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.statusText = AddText("Status Text", canvasObject.transform, new Vector2(-700f, 426f), new Vector2(560f, 28f), "MODE PETUALANGAN", 13, Hex("B7F7FF"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
 
             AddImage("Score Cyber Card", canvasObject.transform, new Vector2(720f, 518f), new Vector2(320f, 64f), Color.white, horrorSprites.UiScorePanel != null ? horrorSprites.UiScorePanel : panelSprite);
-            AddText("Score Label", canvasObject.transform, new Vector2(612f, 532f), new Vector2(92f, 22f), "SCORE", 14, Hex("FF5B9B"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Score Label", canvasObject.transform, new Vector2(612f, 532f), new Vector2(92f, 22f), "SKOR", 14, Hex("FF5B9B"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.scoreText = AddText("Score Text", canvasObject.transform, new Vector2(756f, 504f), new Vector2(206f, 42f), "0", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.pauseButton = AddButton("Menu Button", canvasObject.transform, new Vector2(915f, 518f), new Vector2(112f, 50f), "MENU", 14, font, Hex("08181D"), Color.white, horrorSprites.UiButtonCyan != null ? horrorSprites.UiButtonCyan : buttonSprite, out _);
 
@@ -1517,7 +1599,7 @@ namespace CyberGuardian.Editor
             game.bossHudGroup = bossHud;
             AddImage("Boss Core Icon", bossHud.transform, new Vector2(-376f, 424f), new Vector2(76f, 76f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
             game.bossHealthFill = AddCyberBar(bossHud.transform, new Vector2(-8f, 424f), new Vector2(630f, 38f), Hex("FF2F83"), barBack, horrorSprites.UiBossBarFill != null ? horrorSprites.UiBossBarFill : panelSprite);
-            game.bossText = AddText("Boss Text", bossHud.transform, new Vector2(-8f, 464f), new Vector2(500f, 28f), "BOSS HP", 21, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.bossText = AddText("Boss Text", bossHud.transform, new Vector2(-8f, 464f), new Vector2(500f, 28f), "HP BOS", 21, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             bossHud.SetActive(false);
             BuildStoryPanel(canvasObject.transform, game, horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite, font);
             Sprite modalPanel = horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite;
@@ -1539,11 +1621,11 @@ namespace CyberGuardian.Editor
             rect.anchoredPosition = new Vector2(0f, -365f);
             rect.sizeDelta = new Vector2(1260f, 150f);
 
-            game.storyTitleText = AddText("Story Title", panel.transform, new Vector2(0f, 40f), new Vector2(1160f, 40f), "SECTOR", 28, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.storyTitleText = AddText("Story Title", panel.transform, new Vector2(0f, 40f), new Vector2(1160f, 40f), "SEKTOR", 28, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
             Shadow titleShadow = game.storyTitleText.gameObject.AddComponent<Shadow>();
             titleShadow.effectColor = new Color(0f, 0f, 0f, 0.96f);
             titleShadow.effectDistance = new Vector2(3f, -3f);
-            game.storyBodyText = AddText("Story Body", panel.transform, new Vector2(0f, -24f), new Vector2(1180f, 86f), "Mission update", 19, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.storyBodyText = AddText("Story Body", panel.transform, new Vector2(0f, -24f), new Vector2(1180f, 86f), "Pembaruan misi", 19, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             Shadow bodyShadow = game.storyBodyText.gameObject.AddComponent<Shadow>();
             bodyShadow.effectColor = new Color(0f, 0f, 0f, 0.96f);
             bodyShadow.effectDistance = new Vector2(3f, -3f);
@@ -1571,7 +1653,7 @@ namespace CyberGuardian.Editor
             }
 
             AddPanel("Quiz Header", modal.transform, new Vector2(0f, 158f), new Vector2(620f, 58f), Hex("C7973D"), panelSprite, 1f);
-            game.quizTitleText = AddText("Quiz Title", modal.transform, new Vector2(0f, 158f), new Vector2(590f, 44f), "QUIZ BLOCK", 22, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.quizTitleText = AddText("Quiz Title", modal.transform, new Vector2(0f, 158f), new Vector2(590f, 44f), "BLOK KUIS", 22, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.quizPromptText = AddText("Quiz Prompt", modal.transform, new Vector2(0f, 84f), new Vector2(600f, 78f), "Pertanyaan keamanan siber", 19, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
             game.feedbackText = AddText("Quiz Feedback", modal.transform, new Vector2(0f, -150f), new Vector2(600f, 40f), string.Empty, 15, Hex("B7F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
 
@@ -1587,7 +1669,7 @@ namespace CyberGuardian.Editor
 
             for (int i = 0; i < positions.Length; i++)
             {
-                game.answerButtons[i] = AddButton("Answer " + i, modal.transform, positions[i], new Vector2(310f, 58f), "ANSWER", 14, font, Hex("2E6E75"), Color.white, buttonSprite, out Text label);
+                game.answerButtons[i] = AddButton("Answer " + i, modal.transform, positions[i], new Vector2(310f, 58f), "JAWAB", 14, font, Hex("2E6E75"), Color.white, buttonSprite, out Text label);
                 game.answerLabels[i] = label;
             }
 
@@ -1615,9 +1697,9 @@ namespace CyberGuardian.Editor
                 frame.raycastTarget = false;
             }
 
-            AddText("Pause Title", modal.transform, new Vector2(0f, 104f), new Vector2(470f, 62f), "PAUSED", 42, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.pauseResumeButton = AddButton("Pause Resume Button", modal.transform, new Vector2(0f, 34f), new Vector2(310f, 56f), "RESUME", 19, font, Hex("071B21"), Color.white, buttonSprite, out _);
-            game.pauseRetryButton = AddButton("Pause Retry Button", modal.transform, new Vector2(0f, -38f), new Vector2(310f, 56f), "RETRY", 19, font, Hex("160810"), Color.white, dangerButtonSprite, out _);
+            AddText("Pause Title", modal.transform, new Vector2(0f, 104f), new Vector2(470f, 62f), "JEDA", 42, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.pauseResumeButton = AddButton("Pause Resume Button", modal.transform, new Vector2(0f, 34f), new Vector2(310f, 56f), "LANJUT", 19, font, Hex("071B21"), Color.white, buttonSprite, out _);
+            game.pauseRetryButton = AddButton("Pause Retry Button", modal.transform, new Vector2(0f, -38f), new Vector2(310f, 56f), "ULANGI", 19, font, Hex("160810"), Color.white, dangerButtonSprite, out _);
             game.pauseMenuButton = AddButton("Pause Main Menu Button", modal.transform, new Vector2(0f, -110f), new Vector2(310f, 56f), "MENU", 19, font, Hex("071B21"), Color.white, buttonSprite, out _);
             game.pauseModal = modal;
             modal.SetActive(false);
@@ -1643,10 +1725,10 @@ namespace CyberGuardian.Editor
             }
 
             AddPanel("Game Over Header", modal.transform, new Vector2(0f, 92f), new Vector2(640f, 92f), Hex("11171B"), panelSprite, 1f);
-            AddText("Game Over Title", modal.transform, new Vector2(0f, 102f), new Vector2(620f, 84f), "GAME OVER", 58, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Game Over Subtitle", modal.transform, new Vector2(0f, 24f), new Vector2(620f, 40f), "CYBER GUARDIAN DESTROYED", 22, Hex("FF6671"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.gameOverScoreText = AddText("Game Over Score", modal.transform, new Vector2(0f, -30f), new Vector2(620f, 46f), "SCORE 0", 26, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.gameOverRetryButton = AddButton("Game Over Retry Button", modal.transform, new Vector2(-118f, -116f), new Vector2(210f, 58f), "RETRY", 20, font, Hex("00AFC2"), Color.white, buttonSprite, out _);
+            AddText("Game Over Title", modal.transform, new Vector2(0f, 102f), new Vector2(620f, 84f), "SISTEM JEBOL", 58, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Game Over Subtitle", modal.transform, new Vector2(0f, 24f), new Vector2(620f, 40f), "CYBER GUARDIAN HANCUR", 22, Hex("FF6671"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.gameOverScoreText = AddText("Game Over Score", modal.transform, new Vector2(0f, -30f), new Vector2(620f, 46f), "SKOR 0", 26, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.gameOverRetryButton = AddButton("Game Over Retry Button", modal.transform, new Vector2(-118f, -116f), new Vector2(210f, 58f), "ULANGI", 20, font, Hex("00AFC2"), Color.white, buttonSprite, out _);
             game.gameOverMenuButton = AddButton("Game Over Menu Button", modal.transform, new Vector2(118f, -116f), new Vector2(210f, 58f), "MENU", 20, font, Hex("263039"), Color.white, buttonSprite, out _);
             game.gameOverModal = modal;
             modal.SetActive(false);
@@ -1663,7 +1745,7 @@ namespace CyberGuardian.Editor
             modalRect.offsetMax = Vector2.zero;
 
             game.readyDimImage = AddStretchImage("Ready Countdown Dim", modal.transform, new Color(0f, 0f, 0f, 0.48f), panelSprite);
-            game.readyTitleText = AddText("Ready Countdown Title", modal.transform, new Vector2(0f, 94f), new Vector2(860f, 82f), "ARE YOU READY?", 56, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.readyTitleText = AddText("Ready Countdown Title", modal.transform, new Vector2(0f, 94f), new Vector2(860f, 82f), "SIAP?", 56, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.readyCountdownText = AddText("Ready Countdown Number", modal.transform, new Vector2(0f, -24f), new Vector2(560f, 128f), "3", 92, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
 
             Image[] pulses = new Image[6];
@@ -2410,34 +2492,46 @@ namespace CyberGuardian.Editor
             switch (text)
             {
                 case "PAUSE":
+                case "JEDA":
                     return "||";
                 case "PLAY":
+                case "MULAI":
+                case "LANJUT":
                 case "RESUME":
                 case "START LEVEL 01":
                     return ">";
                 case "CONTINUE":
+                case "LANJUTKAN":
                     return ">>";
                 case "SETTINGS":
+                case "PENGATURAN":
                     return "O";
                 case "CREDITS":
+                case "KREDIT":
                     return "@";
                 case "CONFIRM":
                     return "V";
                 case "EXIT":
                 case "QUIT":
                 case "CANCEL":
+                case "KELUAR":
+                case "BATAL":
                     return "X";
                 case "MAIN":
                 case "MENU":
                     return "H";
                 case "BACK":
+                case "KEMBALI":
                     return "<";
                 case "RETRY":
                 case "RST":
+                case "ULANGI":
                     return "R";
                 case "EASY":
                 case "NORMAL":
                 case "HARD":
+                case "MUDAH":
+                case "SULIT":
                     return "/";
                 default:
                     return string.Empty;
@@ -2527,6 +2621,7 @@ namespace CyberGuardian.Editor
             EditorBuildSettings.scenes = new[]
             {
                 new EditorBuildSettingsScene(MainMenuScenePath, true),
+                new EditorBuildSettingsScene(DifficultyScenePath, true),
                 new EditorBuildSettingsScene(LevelScenePath, true),
                 new EditorBuildSettingsScene(Level02ScenePath, true),
                 new EditorBuildSettingsScene(Level03ScenePath, true)
@@ -2547,14 +2642,14 @@ namespace CyberGuardian.Editor
             {
                 bank.questions.AddRange(new[]
                 {
-                    new QuizQuestion(CyberQuestionCategory.Password, "PASSWORD GATE", "Password yang baik sebaiknya...", new[] { "Panjang, unik, dan sulit ditebak", "Sama untuk semua akun", "Berisi tanggal lahir", "Dibagikan ke teman" }, 0, "Benar. Password perlu panjang, unik, dan tidak dipakai ulang."),
-                    new QuizQuestion(CyberQuestionCategory.Password, "LOGIN SHIELD", "Autentikasi dua faktor berguna untuk...", new[] { "Menambah lapisan verifikasi", "Menghapus password", "Membuka semua akun", "Melemahkan akun" }, 0, "Benar. 2FA menambah bukti verifikasi selain password."),
-                    new QuizQuestion(CyberQuestionCategory.Malware, "MALWARE BLOCK", "Lampiran asing dari email tidak dikenal sebaiknya...", new[] { "Tidak dibuka sembarangan", "Langsung dijalankan", "Dibagikan ulang", "Diubah namanya saja" }, 0, "Benar. Lampiran asing bisa membawa malware."),
-                    new QuizQuestion(CyberQuestionCategory.Malware, "PHISHING FILTER", "Tanda umum phishing adalah...", new[] { "Alamat pengirim mencurigakan", "Bahasa selalu sempurna", "Tidak pernah ada link", "Selalu dari teman" }, 0, "Benar. Pengirim dan domain harus diperiksa."),
-                    new QuizQuestion(CyberQuestionCategory.Network, "NETWORK WALL", "Firewall membantu kita untuk...", new[] { "Menyaring koneksi berbahaya", "Membuka semua port", "Membuat virus", "Mematikan update" }, 0, "Benar. Firewall membantu mengontrol koneksi masuk dan keluar."),
-                    new QuizQuestion(CyberQuestionCategory.Network, "PATCH ROUTE", "Mengapa update sistem penting?", new[] { "Menutup celah keamanan", "Melepas proteksi", "Membagikan data", "Mematikan enkripsi" }, 0, "Benar. Update sering membawa patch keamanan."),
-                    new QuizQuestion(CyberQuestionCategory.Privacy, "PRIVACY LOCK", "Data yang tidak boleh dibagikan sembarangan adalah...", new[] { "OTP, password, NIK", "Genre game favorit", "Warna kesukaan", "Nama panggilan" }, 0, "Benar. Data sensitif dapat dipakai untuk penipuan."),
-                    new QuizQuestion(CyberQuestionCategory.Privacy, "DATA MINIMIZE", "Prinsip minimisasi data berarti...", new[] { "Hanya memakai data yang perlu", "Mengumpulkan semua data", "Menyimpan tanpa batas", "Membagikan cadangan" }, 0, "Benar. Data harus sesuai kebutuhan.")
+                    new QuizQuestion(CyberQuestionCategory.Password, "GERBANG PASSWORD", "Password yang baik sebaiknya...", new[] { "Panjang, unik, dan sulit ditebak", "Sama untuk semua akun", "Berisi tanggal lahir", "Dibagikan ke teman" }, 0, "Benar. Password perlu panjang, unik, dan tidak dipakai ulang."),
+                    new QuizQuestion(CyberQuestionCategory.Password, "PERISAI LOGIN", "Autentikasi dua faktor berguna untuk...", new[] { "Menambah lapisan verifikasi", "Menghapus password", "Membuka semua akun", "Melemahkan akun" }, 0, "Benar. 2FA menambah bukti verifikasi selain password."),
+                    new QuizQuestion(CyberQuestionCategory.Malware, "BLOK MALWARE", "Lampiran asing dari email tidak dikenal sebaiknya...", new[] { "Tidak dibuka sembarangan", "Langsung dijalankan", "Dibagikan ulang", "Diubah namanya saja" }, 0, "Benar. Lampiran asing bisa membawa malware."),
+                    new QuizQuestion(CyberQuestionCategory.Malware, "FILTER PHISHING", "Tanda umum phishing adalah...", new[] { "Alamat pengirim mencurigakan", "Bahasa selalu sempurna", "Tidak pernah ada link", "Selalu dari teman" }, 0, "Benar. Pengirim dan domain harus diperiksa."),
+                    new QuizQuestion(CyberQuestionCategory.Network, "DINDING JARINGAN", "Firewall membantu kita untuk...", new[] { "Menyaring koneksi berbahaya", "Membuka semua port", "Membuat virus", "Mematikan update" }, 0, "Benar. Firewall membantu mengontrol koneksi masuk dan keluar."),
+                    new QuizQuestion(CyberQuestionCategory.Network, "RUTE PATCH", "Mengapa update sistem penting?", new[] { "Menutup celah keamanan", "Melepas proteksi", "Membagikan data", "Mematikan enkripsi" }, 0, "Benar. Update sering membawa patch keamanan."),
+                    new QuizQuestion(CyberQuestionCategory.Privacy, "KUNCI PRIVASI", "Data yang tidak boleh dibagikan sembarangan adalah...", new[] { "OTP, password, NIK", "Genre game favorit", "Warna kesukaan", "Nama panggilan" }, 0, "Benar. Data sensitif dapat dipakai untuk penipuan."),
+                    new QuizQuestion(CyberQuestionCategory.Privacy, "MINIMISASI DATA", "Prinsip minimisasi data berarti...", new[] { "Hanya memakai data yang perlu", "Mengumpulkan semua data", "Menyimpan tanpa batas", "Membagikan cadangan" }, 0, "Benar. Data harus sesuai kebutuhan.")
                 });
                 EditorUtility.SetDirty(bank);
             }
@@ -2567,9 +2662,9 @@ namespace CyberGuardian.Editor
             Directory.CreateDirectory(ToAbsolutePath("Assets/CyberGuardian/Data/Difficulty"));
             return new[]
             {
-                EnsureDifficultyProfile(EasyDifficultyPath, "Easy", 110f, 100, 10, 5, 80, 8, 8, 420, 25),
+                EnsureDifficultyProfile(EasyDifficultyPath, "Mudah", 110f, 100, 10, 5, 80, 8, 8, 420, 25),
                 EnsureDifficultyProfile(NormalDifficultyPath, "Normal", 87f, 100, 25, 7, 100, 12, 12, 600, 30),
-                EnsureDifficultyProfile(HardDifficultyPath, "Hard", 70f, 85, 35, 10, 120, 18, 18, 800, 22)
+                EnsureDifficultyProfile(HardDifficultyPath, "Sulit", 70f, 85, 35, 10, 120, 18, 18, 800, 22)
             };
         }
 
@@ -2585,7 +2680,7 @@ namespace CyberGuardian.Editor
                 profile.startingVirusStrength = virus;
                 profile.requiredRouteOrbs = routeOrbs;
                 profile.correctScoreReward = correctScoreReward;
-                profile.correctShieldReward = displayName == "Hard" ? 4 : (displayName == "Normal" ? 6 : 8);
+                profile.correctShieldReward = displayName == "Sulit" ? 4 : (displayName == "Normal" ? 6 : 8);
                 profile.wrongShieldDamage = wrongDamage;
                 profile.wrongVirusGain = wrongVirusGain;
                 profile.routeScoreReward = routeScore;
@@ -2604,7 +2699,7 @@ namespace CyberGuardian.Editor
             profile.requiredRouteOrbs = routeOrbs;
             profile.correctScoreReward = correctScoreReward;
             profile.correctTokenReward = 1;
-            profile.correctShieldReward = displayName == "Hard" ? 4 : (displayName == "Normal" ? 6 : 8);
+            profile.correctShieldReward = displayName == "Sulit" ? 4 : (displayName == "Normal" ? 6 : 8);
             profile.wrongShieldDamage = wrongDamage;
             profile.wrongVirusGain = wrongVirusGain;
             profile.routeScoreReward = routeScore;

@@ -16,7 +16,7 @@ namespace CyberGuardian
     public sealed class QuizQuestion
     {
         public CyberQuestionCategory category;
-        public string title = "QUIZ NODE";
+        public string title = "NODE KUIS";
         [TextArea(2, 5)] public string prompt = "Pertanyaan keamanan siber";
         public string[] answers = { "Jawaban A", "Jawaban B", "Jawaban C", "Jawaban D" };
         [Range(0, 3)] public int correctIndex;

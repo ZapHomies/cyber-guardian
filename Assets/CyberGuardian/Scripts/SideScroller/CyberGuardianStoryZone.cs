@@ -6,7 +6,7 @@ namespace CyberGuardian
     public sealed class CyberGuardianStoryZone : MonoBehaviour
     {
         public CyberGuardianSideScrollerGame game;
-        public string storyTitle = "SECTOR";
+        public string storyTitle = "SEKTOR";
         [TextArea(2, 4)] public string storyBody = "Data route unlocked.";
         public float duration = 4.2f;
         public bool oneShot = true;
