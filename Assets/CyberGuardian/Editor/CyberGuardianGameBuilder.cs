@@ -1583,6 +1583,7 @@ namespace CyberGuardian.Editor
             AddImage("HP Icon Frame", canvasObject.transform, new Vector2(-960f, 522f), new Vector2(68f, 58f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
             game.healthText = AddText("HP Icon", canvasObject.transform, new Vector2(-960f, 522f), new Vector2(62f, 36f), "HP", 22, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.playerHealthFill = AddCyberBar(canvasObject.transform, new Vector2(-690f, 522f), new Vector2(440f, 40f), Hex("FF2F83"), barBack, horrorSprites.UiHpBarFill != null ? horrorSprites.UiHpBarFill : panelSprite);
+            game.livesText = AddText("Lives Text", canvasObject.transform, new Vector2(-420f, 522f), new Vector2(120f, 30f), "NYAWA 3", 14, Hex("FFD85E"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
 
             AddText("Boost Label", canvasObject.transform, new Vector2(-960f, 470f), new Vector2(86f, 26f), "ENERGI", 13, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.boostEnergyFill = AddCyberBar(canvasObject.transform, new Vector2(-690f, 470f), new Vector2(440f, 34f), Hex("16E8FF"), barBack, horrorSprites.UiBoostBarFill != null ? horrorSprites.UiBoostBarFill : panelSprite);

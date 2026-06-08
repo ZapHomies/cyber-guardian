@@ -58,13 +58,21 @@ Catatan desain: boost bar adalah energy untuk bergerak cepat di darat maupun uda
 ## 6. Nilai Default Saat Game Dimulai
 
 - Player HP/shield: 100%.
+- Player punya 3 nyawa.
 - Boost energy: 100%.
 - Boss HP: 100%, tetapi hanya tampil saat boss encounter.
 - Score: 0.
-- Game over terjadi saat HP player mencapai 0%.
+- Jika HP player mencapai 0%, 1 nyawa hilang dan player kembali ke checkpoint/recovery point dengan HP pulih.
+- Game over terjadi saat HP mencapai 0% ketika nyawa sudah habis.
 - Player tidak mati permanen karena jatuh jurang. Jika jatuh, player dikembalikan ke recovery point/checkpoint dengan punishment damage atau reposition.
 
 ## 7. Struktur Scene Saat Ini
+
+Lokasi project aktif per 05-06-2026:
+
+- `E:\Tugas Project\Pengembangan Game\cyber guardian`
+
+Catatan migrasi: folder aktif ini dibuat tanpa membawa `Library`, `Logs`, `Temp`, sample URP, tutorial template Unity, dan cache Visual Scripting lama. Unity 6.4 akan membuat ulang cache `Library` sendiri saat project dibuka, sehingga error package dari cache versi sebelumnya tidak ikut terbawa.
 
 Scene yang sudah ada di project:
 
@@ -124,6 +132,7 @@ Catatan bahasa: semua teks yang terlihat pemain harus memakai Bahasa Indonesia. 
 Layout HUD yang diinginkan:
 
 - Kiri atas: bar HP.
+- Di dekat bar HP: indikator `NYAWA 3`.
 - Tepat di bawah bar HP: bar energi/boost, hampir menyatu seperti HUD fighting game.
 - Atas tengah/kanan bersih: skor besar dan tombol menu.
 - Kanan atas: area bersih, hanya tombol menu/pause dan score jika diperlukan.

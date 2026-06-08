@@ -38,6 +38,7 @@ namespace CyberGuardian
         public string nextSceneName = string.Empty;
 
         public Text healthText;
+        public Text livesText;
         public Text bossText;
         public Text scoreText;
         public Text modeText;
@@ -95,6 +96,7 @@ namespace CyberGuardian
         public Vector2 cameraMin = new Vector2(-8f, -3.4f);
         public Vector2 cameraMax = new Vector2(78f, 5.4f);
         public Vector3 startingRecoveryPoint = new Vector3(-8f, 0.65f, 0f);
+        public int maxLives = 3;
 
         private static readonly QuizQuestion[] FallbackQuestions =
         {
@@ -119,6 +121,7 @@ namespace CyberGuardian
         private DifficultyProfile activeDifficulty;
         private int currentDifficultyIndex = 1;
         private int playerHealth;
+        private int playerLives;
         private int bossHealth;
         private int score;
         private float boostEnergy = 100f;
@@ -142,6 +145,7 @@ namespace CyberGuardian
             currentDifficultyIndex = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.DifficultyKey, 1), 0, 2);
             activeDifficulty = GetActiveDifficulty();
             playerHealth = activeDifficulty != null ? activeDifficulty.startingShield : 100;
+            playerLives = Mathf.Max(1, maxLives);
             bossHealth = 100;
             score = 0;
             boostEnergy = 100f;
@@ -446,13 +450,69 @@ namespace CyberGuardian
             invulnerabilityTimer = 0.75f;
             playerHealth = Mathf.Max(0, playerHealth - damage);
             PlaySfx(wrongSfx);
-            SetStatus(playerHealth <= 0 ? "SISTEM JEBOL - PERMAINAN BERAKHIR" : "TERKENA " + TranslateDamageSource(source).ToUpperInvariant());
+            SetStatus(playerHealth <= 0 ? "NYAWA GUARDIAN TERKENA KRITIS" : "TERKENA " + TranslateDamageSource(source).ToUpperInvariant());
             RefreshHud();
 
             if (playerHealth <= 0)
             {
-                BeginDefeatSequence(source);
+                if (!TrySpendLifeAndRespawn(source))
+                {
+                    SetStatus("SISTEM JEBOL - PERMAINAN BERAKHIR");
+                    BeginDefeatSequence(source);
+                }
             }
+        }
+
+        private bool TrySpendLifeAndRespawn(string source)
+        {
+            if (playerLives <= 1)
+            {
+                playerLives = 0;
+                RefreshHud();
+                return false;
+            }
+
+            playerLives--;
+            playerHealth = GetRespawnHealth();
+            boostEnergy = 100f;
+            invulnerabilityTimer = 2.0f;
+            quizOpen = false;
+            draggingSlingshot = false;
+            projectileInFlight = false;
+            projectileFlightTimer = 0f;
+            HideSlingshotLines();
+
+            if (quizModal != null)
+            {
+                quizModal.SetActive(false);
+            }
+
+            if (player != null)
+            {
+                Rigidbody2D playerBody = player.GetComponent<Rigidbody2D>();
+                if (playerBody != null)
+                {
+                    playerBody.simulated = true;
+                    playerBody.linearVelocity = Vector2.zero;
+                    playerBody.angularVelocity = 0f;
+                }
+
+                Collider2D playerCollider = player.GetComponent<Collider2D>();
+                if (playerCollider != null)
+                {
+                    playerCollider.enabled = true;
+                }
+
+                SetPlayerRenderersEnabled(true);
+                player.transform.position = currentRecoveryPoint;
+                player.InBossMode = mode == GameMode.BossSlingshot;
+            }
+
+            ResetSlingshotProjectile();
+            SaveProgress(currentRecoveryPoint);
+            SetStatus("NYAWA BERKURANG: " + playerLives + " TERSISA - KEMBALI KE CHECKPOINT");
+            RefreshHud();
+            return true;
         }
 
         private void BeginDefeatSequence(string source)
@@ -1465,6 +1525,11 @@ namespace CyberGuardian
                 healthText.text = "HP";
             }
 
+            if (livesText != null)
+            {
+                livesText.text = "NYAWA " + Mathf.Max(0, playerLives).ToString("0");
+            }
+
             if (bossText != null)
             {
                 bossText.text = "BOS";
@@ -1567,6 +1632,7 @@ namespace CyberGuardian
                 PlayerPrefs.GetFloat(CyberGuardianMainMenu.SaveZKey, currentRecoveryPoint.z));
 
             playerHealth = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.SaveHealthKey, playerHealth), 1, 100);
+            playerLives = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.SaveLivesKey, playerLives), 1, Mathf.Max(1, maxLives));
             boostEnergy = Mathf.Clamp(PlayerPrefs.GetFloat(CyberGuardianMainMenu.SaveBoostKey, boostEnergy), 0f, 100f);
             score = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.SaveScoreKey, score), 0, MaxScore);
 
@@ -1603,6 +1669,7 @@ namespace CyberGuardian
             PlayerPrefs.SetFloat(CyberGuardianMainMenu.SaveYKey, recoveryPoint.y);
             PlayerPrefs.SetFloat(CyberGuardianMainMenu.SaveZKey, recoveryPoint.z);
             PlayerPrefs.SetInt(CyberGuardianMainMenu.SaveHealthKey, Mathf.Clamp(playerHealth, 1, 100));
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.SaveLivesKey, Mathf.Clamp(playerLives, 1, Mathf.Max(1, maxLives)));
             PlayerPrefs.SetFloat(CyberGuardianMainMenu.SaveBoostKey, Mathf.Clamp(boostEnergy, 0f, 100f));
             PlayerPrefs.SetInt(CyberGuardianMainMenu.SaveScoreKey, Mathf.Clamp(score, 0, MaxScore));
             PlayerPrefs.SetInt(CyberGuardianMainMenu.DifficultyKey, currentDifficultyIndex);
@@ -1623,6 +1690,11 @@ namespace CyberGuardian
         private int GetCorrectHealthReward()
         {
             return activeDifficulty != null ? Mathf.Max(2, activeDifficulty.correctShieldReward) : 6;
+        }
+
+        private int GetRespawnHealth()
+        {
+            return Mathf.Clamp(activeDifficulty != null ? activeDifficulty.startingShield : 100, 1, 100);
         }
 
         private int GetWrongAnswerDamage()

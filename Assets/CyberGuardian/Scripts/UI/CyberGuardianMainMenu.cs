@@ -18,6 +18,7 @@ namespace CyberGuardian
         public const string SaveYKey = "CyberGuardianSaveY";
         public const string SaveZKey = "CyberGuardianSaveZ";
         public const string SaveHealthKey = "CyberGuardianSaveHealth";
+        public const string SaveLivesKey = "CyberGuardianSaveLives";
         public const string SaveBoostKey = "CyberGuardianSaveBoost";
         public const string SaveScoreKey = "CyberGuardianSaveScore";
         public const string ResumeRequestedKey = "CyberGuardianResumeRequested";
@@ -339,6 +340,7 @@ namespace CyberGuardian
             PlayerPrefs.DeleteKey(SaveYKey);
             PlayerPrefs.DeleteKey(SaveZKey);
             PlayerPrefs.DeleteKey(SaveHealthKey);
+            PlayerPrefs.DeleteKey(SaveLivesKey);
             PlayerPrefs.DeleteKey(SaveBoostKey);
             PlayerPrefs.DeleteKey(SaveScoreKey);
         }
