@@ -1,0 +1,22 @@
+{
+  "group_id": null,
+  "objects": [
+    {
+      "id": "8e9f80df-46d9-45b0-9d5e-5150f52942e4",
+      "name": null,
+      "prompt": "Pixel art damaged electrical cable, black outer insulation, red white yellow blue wires inside, exposed copper wire, game asset, transparent background, pixel perfect, 2D side view",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-06-11T07:05:11.914237"
+}
