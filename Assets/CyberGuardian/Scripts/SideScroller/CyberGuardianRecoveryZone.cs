@@ -10,7 +10,7 @@ namespace CyberGuardian
         {
             if (game != null && other.GetComponent<CyberGuardianPlayerController>() != null)
             {
-                game.RecoverPlayerFromAbyss();
+                game.FallIntoElectricRiver();
             }
         }
     }

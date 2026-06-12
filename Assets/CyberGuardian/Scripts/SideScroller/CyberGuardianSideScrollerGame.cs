@@ -49,6 +49,12 @@ namespace CyberGuardian
         public GameObject bossDialoguePanel;
         public Text bossDialogueTitleText;
         public Text bossDialogueBodyText;
+        public Image bossDialoguePortraitImage;
+        public RectTransform bossDialoguePanelRect;
+        public RectTransform bossDialoguePortraitRect;
+        public CanvasGroup bossDialogueCanvasGroup;
+        public Sprite bossDialogueIdlePortraitSprite;
+        public Sprite bossDialogueIntroPortraitSprite;
         public Image playerHealthFill;
         public Image bossHealthFill;
         public Image boostEnergyFill;
@@ -164,6 +170,10 @@ namespace CyberGuardian
         private bool introCountdownActive = true;
         private bool resumedFromCheckpoint;
         private int bossAttackPatternIndex;
+        private Coroutine bossDialogueRoutine;
+        private float bossDialoguePreviousTimeScale = 1f;
+        private float bossDialoguePreviousFixedDeltaTime = 0.02f;
+        private bool bossDialogueSlowActive;
 
         public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen && !paused && !introCountdownActive;
 
@@ -275,7 +285,7 @@ namespace CyberGuardian
 
             if (player != null && player.transform.position.y < -8f)
             {
-                RecoverPlayerFromAbyss();
+                FallIntoElectricRiver();
             }
         }
 
@@ -436,6 +446,11 @@ namespace CyberGuardian
             if (normalized.Contains("boss packet"))
             {
                 return "serangan paket bos";
+            }
+
+            if (normalized.Contains("sungai") || normalized.Contains("electric river") || normalized.Contains("abyss") || normalized.Contains("jurang"))
+            {
+                return "sungai listrik";
             }
 
             if (normalized.Contains("enemy"))
@@ -768,21 +783,26 @@ namespace CyberGuardian
 
         public void RecoverPlayerFromAbyss()
         {
+            FallIntoElectricRiver();
+        }
+
+        public void FallIntoElectricRiver()
+        {
             if (player == null || mode == GameMode.Defeat || mode == GameMode.Victory)
             {
                 return;
             }
 
-            Rigidbody2D body = player.GetComponent<Rigidbody2D>();
-            if (body != null)
+            invulnerabilityTimer = 0f;
+            PlaySfx(GetDamageSfx("sungai listrik"));
+            if (!TrySpendLifeAndRespawn("sungai listrik"))
             {
-                body.linearVelocity = Vector2.zero;
-                body.angularVelocity = 0f;
+                SetStatus("SISTEM JEBOL - TERSENGAT SUNGAI LISTRIK");
+                BeginDefeatSequence("sungai listrik");
+                return;
             }
 
-            player.transform.position = currentRecoveryPoint;
-            boostEnergy = Mathf.Min(100f, boostEnergy + 18f);
-            SetStatus("PULIH DARI JURANG KODE - CARI RUTE LAIN");
+            SetStatus("TERSENGAT SUNGAI LISTRIK - NYAWA BERKURANG");
             RefreshHud();
         }
 
@@ -871,6 +891,13 @@ namespace CyberGuardian
                 return;
             }
 
+            if (bossDialogueRoutine != null)
+            {
+                StopCoroutine(bossDialogueRoutine);
+                bossDialogueRoutine = null;
+                RestoreBossDialogueTimeScale();
+            }
+
             if (bossDialogueTitleText != null)
             {
                 bossDialogueTitleText.text = "BOS MALWARE";
@@ -881,17 +908,132 @@ namespace CyberGuardian
                 bossDialogueBodyText.text = "Kamu masuk ke domainku, Guardian. Setiap blok kuis adalah firewall palsu. Salah menjawab, seranganku makin kuat. Buka celahnya kalau berani.";
             }
 
+            if (bossDialoguePortraitImage != null)
+            {
+                bossDialoguePortraitImage.sprite = bossDialogueIntroPortraitSprite != null ? bossDialogueIntroPortraitSprite : bossDialogueIdlePortraitSprite;
+                bossDialoguePortraitImage.preserveAspect = true;
+            }
+
             bossDialoguePanel.SetActive(true);
-            CancelInvoke(nameof(HideBossDialoguePanel));
-            Invoke(nameof(HideBossDialoguePanel), 4.6f);
+            bossDialogueRoutine = StartCoroutine(BossDialogueRevealRoutine());
         }
 
         private void HideBossDialoguePanel()
         {
+            if (bossDialogueRoutine != null)
+            {
+                StopCoroutine(bossDialogueRoutine);
+                bossDialogueRoutine = null;
+            }
+
+            RestoreBossDialogueTimeScale();
             if (bossDialoguePanel != null)
             {
                 bossDialoguePanel.SetActive(false);
             }
+        }
+
+        private IEnumerator BossDialogueRevealRoutine()
+        {
+            bossDialoguePreviousTimeScale = Time.timeScale <= 0f ? 1f : Time.timeScale;
+            bossDialoguePreviousFixedDeltaTime = Time.fixedDeltaTime <= 0f ? 0.02f : Time.fixedDeltaTime;
+            Time.timeScale = Mathf.Min(bossDialoguePreviousTimeScale, 0.38f);
+            Time.fixedDeltaTime = bossDialoguePreviousFixedDeltaTime * (Time.timeScale / Mathf.Max(0.01f, bossDialoguePreviousTimeScale));
+            bossDialogueSlowActive = true;
+
+            if (bossDialogueCanvasGroup != null)
+            {
+                bossDialogueCanvasGroup.alpha = 0f;
+            }
+
+            if (bossDialoguePanelRect != null)
+            {
+                bossDialoguePanelRect.localScale = Vector3.one * 0.92f;
+            }
+
+            if (bossDialoguePortraitRect != null)
+            {
+                bossDialoguePortraitRect.localScale = Vector3.one * 0.52f;
+                bossDialoguePortraitRect.localRotation = Quaternion.Euler(-360f, 0f, 0f);
+            }
+
+            const float duration = 1.15f;
+            float elapsed = 0f;
+            bool switchedToIdle = false;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float eased = t * t * (3f - 2f * t);
+                float punch = Mathf.Sin(t * Mathf.PI);
+
+                if (bossDialogueCanvasGroup != null)
+                {
+                    bossDialogueCanvasGroup.alpha = eased;
+                }
+
+                if (bossDialoguePanelRect != null)
+                {
+                    bossDialoguePanelRect.localScale = Vector3.one * Mathf.Lerp(0.92f, 1f, eased);
+                }
+
+                if (bossDialoguePortraitRect != null)
+                {
+                    float scale = Mathf.Lerp(0.52f, 1.10f, eased) + punch * 0.16f;
+                    bossDialoguePortraitRect.localScale = Vector3.one * scale;
+                    bossDialoguePortraitRect.localRotation = Quaternion.Euler(Mathf.Lerp(-360f, 0f, eased), 0f, Mathf.Sin(t * Mathf.PI) * -8f);
+                }
+
+                if (!switchedToIdle && t >= 0.74f && bossDialoguePortraitImage != null && bossDialogueIdlePortraitSprite != null)
+                {
+                    bossDialoguePortraitImage.sprite = bossDialogueIdlePortraitSprite;
+                    switchedToIdle = true;
+                }
+
+                yield return null;
+            }
+
+            if (bossDialogueCanvasGroup != null)
+            {
+                bossDialogueCanvasGroup.alpha = 1f;
+            }
+
+            if (bossDialoguePanelRect != null)
+            {
+                bossDialoguePanelRect.localScale = Vector3.one;
+            }
+
+            if (bossDialoguePortraitRect != null)
+            {
+                bossDialoguePortraitRect.localScale = Vector3.one;
+                bossDialoguePortraitRect.localRotation = Quaternion.identity;
+            }
+
+            if (bossDialoguePortraitImage != null && bossDialogueIdlePortraitSprite != null)
+            {
+                bossDialoguePortraitImage.sprite = bossDialogueIdlePortraitSprite;
+            }
+
+            RestoreBossDialogueTimeScale();
+            yield return new WaitForSecondsRealtime(3.45f);
+            if (bossDialoguePanel != null)
+            {
+                bossDialoguePanel.SetActive(false);
+            }
+
+            bossDialogueRoutine = null;
+        }
+
+        private void RestoreBossDialogueTimeScale()
+        {
+            if (!bossDialogueSlowActive)
+            {
+                return;
+            }
+
+            Time.timeScale = bossDialoguePreviousTimeScale;
+            Time.fixedDeltaTime = bossDialoguePreviousFixedDeltaTime;
+            bossDialogueSlowActive = false;
         }
 
         private void RegenerateBoost()
