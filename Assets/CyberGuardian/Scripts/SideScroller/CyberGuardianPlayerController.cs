@@ -133,6 +133,7 @@ namespace CyberGuardian
                 body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
                 jumpBufferCounter = 0f;
                 coyoteCounter = 0f;
+                game.PlayPlayerJumpSfx();
             }
 
             meleeCooldown = Mathf.Max(0f, meleeCooldown - Time.deltaTime);
@@ -176,6 +177,7 @@ namespace CyberGuardian
                 : transform.position + new Vector3(0.62f * FacingDirection, 0.42f, 0f);
             GameObject shot = Instantiate(adventureProjectilePrefab, spawnPosition, Quaternion.identity);
             shot.SetActive(true);
+            game.PlayPlayerShootSfx();
             CyberGuardianPlayerProjectile2D projectile = shot.GetComponent<CyberGuardianPlayerProjectile2D>();
             if (projectile != null)
             {

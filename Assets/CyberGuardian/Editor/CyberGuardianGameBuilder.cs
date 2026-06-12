@@ -38,11 +38,17 @@ namespace CyberGuardian.Editor
         private const string MainMenuVideoPath = "Assets/CyberGuardian/Art/Menu/kling_20260604_VIDEO_Image1berf_5479_0.mp4";
         private const string MainMenuRenderTexturePath = "Assets/CyberGuardian/Art/Menu/MainMenuVideoBackground.renderTexture";
 
-        private const string MeleeSfxPath = "Assets/CyberGuardian/Audio/SFX/KenneySciFi/Audio/laserSmall_001.ogg";
-        private const string HitSfxPath = "Assets/CyberGuardian/Audio/SFX/KenneySciFi/Audio/impactMetal_000.ogg";
-        private const string BossShotSfxPath = "Assets/CyberGuardian/Audio/SFX/KenneySciFi/Audio/laserLarge_000.ogg";
-        private const string ShieldSfxPath = "Assets/CyberGuardian/Audio/SFX/KenneySciFi/Audio/forceField_000.ogg";
-        private const string WrongSfxPath = "Assets/CyberGuardian/Audio/SFX/KenneySciFi/Audio/slime_000.ogg";
+        private const string MainMenuMusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Main_Menu.wav";
+        private const string Level01MusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Level_01_Data_Forest.wav";
+        private const string Level02MusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Level_02_Server_Ruins.wav";
+        private const string Level03MusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Level_03_Code_Abyss.wav";
+        private const string BossMusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Boss_Encounter.wav";
+        private const string NamedSfxFolder = "Assets/CyberGuardian/Audio/SFX/Named/";
+        private const string MeleeSfxPath = NamedSfxFolder + "SFX_Player_Melee.wav";
+        private const string HitSfxPath = NamedSfxFolder + "SFX_Player_Hit.wav";
+        private const string BossShotSfxPath = NamedSfxFolder + "SFX_Boss_Shoot.wav";
+        private const string ShieldSfxPath = NamedSfxFolder + "SFX_Boss_Shield_Hit.wav";
+        private const string WrongSfxPath = NamedSfxFolder + "SFX_Quiz_Wrong.wav";
 
         private const string BossGlbPath = "Assets/CyberGuardian/GeneratedBlenderAssets/cg_malware_boss.glb";
         private const string TrapGlbPath = "Assets/CyberGuardian/GeneratedBlenderAssets/cg_platform_traps.glb";
@@ -116,13 +122,14 @@ namespace CyberGuardian.Editor
             AudioClip bossShotSfx = EnsureImportedAudioClip(BossShotSfxPath);
             AudioClip shieldSfx = EnsureImportedAudioClip(ShieldSfxPath);
             AudioClip wrongSfx = EnsureImportedAudioClip(WrongSfxPath);
+            AudioClip menuMusic = EnsureImportedAudioClip(MainMenuMusicPath);
 
             QuizQuestionBank questionBank = EnsureQuestionBank();
             DifficultyProfile[] difficulties = EnsureDifficultyProfiles();
             Font font = GetUiFont();
             GameObject bossProjectilePrefab = EnsureBossProjectilePrefab(circleSprite, sparkSprite);
 
-            BuildMainMenuScene(panelSprite, circleSprite, rockTileSprite, metalCrateSprite, dataMossSprite, sawBladeSprite, dataBlobSprite, horrorSprites, virusSprite, frameSprite, buttonSprite, circuitSprite, font);
+            BuildMainMenuScene(panelSprite, circleSprite, rockTileSprite, metalCrateSprite, dataMossSprite, sawBladeSprite, dataBlobSprite, horrorSprites, virusSprite, frameSprite, buttonSprite, circuitSprite, font, menuMusic);
             BuildDifficultySelectScene(panelSprite, horrorSprites, frameSprite, buttonSprite, circuitSprite, font);
             BuildLevelScene(squareSprite, circleSprite, panelSprite, rockTileSprite, metalCrateSprite, dataMossSprite, sawBladeSprite, dataBlobSprite, horrorSprites, virusSprite, virusAltSprite, projectileSprite, sparkSprite, crosshairSprite, frameSprite, buttonSprite, circuitSprite, questionBank, difficulties, font, bossProjectilePrefab, meleeSfx, hitSfx, bossShotSfx, shieldSfx, wrongSfx);
             BuildLevel02Scene(squareSprite, circleSprite, panelSprite, rockTileSprite, metalCrateSprite, dataMossSprite, sawBladeSprite, dataBlobSprite, horrorSprites, virusSprite, virusAltSprite, projectileSprite, sparkSprite, crosshairSprite, frameSprite, buttonSprite, circuitSprite, questionBank, difficulties, font, bossProjectilePrefab, meleeSfx, hitSfx, bossShotSfx, shieldSfx, wrongSfx);
@@ -133,13 +140,14 @@ namespace CyberGuardian.Editor
             Debug.Log("Cyber Guardian side-scroller main menu, difficulty select, and Levels 01-03 built.");
         }
 
-        private static void BuildMainMenuScene(Sprite panelSprite, Sprite circleSprite, Sprite rockTileSprite, Sprite metalCrateSprite, Sprite dataMossSprite, Sprite sawBladeSprite, Sprite dataBlobSprite, CyberHorrorAssetSprites horrorSprites, Sprite virusSprite, Sprite frameSprite, Sprite buttonSprite, Sprite circuitSprite, Font font)
+        private static void BuildMainMenuScene(Sprite panelSprite, Sprite circleSprite, Sprite rockTileSprite, Sprite metalCrateSprite, Sprite dataMossSprite, Sprite sawBladeSprite, Sprite dataBlobSprite, CyberHorrorAssetSprites horrorSprites, Sprite virusSprite, Sprite frameSprite, Sprite buttonSprite, Sprite circuitSprite, Font font, AudioClip menuMusic)
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             scene.name = "CyberGuardian_MainMenu";
 
             CreateCamera("07171D", 5.4f, new Vector3(0f, 0.35f, -10f));
             EnsureEventSystem();
+            AddLoopingMusic("Main Menu BGM", menuMusic, 0.52f);
 
             GameObject canvasObject = CreateCanvas("Cyber Guardian Main Menu");
             AddStretchImage("Background", canvasObject.transform, Hex("061317"), panelSprite);
@@ -444,6 +452,7 @@ namespace CyberGuardian.Editor
             game.bossShotSfx = bossShotSfx;
             game.shieldSfx = shieldSfx;
             game.wrongSfx = wrongSfx;
+            ConfigureGameplayAudio(game, Level01MusicPath);
             game.nextSceneName = "CyberGuardian_Level02";
 
             Sprite generatedBossSprite = EnsureImportedSprite(BossGeneratedSpritePath);
@@ -521,6 +530,7 @@ namespace CyberGuardian.Editor
             game.bossShotSfx = bossShotSfx;
             game.shieldSfx = shieldSfx;
             game.wrongSfx = wrongSfx;
+            ConfigureGameplayAudio(game, Level02MusicPath);
             game.nextSceneName = "CyberGuardian_Level03";
 
             Sprite generatedBossSprite = EnsureImportedSprite(BossGeneratedSpritePath);
@@ -602,6 +612,7 @@ namespace CyberGuardian.Editor
             game.bossShotSfx = bossShotSfx;
             game.shieldSfx = shieldSfx;
             game.wrongSfx = wrongSfx;
+            ConfigureGameplayAudio(game, Level03MusicPath);
 
             Sprite generatedBossSprite = EnsureImportedSprite(BossGeneratedSpritePath);
             Sprite generatedProjectileSprite = EnsureImportedSprite(ProjectileGeneratedSpritePath);
@@ -2441,6 +2452,59 @@ namespace CyberGuardian.Editor
             camera.orthographicSize = orthographicSize;
             camera.transform.position = position;
             return camera;
+        }
+
+        private static AudioSource AddLoopingMusic(string name, AudioClip clip, float volume)
+        {
+            if (clip == null)
+            {
+                return null;
+            }
+
+            GameObject musicObject = new GameObject(name, typeof(AudioSource));
+            AudioSource source = musicObject.GetComponent<AudioSource>();
+            source.clip = clip;
+            source.loop = true;
+            source.playOnAwake = true;
+            source.volume = volume;
+            return source;
+        }
+
+        private static void ConfigureGameplayAudio(CyberGuardianSideScrollerGame game, string levelMusicPath)
+        {
+            if (game == null)
+            {
+                return;
+            }
+
+            game.musicSource = game.gameObject.AddComponent<AudioSource>();
+            game.musicSource.playOnAwake = false;
+            game.musicSource.loop = true;
+            game.musicSource.volume = 0.46f;
+            game.adventureMusic = EnsureImportedAudioClip(levelMusicPath);
+            game.bossMusic = EnsureImportedAudioClip(BossMusicPath);
+            game.jumpSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Jump.wav");
+            game.playerHitSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Hit.wav");
+            game.playerDeathSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Death.wav");
+            game.playerBoostSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Boost.wav");
+            game.playerRecoverySfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Recovery.wav");
+            game.playerShootSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Shoot.wav");
+            game.checkpointSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Checkpoint.wav");
+            game.quizOpenSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Quiz_Open.wav");
+            game.quizCorrectSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Quiz_Correct.wav");
+            game.quizWrongSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Quiz_Wrong.wav");
+            game.bossShieldBreakSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Boss_Shield_Break.wav");
+            game.bossDamageSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Boss_Damage.wav");
+            game.bossDefeatSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Boss_Defeat.wav");
+            game.bossWarningSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Boss_Warning.wav");
+            game.bossSlingshotPullSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Boss_Slingshot_Pull.wav");
+            game.bossSlingshotLaunchSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Boss_Slingshot_Launch.wav");
+            game.enemyDeathSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Enemy_Death.wav");
+            game.powerupEnergySfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Powerup_Energy.wav");
+            game.powerupHealthSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Powerup_Health.wav");
+            game.countdownBeepSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_UI_Countdown_Beep.wav");
+            game.countdownStartSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_UI_Countdown_Start.wav");
+            game.gameOverSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_UI_Game_Over.wav");
         }
 
         private static void EnsureEventSystem()

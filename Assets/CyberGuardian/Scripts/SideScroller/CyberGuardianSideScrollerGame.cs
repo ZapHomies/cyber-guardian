@@ -82,6 +82,30 @@ namespace CyberGuardian
         public AudioClip bossShotSfx;
         public AudioClip shieldSfx;
         public AudioClip wrongSfx;
+        public AudioSource musicSource;
+        public AudioClip adventureMusic;
+        public AudioClip bossMusic;
+        public AudioClip playerHitSfx;
+        public AudioClip playerDeathSfx;
+        public AudioClip playerBoostSfx;
+        public AudioClip playerRecoverySfx;
+        public AudioClip playerShootSfx;
+        public AudioClip checkpointSfx;
+        public AudioClip quizOpenSfx;
+        public AudioClip quizCorrectSfx;
+        public AudioClip quizWrongSfx;
+        public AudioClip bossShieldBreakSfx;
+        public AudioClip bossDamageSfx;
+        public AudioClip bossDefeatSfx;
+        public AudioClip bossWarningSfx;
+        public AudioClip bossSlingshotPullSfx;
+        public AudioClip bossSlingshotLaunchSfx;
+        public AudioClip enemyDeathSfx;
+        public AudioClip powerupEnergySfx;
+        public AudioClip powerupHealthSfx;
+        public AudioClip countdownBeepSfx;
+        public AudioClip countdownStartSfx;
+        public AudioClip gameOverSfx;
 
         public float bossArenaCenterX = 35.5f;
         public float bossArenaMinX = 28.0f;
@@ -202,6 +226,7 @@ namespace CyberGuardian
                 readyPanel.SetActive(false);
             }
 
+            StartLoopingMusic(adventureMusic);
             SetStatus("MODE PETUALANGAN: A/D GERAK, SPACE LOMPAT, J SERANG, SHIFT ENERGI");
             RefreshHud();
             StartCoroutine(ReadyCountdownSequence());
@@ -274,6 +299,11 @@ namespace CyberGuardian
 
         private IEnumerator AnimateReadyStep(string title, string countdown, float duration)
         {
+            if (!string.IsNullOrEmpty(countdown))
+            {
+                PlaySfx(title == "MULAI!" ? countdownStartSfx : countdownBeepSfx);
+            }
+
             if (readyTitleText != null)
             {
                 readyTitleText.text = title;
@@ -344,6 +374,8 @@ namespace CyberGuardian
 
             bossFireTimer = 1.25f;
             ResetSlingshotProjectile();
+            PlaySfx(bossWarningSfx);
+            StartLoopingMusic(bossMusic);
             SetStatus("MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH");
             RefreshHud();
         }
@@ -379,7 +411,7 @@ namespace CyberGuardian
         {
             enemies.Remove(enemy);
             AddScore(50);
-            PlaySfx(hitSfx);
+            PlaySfx(enemyDeathSfx != null ? enemyDeathSfx : hitSfx);
             SetStatus("Ancaman dihapus. Terus bergerak.");
             RefreshHud();
         }
@@ -449,7 +481,7 @@ namespace CyberGuardian
 
             invulnerabilityTimer = 0.75f;
             playerHealth = Mathf.Max(0, playerHealth - damage);
-            PlaySfx(wrongSfx);
+            PlaySfx(GetDamageSfx(source));
             SetStatus(playerHealth <= 0 ? "NYAWA GUARDIAN TERKENA KRITIS" : "TERKENA " + TranslateDamageSource(source).ToUpperInvariant());
             RefreshHud();
 
@@ -510,6 +542,7 @@ namespace CyberGuardian
 
             ResetSlingshotProjectile();
             SaveProgress(currentRecoveryPoint);
+            PlaySfx(playerRecoverySfx);
             SetStatus("NYAWA BERKURANG: " + playerLives + " TERSISA - KEMBALI KE CHECKPOINT");
             RefreshHud();
             return true;
@@ -525,6 +558,7 @@ namespace CyberGuardian
             defeatSequenceStarted = true;
             SetPaused(false);
             mode = GameMode.Defeat;
+            PlaySfx(playerDeathSfx);
             quizOpen = false;
             draggingSlingshot = false;
             projectileInFlight = false;
@@ -631,6 +665,8 @@ namespace CyberGuardian
             {
                 gameOverModal.SetActive(true);
             }
+
+            PlaySfx(gameOverSfx);
         }
 
         public void ProjectileHitShieldBlock(CyberGuardianBossShieldBlock block)
@@ -673,7 +709,7 @@ namespace CyberGuardian
             projectileFlightTimer = 0f;
             bossHealth = Mathf.Max(0, bossHealth - GetBossHitDamage());
             AddScore(GetBossHitScoreReward());
-            PlaySfx(hitSfx);
+            PlaySfx(bossHealth <= 0 ? (bossDefeatSfx != null ? bossDefeatSfx : bossDamageSfx) : (bossDamageSfx != null ? bossDamageSfx : hitSfx));
             SetStatus(bossHealth <= 0 ? "BOS DIBERSIHKAN - LEVEL SELESAI" : "BOS TERKENA. BUKA SUDUT SERANGAN LAIN.");
             ResetSlingshotProjectile();
             RefreshHud();
@@ -717,6 +753,7 @@ namespace CyberGuardian
         {
             currentRecoveryPoint = point;
             SaveProgress(currentRecoveryPoint);
+            PlaySfx(checkpointSfx);
             SetStatus("NODE PEMULIHAN TERSINKRON");
         }
 
@@ -748,6 +785,7 @@ namespace CyberGuardian
             }
 
             boostEnergy = Mathf.Max(0f, boostEnergy - cost);
+            PlaySfx(playerBoostSfx);
             SetStatus("ENERGI AKTIF: GERAK CEPAT TERPAKAI");
             RefreshHud();
             return true;
@@ -765,13 +803,13 @@ namespace CyberGuardian
                 case CyberGuardianPowerUpType.Health:
                     playerHealth = Mathf.Min(100, playerHealth + Mathf.Max(1, powerUp.amount));
                     AddScore(75);
-                    PlaySfx(shieldSfx);
+                    PlaySfx(powerupHealthSfx != null ? powerupHealthSfx : shieldSfx);
                     SetStatus("PATCH KESEHATAN TERPASANG");
                     break;
                 case CyberGuardianPowerUpType.Boost:
                     boostEnergy = Mathf.Min(100f, boostEnergy + Mathf.Max(1, powerUp.amount));
                     AddScore(60);
-                    PlaySfx(shieldSfx);
+                    PlaySfx(powerupEnergySfx != null ? powerupEnergySfx : shieldSfx);
                     SetStatus("CACHE ENERGI DIPULIHKAN");
                     break;
                 case CyberGuardianPowerUpType.Firewall:
@@ -940,6 +978,7 @@ namespace CyberGuardian
 
                 draggingSlingshot = true;
                 UpdateScreenWideSlingshotPull(rest, mouseWorld);
+                PlaySfx(bossSlingshotPullSfx);
                 SetStatus("MEMBIDIK INTI PATCH - LEPAS UNTUK MENEMBAK");
             }
 
@@ -1217,6 +1256,7 @@ namespace CyberGuardian
                 quizModal.SetActive(true);
             }
 
+            PlaySfx(quizOpenSfx);
             SetStatus("JAWAB UNTUK MENGHANCURKAN BLOK PERISAI BOS");
             RefreshHud();
         }
@@ -1242,7 +1282,7 @@ namespace CyberGuardian
                 activeQuizBlock.ClearBlock();
                 playerHealth = Mathf.Min(100, playerHealth + GetCorrectHealthReward());
                 AddScore(GetCorrectScoreReward());
-                PlaySfx(shieldSfx);
+                PlaySfx(quizCorrectSfx != null ? quizCorrectSfx : (bossShieldBreakSfx != null ? bossShieldBreakSfx : shieldSfx));
                 if (feedbackText != null)
                 {
                     feedbackText.text = question.feedback;
@@ -1332,7 +1372,7 @@ namespace CyberGuardian
                 slingshotCollider.enabled = true;
             }
 
-            PlaySfx(bossShotSfx);
+            PlaySfx(bossSlingshotLaunchSfx != null ? bossSlingshotLaunchSfx : bossShotSfx);
             SetStatus("INTI PATCH DITEMBAKKAN");
         }
 
@@ -1797,6 +1837,39 @@ namespace CyberGuardian
             {
                 sfxSource.PlayOneShot(clip);
             }
+        }
+
+        public void PlayPlayerJumpSfx()
+        {
+            PlaySfx(jumpSfx);
+        }
+
+        public void PlayPlayerShootSfx()
+        {
+            PlaySfx(playerShootSfx != null ? playerShootSfx : bossShotSfx);
+        }
+
+        private AudioClip GetDamageSfx(string source)
+        {
+            string normalized = string.IsNullOrEmpty(source) ? string.Empty : source.ToLowerInvariant();
+            if (normalized.Contains("wrong") || normalized.Contains("jawaban salah") || normalized.Contains("quiz"))
+            {
+                return quizWrongSfx != null ? quizWrongSfx : wrongSfx;
+            }
+
+            return playerHitSfx != null ? playerHitSfx : wrongSfx;
+        }
+
+        private void StartLoopingMusic(AudioClip clip)
+        {
+            if (musicSource == null || clip == null || musicSource.clip == clip)
+            {
+                return;
+            }
+
+            musicSource.clip = clip;
+            musicSource.loop = true;
+            musicSource.Play();
         }
     }
 }
