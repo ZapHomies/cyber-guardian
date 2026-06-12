@@ -38,6 +38,11 @@ namespace CyberGuardian.Editor
         private const string PlatformSupportSpritePath = "Assets/CyberGuardian/assets/katak/tiang_2-removebg-preview.png";
         private const string PlatformSupportAltSpritePath = "Assets/CyberGuardian/assets/katak/tiang-removebg-preview.png";
         private const string LightningTrapSpritePath = "Assets/CyberGuardian/assets/katak/lightning/lightning_v2_1.png";
+        private const string ReferenceTowerLayoutSpritePath = "Assets/CyberGuardian/assets/katak/Gemini_Generated_Image_u4jv2pu4jv2pu4jv.png";
+        private const string FlyingMonsterEastSpritePath = "Assets/CyberGuardian/assets/katak/Monster/Monster terbang east.png";
+        private const string FlyingMonsterWestSpritePath = "Assets/CyberGuardian/assets/katak/Monster/Monster terbang west.png";
+        private const string BossDialoguePortraitSpritePath = "Assets/CyberGuardian/assets/katak/Monster/Boss 1 dialog box.png";
+        private const string DialogueBoxSpritePath = "Assets/CyberGuardian/assets/dialogugebox/Sci-Fi Futuristic Hologram 01/TextBox_Sci-Fi_02_transparent.png";
         private const string MainMenuVideoPath = "Assets/CyberGuardian/Art/Menu/kling_20260604_VIDEO_Image1berf_5479_0.mp4";
         private const string MainMenuRenderTexturePath = "Assets/CyberGuardian/Art/Menu/MainMenuVideoBackground.renderTexture";
 
@@ -63,6 +68,11 @@ namespace CyberGuardian.Editor
         private static Sprite platformSupportSprite;
         private static Sprite platformSupportAltSprite;
         private static Sprite lightningTrapSprite;
+        private static Sprite referenceTowerLayoutSprite;
+        private static Sprite flyingMonsterEastSprite;
+        private static Sprite flyingMonsterWestSprite;
+        private static Sprite bossDialoguePortraitSprite;
+        private static Sprite dialogueBoxSprite;
 
         private sealed class CyberHorrorAssetSprites
         {
@@ -125,6 +135,11 @@ namespace CyberGuardian.Editor
             platformSupportSprite = EnsureImportedSprite(PlatformSupportSpritePath);
             platformSupportAltSprite = EnsureImportedSprite(PlatformSupportAltSpritePath);
             lightningTrapSprite = EnsureImportedSprite(LightningTrapSpritePath);
+            referenceTowerLayoutSprite = EnsureImportedSprite(ReferenceTowerLayoutSpritePath);
+            flyingMonsterEastSprite = EnsureImportedSprite(FlyingMonsterEastSpritePath);
+            flyingMonsterWestSprite = EnsureImportedSprite(FlyingMonsterWestSpritePath);
+            bossDialoguePortraitSprite = EnsureImportedSprite(BossDialoguePortraitSpritePath);
+            dialogueBoxSprite = EnsureImportedSprite(DialogueBoxSpritePath, new Vector4(40f, 40f, 40f, 40f));
 
             AudioClip meleeSfx = EnsureImportedAudioClip(MeleeSfxPath);
             AudioClip hitSfx = EnsureImportedAudioClip(HitSfxPath);
@@ -684,6 +699,7 @@ namespace CyberGuardian.Editor
 
         private static void BuildLevel03Platforms(Transform parent, Sprite squareSprite, Sprite rockTileSprite, Sprite metalCrateSprite, Sprite dataMossSprite, CyberHorrorAssetSprites horrorSprites)
         {
+            BuildTowerCableNetwork(parent, squareSprite, -8f, 344f, -4.95f, "L03");
             CreateCyberPlatform("L03 Entry Cloud Cache Floor", parent, new Vector2(-3.8f, -0.92f), 18, 3, rockTileSprite, metalCrateSprite, dataMossSprite, false);
 
             Vector2[] mainRoute =
@@ -758,6 +774,10 @@ namespace CyberGuardian.Editor
             CreateEnemy("L03 Virus Soldier Backup E", parent, game, new Vector2(229.5f, 6.62f), squareSprite, circleSprite, 3.45f, 1.6f);
             CreateEnemy("L03 Virus Soldier Encryption F", parent, game, new Vector2(263.8f, 2.58f), squareSprite, circleSprite, 3.55f, 1.7f);
             CreateEnemy("L03 Virus Soldier Boss Gate G", parent, game, new Vector2(329.5f, 1.68f), squareSprite, circleSprite, 3.65f, 1.4f);
+            CreateFlyingMonsterEnemy("L03 Flying Malware Token Wing", parent, game, new Vector2(84.2f, 5.55f), 2.8f, 3.0f);
+            CreateFlyingMonsterEnemy("L03 Flying Malware SIEM Wing", parent, game, new Vector2(153.2f, 5.85f), 3.0f, 2.8f);
+            CreateFlyingMonsterEnemy("L03 Flying Malware Encryption Wing", parent, game, new Vector2(263.8f, 4.65f), 3.1f, 2.6f);
+            CreateFlyingMonsterEnemy("L03 Flying Malware Boss Gate Wing", parent, game, new Vector2(329.5f, 4.25f), 3.2f, 2.4f);
         }
 
         private static void BuildLevel03StoryZones(Transform parent, CyberGuardianSideScrollerGame game)
@@ -951,6 +971,7 @@ namespace CyberGuardian.Editor
 
         private static void BuildPlatforms(Transform parent, Sprite squareSprite, Sprite panelSprite, Sprite rockTileSprite, Sprite metalCrateSprite, Sprite dataMossSprite, CyberHorrorAssetSprites horrorSprites)
         {
+            BuildTowerCableNetwork(parent, squareSprite, -8f, 218f, -4.75f, "L01");
             CreateCyberPlatform("Start Data Forest Floor", parent, new Vector2(-3.35f, -1.02f), 17, 3, rockTileSprite, metalCrateSprite, dataMossSprite, false);
             CreateHorrorPlatform("Fork Circuit Bridge", parent, new Vector2(6.1f, -0.72f), 7, 2, horrorSprites.CircuitBlock, horrorSprites.NeonPlatform, dataMossSprite, Hex("D9FFFF"), Hex("69F7FF"));
             CreateHorrorPlatform("Upper Route Step A", parent, new Vector2(11.7f, 0.92f), 4, 1, horrorSprites.NeonPlatform, horrorSprites.GlowEdgePlatform, dataMossSprite, Color.white, Hex("69F7FF"));
@@ -1069,6 +1090,7 @@ namespace CyberGuardian.Editor
 
         private static void BuildLevel02Platforms(Transform parent, Sprite squareSprite, Sprite rockTileSprite, Sprite metalCrateSprite, Sprite dataMossSprite, CyberHorrorAssetSprites horrorSprites)
         {
+            BuildTowerCableNetwork(parent, squareSprite, -8f, 268f, -4.82f, "L02");
             CreateCyberPlatform("L02 Start HD Data Floor", parent, new Vector2(-3.35f, -1.02f), 18, 3, rockTileSprite, metalCrateSprite, dataMossSprite, true);
             CreateHorrorPlatform("L02 Glass Bridge A", parent, new Vector2(6.7f, -0.72f), 8, 2, horrorSprites.ServerCore, horrorSprites.GlowEdgePlatform, dataMossSprite, Color.white, Hex("8CFFFF"));
             CreateHorrorPlatform("L02 Upper Fork Step A", parent, new Vector2(12.6f, 0.92f), 4, 1, horrorSprites.NeonPlatform, horrorSprites.GlowEdgePlatform, dataMossSprite, Color.white, Hex("8CFFFF"));
@@ -1448,6 +1470,9 @@ namespace CyberGuardian.Editor
             CreateEnemy("Virus Soldier Kernel O", parent, game, new Vector2(178.2f, 1.34f), squareSprite, circleSprite, 2.90f, 2.2f);
             CreateEnemy("Virus Soldier MFA P", parent, game, new Vector2(194.4f, 4.24f), squareSprite, circleSprite, 3.00f, 1.8f);
             CreateEnemy("Virus Soldier Final Gate Q", parent, game, new Vector2(212.4f, 1.32f), squareSprite, circleSprite, 3.10f, 1.4f);
+            CreateFlyingMonsterEnemy("Flying Malware Scout Upload A", parent, game, new Vector2(50.5f, 2.85f), 2.2f, 2.6f);
+            CreateFlyingMonsterEnemy("Flying Malware Scout Checksum B", parent, game, new Vector2(136.0f, 4.85f), 2.6f, 2.8f);
+            CreateFlyingMonsterEnemy("Flying Malware Scout Boss Gate C", parent, game, new Vector2(203.5f, 3.75f), 2.8f, 2.4f);
 
             CreateMovingPlatform("Corrupted Moving Platform Lower", parent, new Vector2(42.8f, -2.15f), new Vector3(0f, 1.2f, 0f), horrorSprites.CorruptedPlatform, squareSprite);
             CreateMovingPlatform("Upload Tower Moving Platform", parent, new Vector2(64.6f, -2.45f), new Vector3(2.2f, 1.45f, 0f), horrorSprites.CorruptedPlatform, squareSprite);
@@ -1510,6 +1535,9 @@ namespace CyberGuardian.Editor
             CreateEnemy("Virus Soldier Quantum S", parent, game, new Vector2(205.0f, 2.04f), squareSprite, circleSprite, 3.25f, 1.7f);
             CreateEnemy("Virus Soldier Enclave T", parent, game, new Vector2(246.0f, 3.76f), squareSprite, circleSprite, 3.35f, 1.9f);
             CreateEnemy("Virus Soldier Final Gate U", parent, game, new Vector2(263.0f, 1.42f), squareSprite, circleSprite, 3.45f, 1.4f);
+            CreateFlyingMonsterEnemy("L02 Flying Malware Split Route", parent, game, new Vector2(65.5f, 3.65f), 2.4f, 2.7f);
+            CreateFlyingMonsterEnemy("L02 Flying Malware Privilege Gate", parent, game, new Vector2(144.2f, 4.65f), 2.7f, 3.0f);
+            CreateFlyingMonsterEnemy("L02 Flying Malware Backup Core", parent, game, new Vector2(221.2f, 4.45f), 2.9f, 2.6f);
         }
 
         private static void BuildBossArena(Transform parent, CyberGuardianSideScrollerGame game, Sprite squareSprite, Sprite circleSprite, Sprite metalCrateSprite, CyberHorrorAssetSprites horrorSprites, Sprite virusSprite, Sprite virusAltSprite, Sprite bossGeneratedSprite, Sprite projectileSprite, Sprite projectileGeneratedSprite, Sprite sparkSprite, Sprite crosshairSprite, Font font)
@@ -1623,6 +1651,7 @@ namespace CyberGuardian.Editor
             game.bossText = AddText("Boss Text", bossHud.transform, new Vector2(-8f, 464f), new Vector2(500f, 28f), "HP BOS", 21, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             bossHud.SetActive(false);
             BuildStoryPanel(canvasObject.transform, game, horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite, font);
+            BuildBossDialoguePanel(canvasObject.transform, game, dialogueBoxSprite != null ? dialogueBoxSprite : panelFrame, font);
             Sprite modalPanel = horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite;
             Sprite modalButton = horrorSprites.UiButtonCyan != null ? horrorSprites.UiButtonCyan : buttonSprite;
             BuildQuizModal(canvasObject.transform, game, modalPanel, modalButton, frameSprite, font);
@@ -1651,6 +1680,33 @@ namespace CyberGuardian.Editor
             bodyShadow.effectColor = new Color(0f, 0f, 0f, 0.96f);
             bodyShadow.effectDistance = new Vector2(3f, -3f);
             game.storyPanel = panel;
+            panel.SetActive(false);
+        }
+
+        private static void BuildBossDialoguePanel(Transform parent, CyberGuardianSideScrollerGame game, Sprite panelSprite, Font font)
+        {
+            GameObject panel = new GameObject("Boss Dialogue Panel", typeof(RectTransform));
+            panel.transform.SetParent(parent, false);
+            RectTransform rect = panel.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(0f, -390f);
+            rect.sizeDelta = new Vector2(1280f, 210f);
+
+            Image frame = AddImage("Boss Dialogue Frame", panel.transform, Vector2.zero, new Vector2(1240f, 190f), Color.white, panelSprite);
+            frame.raycastTarget = false;
+            if (panelSprite != null)
+            {
+                frame.type = Image.Type.Sliced;
+            }
+
+            Image portrait = AddImage("Boss Dialogue Portrait", panel.transform, new Vector2(-505f, 0f), new Vector2(180f, 180f), Color.white, bossDialoguePortraitSprite != null ? bossDialoguePortraitSprite : panelSprite);
+            portrait.raycastTarget = false;
+
+            game.bossDialogueTitleText = AddText("Boss Dialogue Title", panel.transform, new Vector2(-140f, 48f), new Vector2(800f, 42f), "BOS MALWARE", 28, Hex("FF5B9B"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
+            game.bossDialogueBodyText = AddText("Boss Dialogue Body", panel.transform, new Vector2(-88f, -18f), new Vector2(900f, 92f), "Buka celah dengan menjawab kuis keamanan siber.", 20, Color.white, font, TextAnchor.MiddleLeft, FontStyle.Bold);
+            game.bossDialoguePanel = panel;
             panel.SetActive(false);
         }
 
@@ -1897,11 +1953,88 @@ namespace CyberGuardian.Editor
             }
         }
 
-        private static CyberGuardianEnemy CreateEnemy(string name, Transform parent, CyberGuardianSideScrollerGame game, Vector2 position, Sprite squareSprite, Sprite circleSprite, float speed, float patrol)
+        private static Vector2 SnapEnemyToPlatform(Vector2 position, float yOffset)
+        {
+            float bestTop = float.NegativeInfinity;
+            BoxCollider2D[] colliders = Object.FindObjectsByType<BoxCollider2D>();
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                BoxCollider2D platformCollider = colliders[i];
+                if (platformCollider == null || platformCollider.isTrigger || platformCollider.size.x < 0.55f)
+                {
+                    continue;
+                }
+
+                Bounds bounds = platformCollider.bounds;
+                if (bounds.size.x < 0.70f || bounds.size.y > 3.25f)
+                {
+                    continue;
+                }
+
+                if (position.x < bounds.min.x - 0.28f || position.x > bounds.max.x + 0.28f)
+                {
+                    continue;
+                }
+
+                float top = bounds.max.y;
+                if (top <= position.y + 2.8f && top >= position.y - 8.0f && top > bestTop)
+                {
+                    bestTop = top;
+                }
+            }
+
+            return float.IsNegativeInfinity(bestTop) ? position : new Vector2(position.x, bestTop + yOffset);
+        }
+
+        private static CyberGuardianEnemy CreateFlyingMonsterEnemy(string name, Transform parent, CyberGuardianSideScrollerGame game, Vector2 position, float speed, float patrol)
         {
             GameObject enemyObject = new GameObject(name, typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(CyberGuardianEnemy));
             enemyObject.transform.SetParent(parent, false);
             enemyObject.transform.position = position;
+            Transform visualRoot = new GameObject("Flying Monster Visual Root").transform;
+            visualRoot.SetParent(enemyObject.transform, false);
+            visualRoot.localPosition = Vector3.zero;
+
+            Rigidbody2D body = enemyObject.GetComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Kinematic;
+            body.freezeRotation = true;
+
+            BoxCollider2D collider = enemyObject.GetComponent<BoxCollider2D>();
+            collider.size = new Vector2(0.82f, 0.70f);
+            collider.offset = new Vector2(0f, -0.02f);
+
+            CyberGuardianEnemy enemy = enemyObject.GetComponent<CyberGuardianEnemy>();
+            enemy.game = game;
+            enemy.health = 2;
+            enemy.touchDamage = 12;
+            enemy.speed = speed;
+            enemy.patrolDistance = patrol;
+            enemy.visualRoot = visualRoot;
+            enemy.flipVisualRootWithDirection = false;
+            game.enemies.Add(enemy);
+
+            Sprite startSprite = flyingMonsterEastSprite != null ? flyingMonsterEastSprite : (flyingMonsterWestSprite != null ? flyingMonsterWestSprite : null);
+            SpriteRenderer renderer = CreateLocalSprite("Imported Flying Malware Sprite", visualRoot, Vector3.zero, new Vector2(0.92f, 0.92f), Color.white, startSprite, 24);
+            CyberGuardianEnemySpriteAnimator2D animator = enemyObject.AddComponent<CyberGuardianEnemySpriteAnimator2D>();
+            animator.enemy = enemy;
+            animator.spriteRenderer = renderer;
+            animator.walkEast = flyingMonsterEastSprite != null ? new[] { flyingMonsterEastSprite } : new[] { startSprite };
+            animator.walkWest = flyingMonsterWestSprite != null ? new[] { flyingMonsterWestSprite } : animator.walkEast;
+            animator.attackEast = animator.walkEast;
+            animator.attackWest = animator.walkWest;
+            animator.walkFps = 1f;
+            animator.attackFps = 1f;
+
+            SpriteRenderer aura = CreateLocalSprite("Flying Malware Hover Aura", visualRoot, new Vector3(0f, -0.26f, 0.08f), new Vector2(0.82f, 0.18f), new Color(0.20f, 1f, 1f, 0.30f), startSprite, 18);
+            AddPulse(aura, 0.08f, 0.16f, 4.8f, 0.5f);
+            return enemy;
+        }
+
+        private static CyberGuardianEnemy CreateEnemy(string name, Transform parent, CyberGuardianSideScrollerGame game, Vector2 position, Sprite squareSprite, Sprite circleSprite, float speed, float patrol)
+        {
+            GameObject enemyObject = new GameObject(name, typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(CyberGuardianEnemy));
+            enemyObject.transform.SetParent(parent, false);
+            enemyObject.transform.position = SnapEnemyToPlatform(position, 0.58f);
             Transform visualRoot = new GameObject("Virus Visual Root").transform;
             visualRoot.SetParent(enemyObject.transform, false);
             visualRoot.localPosition = Vector3.zero;
@@ -1976,7 +2109,7 @@ namespace CyberGuardian.Editor
         {
             GameObject enemyObject = new GameObject(name, typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(CyberGuardianEnemy));
             enemyObject.transform.SetParent(parent, false);
-            enemyObject.transform.position = position;
+            enemyObject.transform.position = SnapEnemyToPlatform(position, 0.54f);
             Transform visualRoot = new GameObject("Quad Malware Beast Visual Root").transform;
             visualRoot.SetParent(enemyObject.transform, false);
             visualRoot.localPosition = Vector3.zero;
@@ -2236,6 +2369,80 @@ namespace CyberGuardian.Editor
         {
             GameObject platform = CreateWorldSprite(name, parent, position, size, color, sprite, 10).gameObject;
             platform.AddComponent<BoxCollider2D>();
+        }
+
+        private static void BuildTowerCableNetwork(Transform parent, Sprite squareSprite, float startX, float endX, float baseY, string prefix)
+        {
+            if (referenceTowerLayoutSprite != null)
+            {
+                float width = Mathf.Clamp(endX - startX + 18f, 70f, 380f);
+                SpriteRenderer referenceWash = CreateWorldSprite(prefix + " Reference Tower Layout Wash", parent, new Vector2((startX + endX) * 0.5f, 2.15f), new Vector2(width, 11.2f), new Color(0.55f, 1f, 1f, 0.075f), referenceTowerLayoutSprite, 1);
+                AddPulse(referenceWash, 0.006f, 0.012f, 1.35f, 0.2f);
+            }
+
+            float length = Mathf.Max(1f, endX - startX);
+            float[] ratios = { 0.06f, 0.22f, 0.38f, 0.55f, 0.72f, 0.88f };
+            for (int i = 0; i < ratios.Length; i++)
+            {
+                float x = Mathf.Lerp(startX, endX, ratios[i]);
+                float height = 4.1f + (i % 3) * 0.85f;
+                CreateSupportTower(prefix + " Signal Tower " + i, parent, new Vector2(x, baseY + height * 0.5f), height, squareSprite, i);
+            }
+
+            for (int i = 0; i < ratios.Length - 1; i++)
+            {
+                Vector2 a = new Vector2(Mathf.Lerp(startX, endX, ratios[i]) + 1.0f, baseY + 3.2f + (i % 2) * 0.55f);
+                Vector2 b = new Vector2(Mathf.Lerp(startX, endX, ratios[i + 1]) - 1.0f, baseY + 2.75f + ((i + 1) % 2) * 0.62f);
+                CreateCableStrand(prefix + " Broken Data Cable " + i, parent, a, b, 14 + i * 2, i % 2 == 0 ? Hex("61F7FF") : Hex("FF2F83"), squareSprite, 7, true, i * 0.37f);
+                CreateCableStrand(prefix + " Lower Hanging Cable " + i, parent, a + new Vector2(0.2f, -0.52f), b + new Vector2(-0.2f, -0.80f), 11 + i, new Color(0.05f, 0.02f, 0.08f, 0.90f), squareSprite, 6, i % 3 == 0, i * 0.51f);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                float x = Mathf.Lerp(startX + 8f, endX - 8f, i / 9f);
+                float y = baseY + 2.0f + (i % 4) * 0.68f;
+                CreateCableStrand(prefix + " Short Cut Cable " + i, parent, new Vector2(x, y), new Vector2(x + 3.6f + (i % 3), y - 0.55f), 5 + i % 4, i % 2 == 0 ? Hex("43F7FF") : Hex("A73BFF"), squareSprite, 8, true, i * 0.2f);
+            }
+        }
+
+        private static void CreateSupportTower(string name, Transform parent, Vector2 center, float height, Sprite squareSprite, int index)
+        {
+            Sprite supportSprite = platformSupportSprite != null ? platformSupportSprite : platformSupportAltSprite;
+            Color towerTint = index % 2 == 0 ? new Color(0.48f, 0.96f, 1f, 0.58f) : new Color(0.86f, 0.18f, 0.58f, 0.44f);
+            CreateWorldSprite(name + " Back Mast", parent, center, new Vector2(0.54f, height), new Color(0.02f, 0.05f, 0.07f, 0.84f), supportSprite != null ? supportSprite : squareSprite, 5);
+            CreateWorldSprite(name + " Front Mast", parent, center + new Vector2(0.38f, 0f), new Vector2(0.34f, height * 0.92f), towerTint, supportSprite != null ? supportSprite : squareSprite, 8);
+            CreateWorldSprite(name + " Top Rail", parent, center + new Vector2(0.18f, height * 0.46f), new Vector2(2.2f, 0.16f), new Color(0.08f, 0.95f, 1f, 0.52f), squareSprite, 8);
+            CreateWorldSprite(name + " Base Foot", parent, center + new Vector2(0.16f, -height * 0.50f), new Vector2(2.5f, 0.26f), new Color(0.02f, 0.05f, 0.07f, 0.90f), squareSprite, 8);
+            for (int i = 0; i < 4; i++)
+            {
+                SpriteRenderer brace = CreateWorldSprite(name + " Diagonal Brace " + i, parent, center + new Vector2(0.18f, -height * 0.32f + i * height * 0.20f), new Vector2(1.3f, 0.08f), new Color(0.55f, 1f, 1f, 0.34f), squareSprite, 7);
+                brace.transform.localRotation = Quaternion.Euler(0f, 0f, i % 2 == 0 ? 28f : -28f);
+            }
+        }
+
+        private static void CreateCableStrand(string name, Transform parent, Vector2 start, Vector2 end, int segments, Color color, Sprite sprite, int sortingOrder, bool broken, float phase)
+        {
+            int count = Mathf.Max(2, segments);
+            for (int i = 0; i < count; i++)
+            {
+                if (broken && (i + Mathf.RoundToInt(phase * 10f)) % 5 == 2)
+                {
+                    continue;
+                }
+
+                float t0 = i / (float)count;
+                float t1 = (i + 0.64f) / count;
+                Vector2 p0 = Vector2.Lerp(start, end, t0);
+                Vector2 p1 = Vector2.Lerp(start, end, t1);
+                float sag0 = Mathf.Sin(t0 * Mathf.PI) * (0.28f + Mathf.Abs(end.x - start.x) * 0.012f);
+                float sag1 = Mathf.Sin(t1 * Mathf.PI) * (0.28f + Mathf.Abs(end.x - start.x) * 0.012f);
+                p0.y -= sag0;
+                p1.y -= sag1;
+                Vector2 mid = (p0 + p1) * 0.5f;
+                Vector2 delta = p1 - p0;
+                SpriteRenderer segment = CreateWorldSprite(name + " Segment " + i, parent, mid, new Vector2(delta.magnitude, 0.045f), color, sprite, sortingOrder);
+                segment.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+            }
         }
 
         private static GameObject CreateCyberPlatform(string name, Transform parent, Vector2 center, int columns, int rows, Sprite rockTileSprite, Sprite metalCrateSprite, Sprite dataMossSprite, bool metal)

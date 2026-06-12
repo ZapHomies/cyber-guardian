@@ -46,6 +46,9 @@ namespace CyberGuardian
         public GameObject storyPanel;
         public Text storyTitleText;
         public Text storyBodyText;
+        public GameObject bossDialoguePanel;
+        public Text bossDialogueTitleText;
+        public Text bossDialogueBodyText;
         public Image playerHealthFill;
         public Image bossHealthFill;
         public Image boostEnergyFill;
@@ -221,6 +224,11 @@ namespace CyberGuardian
                 storyPanel.SetActive(false);
             }
 
+            if (bossDialoguePanel != null)
+            {
+                bossDialoguePanel.SetActive(false);
+            }
+
             if (readyPanel != null)
             {
                 readyPanel.SetActive(false);
@@ -376,6 +384,7 @@ namespace CyberGuardian
             ResetSlingshotProjectile();
             PlaySfx(bossWarningSfx);
             StartLoopingMusic(bossMusic);
+            ShowBossDialogue();
             SetStatus("MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH");
             RefreshHud();
         }
@@ -852,6 +861,37 @@ namespace CyberGuardian
             storyPanel.SetActive(true);
             CancelInvoke(nameof(HideStoryPanel));
             Invoke(nameof(HideStoryPanel), Mathf.Max(1f, duration));
+        }
+
+        private void ShowBossDialogue()
+        {
+            if (bossDialoguePanel == null)
+            {
+                ShowStory("BOS MALWARE", "Akhirnya kamu sampai di firewall inti. Jawab blok kuis, buka celah, lalu tembak inti patch sebelum sistem direbut.", 4.2f);
+                return;
+            }
+
+            if (bossDialogueTitleText != null)
+            {
+                bossDialogueTitleText.text = "BOS MALWARE";
+            }
+
+            if (bossDialogueBodyText != null)
+            {
+                bossDialogueBodyText.text = "Kamu masuk ke domainku, Guardian. Setiap blok kuis adalah firewall palsu. Salah menjawab, seranganku makin kuat. Buka celahnya kalau berani.";
+            }
+
+            bossDialoguePanel.SetActive(true);
+            CancelInvoke(nameof(HideBossDialoguePanel));
+            Invoke(nameof(HideBossDialoguePanel), 4.6f);
+        }
+
+        private void HideBossDialoguePanel()
+        {
+            if (bossDialoguePanel != null)
+            {
+                bossDialoguePanel.SetActive(false);
+            }
         }
 
         private void RegenerateBoost()
