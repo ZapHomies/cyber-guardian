@@ -35,6 +35,9 @@ namespace CyberGuardian.Editor
         private const string PanelFrameSpritePath = "Assets/CyberGuardian/Art/UI/CyberpunkPixelUI/1 Frames/Frame_05.png";
         private const string ButtonSpritePath = "Assets/CyberGuardian/Art/UI/KenneySpaceUI/PNG/Blue/Default/button_square_header_large_rectangle.png";
         private const string CircuitSpritePath = "Assets/SourceFiles/Textures/Repeating Tiles/Circuit_Albedo.png";
+        private const string PlatformSupportSpritePath = "Assets/CyberGuardian/assets/katak/tiang_2-removebg-preview.png";
+        private const string PlatformSupportAltSpritePath = "Assets/CyberGuardian/assets/katak/tiang-removebg-preview.png";
+        private const string LightningTrapSpritePath = "Assets/CyberGuardian/assets/katak/lightning/lightning_v2_1.png";
         private const string MainMenuVideoPath = "Assets/CyberGuardian/Art/Menu/kling_20260604_VIDEO_Image1berf_5479_0.mp4";
         private const string MainMenuRenderTexturePath = "Assets/CyberGuardian/Art/Menu/MainMenuVideoBackground.renderTexture";
 
@@ -57,6 +60,9 @@ namespace CyberGuardian.Editor
         private const string BossGeneratedSpritePath = "Assets/CyberGuardian/GeneratedBlenderAssets/cg_malware_boss_sprite.png";
         private const string ProjectileGeneratedSpritePath = "Assets/CyberGuardian/GeneratedBlenderAssets/cg_patch_core_sprite.png";
         private const bool RegenerateGeneratedSprites = true;
+        private static Sprite platformSupportSprite;
+        private static Sprite platformSupportAltSprite;
+        private static Sprite lightningTrapSprite;
 
         private sealed class CyberHorrorAssetSprites
         {
@@ -116,6 +122,9 @@ namespace CyberGuardian.Editor
             Sprite frameSprite = EnsureImportedSprite(PanelFrameSpritePath, new Vector4(28f, 28f, 28f, 28f));
             Sprite buttonSprite = EnsureImportedSprite(ButtonSpritePath, new Vector4(18f, 18f, 18f, 18f));
             Sprite circuitSprite = EnsureImportedSprite(CircuitSpritePath);
+            platformSupportSprite = EnsureImportedSprite(PlatformSupportSpritePath);
+            platformSupportAltSprite = EnsureImportedSprite(PlatformSupportAltSpritePath);
+            lightningTrapSprite = EnsureImportedSprite(LightningTrapSpritePath);
 
             AudioClip meleeSfx = EnsureImportedAudioClip(MeleeSfxPath);
             AudioClip hitSfx = EnsureImportedAudioClip(HitSfxPath);
@@ -2125,6 +2134,12 @@ namespace CyberGuardian.Editor
         {
             SpriteRenderer glow = CreateWorldSprite(name + " Glow", parent, position, new Vector2(1.2f, 1.2f), new Color(0.35f, 1f, 1f, 0.24f), fallbackSprite, 16);
             AddPulse(glow, 0.10f, 0.12f, 3.6f, 0.4f);
+            if (lightningTrapSprite != null)
+            {
+                SpriteRenderer lightning = CreateWorldSprite(name + " Lightning Trap Arc", parent, position + new Vector2(0f, 0.22f), new Vector2(1.05f, 1.45f), new Color(0.72f, 1f, 1f, 0.96f), lightningTrapSprite, 25);
+                AddPulse(lightning, 0.045f, 0.16f, 7.8f, 0.15f);
+            }
+
             GameObject node = CreateWorldSprite(name, parent, position, new Vector2(0.72f, 0.92f), Color.white, nodeSprite != null ? nodeSprite : fallbackSprite, 24).gameObject;
             AddPulse(node.GetComponent<SpriteRenderer>(), 0.025f, 0.035f, 4.4f, 1.0f);
             CircleCollider2D collider = node.AddComponent<CircleCollider2D>();
@@ -2251,6 +2266,7 @@ namespace CyberGuardian.Editor
                 CreateLocalSprite("Data Moss " + x, root.transform, new Vector3(localX, rows * tile * 0.5f + 0.07f, -0.02f), new Vector2(tile * 1.05f, 0.23f), metal ? Hex("6EF7FF") : Hex("5BE85D"), dataMossSprite, 12);
             }
 
+            AddPlatformSupports(root.transform, columns, rows, tile, metal ? Hex("B6F8FF") : Color.white);
             return root;
         }
 
@@ -2282,7 +2298,34 @@ namespace CyberGuardian.Editor
                 CreateLocalSprite("Glow Edge " + x, root.transform, new Vector3(localX, rows * tile * 0.5f + 0.06f, -0.02f), new Vector2(tile * 1.05f, 0.22f), edgeTint, topSprite, 12);
             }
 
+            AddPlatformSupports(root.transform, columns, rows, tile, Color.Lerp(edgeTint, Color.white, 0.58f));
             return root;
+        }
+
+        private static void AddPlatformSupports(Transform parent, int columns, int rows, float tile, Color tint)
+        {
+            Sprite supportSprite = platformSupportSprite != null ? platformSupportSprite : platformSupportAltSprite;
+            if (supportSprite == null || columns < 2)
+            {
+                return;
+            }
+
+            float bottom = -rows * tile * 0.5f;
+            float supportHeight = Mathf.Clamp(0.90f + rows * 0.34f, 1.05f, 2.15f);
+            int step = columns <= 6 ? 1 : 2;
+            for (int x = 0; x < columns; x += step)
+            {
+                float localX = (x - (columns - 1) * 0.5f) * tile;
+                SpriteRenderer support = CreateLocalSprite("Support Pillar " + x, parent, new Vector3(localX, bottom - supportHeight * 0.5f + 0.04f, 0.12f), new Vector2(0.46f, supportHeight), tint, supportSprite, 8);
+                support.color = new Color(tint.r, tint.g, tint.b, 0.92f);
+            }
+
+            if ((columns - 1) % step != 0)
+            {
+                float edgeX = (columns - 1 - (columns - 1) * 0.5f) * tile;
+                SpriteRenderer support = CreateLocalSprite("Support Pillar Edge", parent, new Vector3(edgeX, bottom - supportHeight * 0.5f + 0.04f, 0.12f), new Vector2(0.46f, supportHeight), tint, supportSprite, 8);
+                support.color = new Color(tint.r, tint.g, tint.b, 0.92f);
+            }
         }
 
         private static SpriteRenderer CreateWorldSprite(string name, Transform parent, Vector2 position, Vector2 size, Color color, Sprite sprite, int sortingOrder)
@@ -2445,7 +2488,9 @@ namespace CyberGuardian.Editor
 
         private static Camera CreateCamera(string backgroundHex, float orthographicSize, Vector3 position)
         {
-            Camera camera = new GameObject("Main Camera").AddComponent<Camera>();
+            GameObject cameraObject = new GameObject("Main Camera", typeof(AudioListener));
+            cameraObject.tag = "MainCamera";
+            Camera camera = cameraObject.AddComponent<Camera>();
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = Hex(backgroundHex);
             camera.orthographic = true;
