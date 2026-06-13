@@ -2406,6 +2406,19 @@ namespace CyberGuardian.Editor
             SpriteRenderer surface = CreateWorldSprite(name + " Electric River Surface", parent, position + new Vector2(0f, size.y * 0.46f), new Vector2(size.x, 0.20f), new Color(0.20f, 1f, 1f, 0.78f), fallbackSprite, 17);
             AddPulse(surface, 0.006f, 0.16f, 5.6f, 0.4f);
 
+            int currentBands = Mathf.Clamp(Mathf.RoundToInt(size.x / 18f), 10, 34);
+            for (int i = 0; i < currentBands; i++)
+            {
+                float t = i / (float)Mathf.Max(1, currentBands - 1);
+                float x = Mathf.Lerp(position.x - size.x * 0.48f, position.x + size.x * 0.48f, t);
+                float y = position.y + Mathf.Sin(i * 1.37f) * 0.18f;
+                float width = 5.0f + (i % 5) * 1.35f;
+                Color currentColor = i % 3 == 0 ? new Color(0.05f, 0.18f, 0.20f, 0.58f) : (i % 3 == 1 ? new Color(0.24f, 1f, 1f, 0.34f) : new Color(1f, 0.05f, 0.38f, 0.22f));
+                SpriteRenderer current = CreateWorldSprite(name + " Dirty Electric Current Band " + i, parent, new Vector2(x, y), new Vector2(width, 0.07f), currentColor, fallbackSprite, 16);
+                current.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(i * 0.73f) * 5f);
+                AddPulse(current, 0.010f, 0.11f, 3.4f + (i % 4) * 0.35f, i * 0.19f);
+            }
+
             Sprite arcSprite = lightningTrapSprite != null ? lightningTrapSprite : fallbackSprite;
             int arcCount = Mathf.Clamp(Mathf.RoundToInt(size.x / 8f), 10, 46);
             for (int i = 0; i < arcCount; i++)
@@ -2424,6 +2437,25 @@ namespace CyberGuardian.Editor
                 SpriteRenderer warning = CreateWorldSprite(name + " Electric River Warning Line " + i, parent, new Vector2(x, position.y + size.y * 0.55f), new Vector2(5.8f, 0.055f), i % 2 == 0 ? Hex("FF2F83") : Hex("61F7FF"), fallbackSprite, 20);
                 warning.transform.localRotation = Quaternion.Euler(0f, 0f, i % 2 == 0 ? 4f : -4f);
                 AddPulse(warning, 0.01f, 0.18f, 4.9f, i * 0.28f);
+            }
+
+            int wreckCount = Mathf.Clamp(Mathf.RoundToInt(size.x / 26f), 6, 16);
+            for (int i = 0; i < wreckCount; i++)
+            {
+                float x = Mathf.Lerp(position.x - size.x * 0.45f, position.x + size.x * 0.45f, i / (float)Mathf.Max(1, wreckCount - 1));
+                float startY = position.y + size.y * 0.78f + Mathf.Sin(i * 0.81f) * 0.42f;
+                float endY = position.y + size.y * 0.18f + Mathf.Sin(i * 1.31f) * 0.16f;
+                Vector2 cableStart = new Vector2(x - 0.8f + (i % 3) * 0.28f, startY);
+                Vector2 cableEnd = new Vector2(x + 0.45f, endY);
+                CreateCableStrand(name + " Fallen Cable Into River " + i, parent, cableStart, cableEnd, 7 + i % 4, new Color(0.015f, 0.015f, 0.018f, 0.94f), fallbackSprite, 18, true, i * 0.41f);
+                CreateCableStrand(name + " Exposed Live Wire " + i, parent, cableEnd + new Vector2(-0.32f, 0.08f), cableEnd + new Vector2(0.38f, -0.04f), 3, i % 2 == 0 ? new Color(0.30f, 1f, 1f, 0.88f) : new Color(1f, 0.08f, 0.45f, 0.78f), fallbackSprite, 21, false, i * 0.12f);
+
+                SpriteRenderer spark = CreateWorldSprite(name + " Live Cable Spark " + i, parent, cableEnd + new Vector2(0.42f, 0.02f), new Vector2(0.55f, 0.55f), i % 2 == 0 ? Hex("61F7FF") : Hex("FF3B88"), arcSprite, 22);
+                spark.transform.localRotation = Quaternion.Euler(0f, 0f, i * 23f);
+                AddPulse(spark, 0.09f, 0.24f, 8.5f, i * 0.33f);
+
+                SpriteRenderer debris = CreateWorldSprite(name + " Abandoned Metal Debris " + i, parent, new Vector2(x + 1.2f, position.y + size.y * 0.50f + Mathf.Sin(i) * 0.22f), new Vector2(1.3f + (i % 4) * 0.35f, 0.10f), new Color(0.03f, 0.04f, 0.045f, 0.82f), fallbackSprite, 15);
+                debris.transform.localRotation = Quaternion.Euler(0f, 0f, -12f + (i % 5) * 6f);
             }
 
             GameObject zone = new GameObject(name, typeof(BoxCollider2D), typeof(CyberGuardianRecoveryZone));
@@ -2457,6 +2489,7 @@ namespace CyberGuardian.Editor
                 float x = Mathf.Lerp(startX, endX, ratios[i]);
                 float height = 4.1f + (i % 3) * 0.85f;
                 CreateSupportTower(prefix + " Signal Tower " + i, parent, new Vector2(x, baseY + height * 0.5f), height, squareSprite, i);
+                CreateDanglingCableDrop(prefix + " Tower Broken Drop Cable " + i, parent, new Vector2(x + 0.65f, baseY + height - 0.36f), 1.8f + (i % 3) * 0.56f, squareSprite, i);
             }
 
             for (int i = 0; i < ratios.Length - 1; i++)
@@ -2465,6 +2498,7 @@ namespace CyberGuardian.Editor
                 Vector2 b = new Vector2(Mathf.Lerp(startX, endX, ratios[i + 1]) - 1.0f, baseY + 2.75f + ((i + 1) % 2) * 0.62f);
                 CreateCableStrand(prefix + " Broken Data Cable " + i, parent, a, b, 14 + i * 2, i % 2 == 0 ? Hex("61F7FF") : Hex("FF2F83"), squareSprite, 7, true, i * 0.37f);
                 CreateCableStrand(prefix + " Lower Hanging Cable " + i, parent, a + new Vector2(0.2f, -0.52f), b + new Vector2(-0.2f, -0.80f), 11 + i, new Color(0.05f, 0.02f, 0.08f, 0.90f), squareSprite, 6, i % 3 == 0, i * 0.51f);
+                CreateDanglingCableDrop(prefix + " Midspan Abandoned Cable Drop " + i, parent, Vector2.Lerp(a, b, 0.48f) + new Vector2(0f, -0.20f), 1.15f + (i % 2) * 0.42f, squareSprite, i + 8);
             }
 
             for (int i = 0; i < 10; i++)
@@ -2515,6 +2549,37 @@ namespace CyberGuardian.Editor
             }
         }
 
+        private static void CreateDanglingCableDrop(string name, Transform parent, Vector2 anchor, float length, Sprite sprite, int index)
+        {
+            int segments = Mathf.Clamp(Mathf.RoundToInt(length * 5f), 5, 14);
+            Vector2 previous = anchor;
+            for (int i = 0; i < segments; i++)
+            {
+                float t = (i + 1) / (float)segments;
+                Vector2 next = anchor + new Vector2(Mathf.Sin((t + index * 0.17f) * Mathf.PI * 1.6f) * 0.18f, -length * t);
+                Vector2 mid = (previous + next) * 0.5f;
+                Vector2 delta = next - previous;
+                SpriteRenderer sheath = CreateWorldSprite(name + " Sheath Segment " + i, parent, mid, new Vector2(delta.magnitude, 0.055f), new Color(0.015f, 0.018f, 0.022f, 0.92f), sprite, 7);
+                sheath.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg);
+                previous = next;
+            }
+
+            Vector2 tip = previous;
+            for (int i = 0; i < 3; i++)
+            {
+                float side = i - 1f;
+                SpriteRenderer wire = CreateWorldSprite(name + " Exposed Wire " + i, parent, tip + new Vector2(side * 0.08f, -0.08f), new Vector2(0.36f, 0.035f), i == 1 ? Hex("FF3B88") : Hex("61F7FF"), sprite, 10);
+                wire.transform.localRotation = Quaternion.Euler(0f, 0f, -58f + i * 48f);
+                AddPulse(wire, 0.012f, 0.12f, 5.8f, index * 0.23f + i * 0.18f);
+            }
+
+            if (index % 2 == 0)
+            {
+                SpriteRenderer spark = CreateWorldSprite(name + " Occasional Spark", parent, tip + new Vector2(0.08f, -0.18f), new Vector2(0.28f, 0.28f), Hex("61F7FF"), sprite, 11);
+                AddPulse(spark, 0.10f, 0.28f, 8.0f, index * 0.31f);
+            }
+        }
+
         private static GameObject CreateCyberPlatform(string name, Transform parent, Vector2 center, int columns, int rows, Sprite rockTileSprite, Sprite metalCrateSprite, Sprite dataMossSprite, bool metal)
         {
             const float tile = 0.72f;
@@ -2543,7 +2608,7 @@ namespace CyberGuardian.Editor
                 CreateLocalSprite("Data Moss " + x, root.transform, new Vector3(localX, rows * tile * 0.5f + 0.07f, -0.02f), new Vector2(tile * 1.05f, 0.23f), metal ? Hex("6EF7FF") : Hex("5BE85D"), dataMossSprite, 12);
             }
 
-            AddPlatformSupports(root.transform, columns, rows, tile, metal ? Hex("B6F8FF") : Color.white);
+            AddPlatformSupports(root.transform, columns, rows, tile, metal ? Hex("B6F8FF") : Color.white, tileSprite);
             return root;
         }
 
@@ -2575,11 +2640,11 @@ namespace CyberGuardian.Editor
                 CreateLocalSprite("Glow Edge " + x, root.transform, new Vector3(localX, rows * tile * 0.5f + 0.06f, -0.02f), new Vector2(tile * 1.05f, 0.22f), edgeTint, topSprite, 12);
             }
 
-            AddPlatformSupports(root.transform, columns, rows, tile, Color.Lerp(edgeTint, Color.white, 0.58f));
+            AddPlatformSupports(root.transform, columns, rows, tile, Color.Lerp(edgeTint, Color.white, 0.58f), activeTile);
             return root;
         }
 
-        private static void AddPlatformSupports(Transform parent, int columns, int rows, float tile, Color tint)
+        private static void AddPlatformSupports(Transform parent, int columns, int rows, float tile, Color tint, Sprite capSprite)
         {
             Sprite supportSprite = platformSupportSprite != null ? platformSupportSprite : platformSupportAltSprite;
             if (supportSprite == null || columns < 2)
@@ -2589,20 +2654,33 @@ namespace CyberGuardian.Editor
 
             float bottom = -rows * tile * 0.5f;
             float platformWidth = columns * tile;
-            float supportWidth = Mathf.Clamp(platformWidth * 0.90f, 1.65f, 22.0f);
-            float supportTopWorld = parent.position.y + bottom + tile * 0.56f;
+            float supportWidth = Mathf.Clamp(platformWidth * 0.96f, 1.65f, 28.0f);
+            float supportTopWorld = parent.position.y + bottom + tile * 0.82f;
             float supportBottomWorld = currentSupportBaseY;
             float supportHeight = Mathf.Max(0.35f, supportTopWorld - supportBottomWorld);
             float supportCenterLocalY = (supportTopWorld + supportBottomWorld) * 0.5f - parent.position.y;
             SpriteRenderer support = CreateLocalSprite("Single Wide Transparent Pass-Through Support Pillar", parent, new Vector3(0f, supportCenterLocalY, 0.16f), new Vector2(supportWidth, supportHeight), tint, supportSprite, 6);
-            support.color = new Color(tint.r, tint.g, tint.b, 0.32f);
+            support.color = new Color(tint.r, tint.g, tint.b, 0.28f);
 
             SpriteRenderer glow = CreateLocalSprite("Support Pillar Transparent Cyan Power Bus", parent, new Vector3(0f, supportCenterLocalY, 0.10f), new Vector2(supportWidth * 0.16f, supportHeight * 0.92f), new Color(0.25f, 1f, 1f, 0.20f), supportSprite, 7);
             AddPulse(glow, 0.010f, 0.08f, 2.4f, columns * 0.13f);
 
-            float couplerLocalY = bottom - tile * 0.04f;
-            SpriteRenderer coupler = CreateLocalSprite("Support Pillar Transparent Top Coupler", parent, new Vector3(0f, couplerLocalY, 0.08f), new Vector2(supportWidth * 0.96f, tile * 0.34f), new Color(tint.r, tint.g, tint.b, 0.38f), supportSprite, 8);
+            Sprite plateSprite = capSprite != null ? capSprite : supportSprite;
+            float plateY = bottom + tile * 0.08f;
+            SpriteRenderer plate = CreateLocalSprite("Support Pillar Underside Docking Plate", parent, new Vector3(0f, plateY, 0.07f), new Vector2(platformWidth + 0.16f, tile * 0.30f), new Color(tint.r, tint.g, tint.b, 0.46f), plateSprite, 9);
+            AddPulse(plate, 0.004f, 0.035f, 2.1f, columns * 0.05f);
+
+            float couplerLocalY = bottom - tile * 0.02f;
+            SpriteRenderer coupler = CreateLocalSprite("Support Pillar Transparent Top Coupler", parent, new Vector3(0f, couplerLocalY, 0.05f), new Vector2(supportWidth * 0.98f, tile * 0.48f), new Color(tint.r, tint.g, tint.b, 0.34f), supportSprite, 8);
             AddPulse(coupler, 0.006f, 0.05f, 2.8f, columns * 0.09f);
+
+            float braceY = bottom - tile * 0.22f;
+            float braceLength = Mathf.Clamp(platformWidth * 0.24f, 0.82f, 2.4f);
+            float braceInset = Mathf.Min(platformWidth * 0.38f, supportWidth * 0.46f);
+            SpriteRenderer leftBrace = CreateLocalSprite("Support Pillar Left Diagonal Connector", parent, new Vector3(-braceInset * 0.46f, braceY, 0.04f), new Vector2(braceLength, tile * 0.12f), new Color(tint.r, tint.g, tint.b, 0.30f), supportSprite, 8);
+            leftBrace.transform.localRotation = Quaternion.Euler(0f, 0f, 18f);
+            SpriteRenderer rightBrace = CreateLocalSprite("Support Pillar Right Diagonal Connector", parent, new Vector3(braceInset * 0.46f, braceY, 0.04f), new Vector2(braceLength, tile * 0.12f), new Color(tint.r, tint.g, tint.b, 0.30f), supportSprite, 8);
+            rightBrace.transform.localRotation = Quaternion.Euler(0f, 0f, -18f);
         }
 
         private static SpriteRenderer CreateWorldSprite(string name, Transform parent, Vector2 position, Vector2 size, Color color, Sprite sprite, int sortingOrder)
