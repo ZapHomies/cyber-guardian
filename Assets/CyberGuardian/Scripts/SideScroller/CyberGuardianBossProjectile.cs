@@ -9,10 +9,16 @@ namespace CyberGuardian
         public Vector2 velocity = new Vector2(-8f, 0f);
         public int damage = 12;
         public float lifetime = 4f;
+        public string damageSource = "Boss packet attack";
 
         private void Update()
         {
             transform.position += (Vector3)(velocity * Time.deltaTime);
+            if (velocity.sqrMagnitude > 0.01f)
+            {
+                transform.right = velocity.normalized;
+            }
+
             lifetime -= Time.deltaTime;
             if (lifetime <= 0f)
             {
@@ -28,7 +34,7 @@ namespace CyberGuardian
             }
             else if (game != null && other.GetComponent<CyberGuardianPlayerController>() != null)
             {
-                game.DamagePlayer(damage, "Boss packet attack");
+                game.DamagePlayer(damage, damageSource);
                 Destroy(gameObject);
             }
             else if (!other.isTrigger && other.GetComponent<CyberGuardianBossShieldBlock>() == null)

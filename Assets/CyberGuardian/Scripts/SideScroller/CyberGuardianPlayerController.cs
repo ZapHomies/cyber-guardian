@@ -19,6 +19,10 @@ namespace CyberGuardian
         public float boostLift = 1.4f;
         public float boostDuration = 0.16f;
         public float boostCost = 26f;
+        public float flightSpeed = 8.2f;
+        public float flightVerticalSpeed = 7.0f;
+        public float flightBoostSpeed = 14.5f;
+        public float flightSmoothing = 13.5f;
         public float meleeRange = 1.25f;
         public int meleeDamage = 1;
         public GameObject adventureProjectilePrefab;
@@ -38,10 +42,12 @@ namespace CyberGuardian
         private float boostTimer;
         private float attackAnimationTimer;
         private float boostDirection = 1f;
+        private float baseGravityScale = 1f;
         private Vector3 baseVisualScale;
         private bool facingRight = true;
 
         public bool InBossMode { get; set; }
+        public bool FlightMode { get; private set; }
         public int FacingDirection => facingRight ? 1 : -1;
         public float HorizontalInput { get; private set; }
         public bool IsGroundedForAnimation { get; private set; }
@@ -52,6 +58,7 @@ namespace CyberGuardian
         private void Awake()
         {
             body = GetComponent<Rigidbody2D>();
+            baseGravityScale = body != null ? body.gravityScale : 1f;
             if (visualRoot == null)
             {
                 visualRoot = transform;
@@ -67,7 +74,7 @@ namespace CyberGuardian
             {
                 if (body != null)
                 {
-                    body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
+                    body.linearVelocity = FlightMode ? Vector2.zero : new Vector2(0f, body.linearVelocity.y);
                 }
 
                 jumpBufferCounter = 0f;
@@ -82,11 +89,25 @@ namespace CyberGuardian
 
             attackAnimationTimer = Mathf.Max(0f, attackAnimationTimer - Time.deltaTime);
             rangedCooldown = Mathf.Max(0f, rangedCooldown - Time.deltaTime);
-            float horizontal = Input.GetAxisRaw("Horizontal");
-            if (Mathf.Abs(horizontal) < 0.05f)
+            int controlScheme = CyberGuardianMainMenu.GetControlScheme();
+            bool useWasd = controlScheme != 2;
+            bool useArrow = controlScheme != 1;
+            float horizontal = 0f;
+            if (useWasd)
             {
-                horizontal = (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow) ? -1f : 0f)
-                    + (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow) ? 1f : 0f);
+                horizontal += Input.GetKey(KeyCode.A) ? -1f : 0f;
+                horizontal += Input.GetKey(KeyCode.D) ? 1f : 0f;
+            }
+
+            if (useArrow)
+            {
+                horizontal += Input.GetKey(KeyCode.LeftArrow) ? -1f : 0f;
+                horizontal += Input.GetKey(KeyCode.RightArrow) ? 1f : 0f;
+            }
+
+            if (controlScheme == 0 && Mathf.Abs(horizontal) < 0.05f)
+            {
+                horizontal = Input.GetAxisRaw("Horizontal");
             }
 
             HorizontalInput = Mathf.Clamp(horizontal, -1f, 1f);
@@ -96,10 +117,45 @@ namespace CyberGuardian
                 ApplyFacing();
             }
 
+            float vertical = 0f;
+            if (useWasd)
+            {
+                vertical += Input.GetKey(KeyCode.W) ? 1f : 0f;
+                vertical += Input.GetKey(KeyCode.S) ? -1f : 0f;
+            }
+
+            if (useArrow)
+            {
+                vertical += Input.GetKey(KeyCode.UpArrow) ? 1f : 0f;
+                vertical += Input.GetKey(KeyCode.DownArrow) ? -1f : 0f;
+            }
+
+            if (Input.GetKey(KeyCode.Space))
+            {
+                vertical += 1f;
+            }
+
+            if (controlScheme == 0 && Mathf.Abs(vertical) < 0.05f)
+            {
+                vertical = Input.GetAxisRaw("Vertical");
+            }
+
+            bool boostPressed = (controlScheme == 1 && Input.GetKeyDown(KeyCode.LeftShift))
+                || (controlScheme == 2 && Input.GetKeyDown(KeyCode.RightShift))
+                || (controlScheme == 0 && (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.K)));
+            if (FlightMode)
+            {
+                HandleFlightMovement(horizontal, vertical, boostPressed);
+                return;
+            }
+
             bool grounded = IsGrounded();
             IsGroundedForAnimation = grounded;
             coyoteCounter = grounded ? coyoteTime : Mathf.Max(0f, coyoteCounter - Time.deltaTime);
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow))
+            bool jumpPressed = Input.GetKeyDown(KeyCode.Space)
+                || (useWasd && Input.GetKeyDown(KeyCode.W))
+                || (useArrow && Input.GetKeyDown(KeyCode.UpArrow));
+            if (jumpPressed)
             {
                 jumpBufferCounter = jumpBufferTime;
             }
@@ -108,7 +164,7 @@ namespace CyberGuardian
                 jumpBufferCounter = Mathf.Max(0f, jumpBufferCounter - Time.deltaTime);
             }
 
-            if ((Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift) || Input.GetKeyDown(KeyCode.K)) && game.TryUseBoost(boostCost))
+            if (boostPressed && game.TryUseBoost(boostCost))
             {
                 boostTimer = boostDuration;
                 boostDirection = Mathf.Abs(horizontal) > 0.05f ? Mathf.Sign(horizontal) : FacingDirection;
@@ -161,6 +217,69 @@ namespace CyberGuardian
         public void TriggerFireAnimation(float duration)
         {
             attackAnimationTimer = Mathf.Max(attackAnimationTimer, duration);
+        }
+
+        public void SetFlightMode(bool enabled)
+        {
+            if (FlightMode == enabled)
+            {
+                return;
+            }
+
+            FlightMode = enabled;
+            jumpBufferCounter = 0f;
+            coyoteCounter = 0f;
+            boostTimer = 0f;
+            if (body != null)
+            {
+                body.gravityScale = enabled ? 0f : baseGravityScale;
+                body.linearVelocity = enabled ? Vector2.zero : body.linearVelocity;
+            }
+
+            IsGroundedForAnimation = enabled ? false : IsGrounded();
+        }
+
+        private void HandleFlightMovement(float horizontal, float vertical, bool boostPressed)
+        {
+            if (body == null)
+            {
+                return;
+            }
+
+            body.gravityScale = 0f;
+            IsGroundedForAnimation = false;
+            jumpBufferCounter = 0f;
+            coyoteCounter = 0f;
+
+            Vector2 input = new Vector2(Mathf.Clamp(horizontal, -1f, 1f), Mathf.Clamp(vertical, -1f, 1f));
+            if (input.sqrMagnitude > 1f)
+            {
+                input.Normalize();
+            }
+
+            if (boostPressed && game.TryUseBoost(boostCost))
+            {
+                boostTimer = boostDuration;
+                boostDirection = Mathf.Abs(input.x) > 0.05f ? Mathf.Sign(input.x) : FacingDirection;
+                if (Mathf.Abs(input.x) > 0.05f)
+                {
+                    facingRight = input.x > 0f;
+                    ApplyFacing();
+                }
+            }
+
+            boostTimer = Mathf.Max(0f, boostTimer - Time.deltaTime);
+            IsBoosting = boostTimer > 0f;
+            if (IsBoosting)
+            {
+                Vector2 boostVector = input.sqrMagnitude > 0.05f ? input.normalized : new Vector2(boostDirection, 0f);
+                body.linearVelocity = boostVector * flightBoostSpeed;
+            }
+            else
+            {
+                Vector2 targetVelocity = new Vector2(input.x * flightSpeed, input.y * flightVerticalSpeed);
+                body.linearVelocity = Vector2.Lerp(body.linearVelocity, targetVelocity, Time.deltaTime * flightSmoothing);
+            }
         }
 
         private void FireAdventureProjectile()

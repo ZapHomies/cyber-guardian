@@ -22,6 +22,12 @@ namespace CyberGuardian
         public const string SaveBoostKey = "CyberGuardianSaveBoost";
         public const string SaveScoreKey = "CyberGuardianSaveScore";
         public const string ResumeRequestedKey = "CyberGuardianResumeRequested";
+        public const string DeveloperModeKey = "CyberGuardianDeveloperMode";
+        public const string MusicEnabledKey = "CyberGuardianMusicEnabled";
+        public const string SfxEnabledKey = "CyberGuardianSfxEnabled";
+        public const string ControlSchemeKey = "CyberGuardianControlScheme";
+        public const string DeveloperUsername = "developer";
+        public const string DeveloperPassword = "cyberguardian2026";
 
         public string gameplaySceneName = "CyberGuardian_Level01";
         public string difficultySceneName = "CyberGuardian_PilihKesulitan";
@@ -33,11 +39,25 @@ namespace CyberGuardian
         public Button hardButton;
         public Button settingsButton;
         public Button creditsButton;
+        public Button developerButton;
+        public Button developerLoginButton;
+        public Button developerDisableButton;
+        public Button developerCancelButton;
         public Button quitButton;
         public Button settingsBackButton;
+        public Button settingsMusicToggleButton;
+        public Button settingsSfxToggleButton;
+        public Button settingsControlSchemeButton;
         public Button creditsBackButton;
         public GameObject settingsPanel;
         public GameObject creditsPanel;
+        public GameObject developerLoginPanel;
+        public InputField developerUserInput;
+        public InputField developerPasswordInput;
+        public Text developerStatusText;
+        public Text settingsMusicText;
+        public Text settingsSfxText;
+        public Text settingsControlText;
         public Image[] difficultyHighlights;
         public GameObject startTransitionOverlay;
         public Image startTransitionFade;
@@ -56,8 +76,10 @@ namespace CyberGuardian
         private void Awake()
         {
             selectedDifficulty = Mathf.Clamp(PlayerPrefs.GetInt(DifficultyKey, 1), 0, 2);
+            EnsureDefaultPreferences();
             WireButtons();
             HidePanels();
+            ApplyAudioPreferencesToScene();
             Refresh();
         }
 
@@ -83,6 +105,39 @@ namespace CyberGuardian
             WirePanelButton(creditsButton, creditsPanel);
             WireCloseButton(settingsBackButton, settingsPanel);
             WireCloseButton(creditsBackButton, creditsPanel);
+            WireSettingsButton(settingsMusicToggleButton, ToggleMusic);
+            WireSettingsButton(settingsSfxToggleButton, ToggleSfx);
+            WireSettingsButton(settingsControlSchemeButton, CycleControlScheme);
+
+            if (developerButton != null)
+            {
+                developerButton.onClick.RemoveAllListeners();
+                developerButton.onClick.AddListener(ShowDeveloperLogin);
+            }
+
+            if (developerLoginButton != null)
+            {
+                developerLoginButton.onClick.RemoveAllListeners();
+                developerLoginButton.onClick.AddListener(SubmitDeveloperLogin);
+            }
+
+            if (developerDisableButton != null)
+            {
+                developerDisableButton.onClick.RemoveAllListeners();
+                developerDisableButton.onClick.AddListener(DisableDeveloperMode);
+            }
+
+            if (developerCancelButton != null)
+            {
+                developerCancelButton.onClick.RemoveAllListeners();
+                developerCancelButton.onClick.AddListener(() =>
+                {
+                    if (developerLoginPanel != null)
+                    {
+                        developerLoginPanel.SetActive(false);
+                    }
+                });
+            }
 
             if (quitButton != null)
             {
@@ -128,6 +183,91 @@ namespace CyberGuardian
         {
             HidePanels();
             panel.SetActive(true);
+        }
+
+        private void ShowDeveloperLogin()
+        {
+            HidePanels();
+            if (developerLoginPanel != null)
+            {
+                developerLoginPanel.SetActive(true);
+            }
+
+            if (developerStatusText != null)
+            {
+                developerStatusText.text = IsDeveloperModeEnabled()
+                    ? "Mode developer aktif. Tekan NONAKTIFKAN untuk kembali ke mode normal."
+                    : "Masuk untuk membuka HP dan energi tanpa batas.";
+            }
+
+            if (developerPasswordInput != null)
+            {
+                developerPasswordInput.text = string.Empty;
+            }
+
+            Refresh();
+        }
+
+        private void SubmitDeveloperLogin()
+        {
+            string username = developerUserInput != null ? developerUserInput.text.Trim() : string.Empty;
+            string password = developerPasswordInput != null ? developerPasswordInput.text : string.Empty;
+            if (username == DeveloperUsername && password == DeveloperPassword)
+            {
+                PlayerPrefs.SetInt(DeveloperModeKey, 1);
+                PlayerPrefs.Save();
+                if (developerStatusText != null)
+                {
+                    developerStatusText.text = "Mode developer aktif. HP, energi, dan petunjuk jawaban terbuka.";
+                }
+
+                Refresh();
+                return;
+            }
+
+            PlayerPrefs.SetInt(DeveloperModeKey, 0);
+            PlayerPrefs.Save();
+            if (developerStatusText != null)
+            {
+                developerStatusText.text = "Login gagal. Periksa username dan password.";
+            }
+
+            Refresh();
+        }
+
+        private void DisableDeveloperMode()
+        {
+            PlayerPrefs.SetInt(DeveloperModeKey, 0);
+            PlayerPrefs.Save();
+            if (developerStatusText != null)
+            {
+                developerStatusText.text = "Mode developer nonaktif. Game kembali memakai HP, energi, dan kuis normal.";
+            }
+
+            Refresh();
+        }
+
+        private void ToggleMusic()
+        {
+            PlayerPrefs.SetInt(MusicEnabledKey, IsMusicEnabled() ? 0 : 1);
+            PlayerPrefs.Save();
+            ApplyAudioPreferencesToScene();
+            Refresh();
+        }
+
+        private void ToggleSfx()
+        {
+            PlayerPrefs.SetInt(SfxEnabledKey, IsSfxEnabled() ? 0 : 1);
+            PlayerPrefs.Save();
+            ApplyAudioPreferencesToScene();
+            Refresh();
+        }
+
+        private void CycleControlScheme()
+        {
+            PlayerPrefs.SetInt(ControlSchemeKey, (GetControlScheme() + 1) % 3);
+            PlayerPrefs.Save();
+            Refresh();
         }
 
         private void SelectDifficulty(int index)
@@ -261,7 +401,14 @@ namespace CyberGuardian
                 settingsButton,
                 creditsButton,
                 quitButton,
+                developerButton,
+                developerLoginButton,
+                developerDisableButton,
+                developerCancelButton,
                 settingsBackButton,
+                settingsMusicToggleButton,
+                settingsSfxToggleButton,
+                settingsControlSchemeButton,
                 creditsBackButton
             };
 
@@ -285,6 +432,11 @@ namespace CyberGuardian
             {
                 creditsPanel.SetActive(false);
             }
+
+            if (developerLoginPanel != null)
+            {
+                developerLoginPanel.SetActive(false);
+            }
         }
 
         private void QuitGame()
@@ -301,11 +453,44 @@ namespace CyberGuardian
             if (selectedDifficultyText != null)
             {
                 selectedDifficultyText.text = "KESULITAN: " + difficultyNames[selectedDifficulty].ToUpperInvariant();
+                if (IsDeveloperModeEnabled())
+                {
+                    selectedDifficultyText.text += "  |  MODE DEVELOPER AKTIF";
+                }
             }
 
             if (continueButton != null)
             {
                 continueButton.interactable = HasSavedProgress() && !startingGame;
+            }
+
+            SetButtonLabel(developerButton, IsDeveloperModeEnabled() ? "DEV: AKTIF" : "MODE DEV");
+            SetButtonLabel(settingsMusicToggleButton, IsMusicEnabled() ? "MUSIK: AKTIF" : "MUSIK: MATI");
+            SetButtonLabel(settingsSfxToggleButton, IsSfxEnabled() ? "SFX: AKTIF" : "SFX: MATI");
+            SetButtonLabel(settingsControlSchemeButton, "KONTROL: " + GetControlSchemeName().ToUpperInvariant());
+
+            if (settingsMusicText != null)
+            {
+                settingsMusicText.text = IsMusicEnabled()
+                    ? "Musik dan video menu aktif."
+                    : "Musik dimatikan, efek suara tetap mengikuti pengaturan SFX.";
+            }
+
+            if (settingsSfxText != null)
+            {
+                settingsSfxText.text = IsSfxEnabled()
+                    ? "Efek suara serangan, lompat, kuis, dan tombol aktif."
+                    : "Efek suara gameplay dimatikan.";
+            }
+
+            if (settingsControlText != null)
+            {
+                settingsControlText.text = GetControlSchemeHint();
+            }
+
+            if (developerDisableButton != null)
+            {
+                developerDisableButton.gameObject.SetActive(IsDeveloperModeEnabled());
             }
 
             if (difficultyHighlights == null)
@@ -331,6 +516,69 @@ namespace CyberGuardian
             return PlayerPrefs.GetInt(SaveExistsKey, 0) == 1 && !string.IsNullOrEmpty(PlayerPrefs.GetString(SaveSceneKey, string.Empty));
         }
 
+        public static bool IsDeveloperModeEnabled()
+        {
+            return PlayerPrefs.GetInt(DeveloperModeKey, 0) == 1;
+        }
+
+        public static bool IsMusicEnabled()
+        {
+            return PlayerPrefs.GetInt(MusicEnabledKey, 1) == 1;
+        }
+
+        public static bool IsSfxEnabled()
+        {
+            return PlayerPrefs.GetInt(SfxEnabledKey, 1) == 1;
+        }
+
+        public static int GetControlScheme()
+        {
+            return Mathf.Clamp(PlayerPrefs.GetInt(ControlSchemeKey, 0), 0, 2);
+        }
+
+        public static string GetControlSchemeName()
+        {
+            switch (GetControlScheme())
+            {
+                case 1:
+                    return "WASD";
+                case 2:
+                    return "Arrow";
+                default:
+                    return "Hybrid";
+            }
+        }
+
+        public static string GetControlSchemeHint()
+        {
+            switch (GetControlScheme())
+            {
+                case 1:
+                    return "GERAK: A/D  LOMPAT: W/SPACE  BOOST: LEFT SHIFT  SERANG: J  TEMBAK: L/KLIK";
+                case 2:
+                    return "GERAK: PANAH KIRI/KANAN  LOMPAT: PANAH ATAS/SPACE  BOOST: RIGHT SHIFT  SERANG: J  TEMBAK: L/KLIK";
+                default:
+                    return "GERAK: A/D ATAU PANAH  LOMPAT: SPACE/W/PANAH ATAS  BOOST: SHIFT/K  SERANG: J  TEMBAK: L/KLIK";
+            }
+        }
+
+        public static void ApplyAudioPreferencesToScene()
+        {
+            AudioSource[] sources = Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Include);
+            bool musicEnabled = IsMusicEnabled();
+            bool sfxEnabled = IsSfxEnabled();
+            for (int i = 0; i < sources.Length; i++)
+            {
+                AudioSource source = sources[i];
+                if (source == null)
+                {
+                    continue;
+                }
+
+                source.mute = source.loop ? !musicEnabled : !sfxEnabled;
+            }
+        }
+
         public static void ClearSavedProgress()
         {
             PlayerPrefs.SetInt(SaveExistsKey, 0);
@@ -343,6 +591,49 @@ namespace CyberGuardian
             PlayerPrefs.DeleteKey(SaveLivesKey);
             PlayerPrefs.DeleteKey(SaveBoostKey);
             PlayerPrefs.DeleteKey(SaveScoreKey);
+        }
+
+        private static void EnsureDefaultPreferences()
+        {
+            if (!PlayerPrefs.HasKey(MusicEnabledKey))
+            {
+                PlayerPrefs.SetInt(MusicEnabledKey, 1);
+            }
+
+            if (!PlayerPrefs.HasKey(SfxEnabledKey))
+            {
+                PlayerPrefs.SetInt(SfxEnabledKey, 1);
+            }
+
+            if (!PlayerPrefs.HasKey(ControlSchemeKey))
+            {
+                PlayerPrefs.SetInt(ControlSchemeKey, 0);
+            }
+        }
+
+        private static void WireSettingsButton(Button button, UnityEngine.Events.UnityAction action)
+        {
+            if (button == null || action == null)
+            {
+                return;
+            }
+
+            button.onClick.RemoveAllListeners();
+            button.onClick.AddListener(action);
+        }
+
+        private static void SetButtonLabel(Button button, string text)
+        {
+            if (button == null)
+            {
+                return;
+            }
+
+            Text label = button.GetComponentInChildren<Text>(true);
+            if (label != null)
+            {
+                label.text = text;
+            }
         }
     }
 }

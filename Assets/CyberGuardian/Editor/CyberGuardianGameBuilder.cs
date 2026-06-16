@@ -26,6 +26,8 @@ namespace CyberGuardian.Editor
         private const string BossProjectilePrefabPath = "Assets/CyberGuardian/Prefabs/Projectiles/BossPacketProjectile.prefab";
         private const string PlayerSpriteFolder = "Assets/CyberGuardian/Art/Player/CyberGuardianSprites";
         private const string EnemySpriteFolder = "Assets/CyberGuardian/Art/Enemies/BasicEnemySprites";
+        private const string Level03WingedBossSpriteFolder = "Assets/CyberGuardian/Art/Bosses/L03WingedMalware";
+        private const string GroundBossSpriteFolder = "Assets/CyberGuardian/Art/Bosses/GroundBoss";
 
         private const string VirusSpritePath = "Assets/CyberGuardian/Art/Enemies/VirusBigPack/png1.png";
         private const string VirusAltSpritePath = "Assets/CyberGuardian/Art/Enemies/VirusBigPack/png18.png";
@@ -38,7 +40,49 @@ namespace CyberGuardian.Editor
         private const string PlatformSupportSpritePath = "Assets/CyberGuardian/assets/katak/tiang_2-removebg-preview.png";
         private const string PlatformSupportAltSpritePath = "Assets/CyberGuardian/assets/katak/tiang-removebg-preview.png";
         private const string LightningTrapSpritePath = "Assets/CyberGuardian/assets/katak/lightning/lightning_v2_1.png";
+        private const string LightningTrapFolder = "Assets/CyberGuardian/assets/katak/lightning";
         private const string ReferenceTowerLayoutSpritePath = "Assets/CyberGuardian/assets/katak/Gemini_Generated_Image_u4jv2pu4jv2pu4jv.png";
+        private const string KatakAssetFolder = "Assets/CyberGuardian/assets/katak";
+        private const string CitySkylineBackPath = "Assets/CyberGuardian/assets/katak/city skyline/Layers/back.png";
+        private const string CitySkylineBuildingsPath = "Assets/CyberGuardian/assets/katak/city skyline/Layers/buildings.png";
+        private const string CitySkylineFrontPath = "Assets/CyberGuardian/assets/katak/city skyline/Layers/front.png";
+        private const string DamagedCableSpritePath = "Assets/CyberGuardian/assets/katak/Pixel_art_damaged_electrical_cable_blac/rotations/unknown.png";
+        private const string CentralCityBuildingsPath = "Assets/CyberGuardian/assets/Sidescroller Shooter - Central City/Social/Buildings.png";
+        private const string CentralCityPropsPath = "Assets/CyberGuardian/assets/Sidescroller Shooter - Central City/Social/Props-01.png";
+        private const string CentralCityTilesPath = "Assets/CyberGuardian/assets/Sidescroller Shooter - Central City/Social/Tiles.png";
+        private const string CentralCityBackgroundPropsPath = "Assets/CyberGuardian/assets/Sidescroller Shooter - Central City/Social/Background Props.png";
+        private const string StreetV1BackBuildingsPath = "Assets/CyberGuardian/assets/cyberpunk-street-files/cyberpunk-street-files/Assets/Version 1/PNG/layers/back-buildings.png";
+        private const string StreetV1FarBuildingsPath = "Assets/CyberGuardian/assets/cyberpunk-street-files/cyberpunk-street-files/Assets/Version 1/PNG/layers/far-buildings.png";
+        private const string StreetV1ForegroundPath = "Assets/CyberGuardian/assets/cyberpunk-street-files/cyberpunk-street-files/Assets/Version 1/PNG/layers/foreground.png";
+        private const string StreetV2BackPath = "Assets/CyberGuardian/assets/cyberpunk-street-files/cyberpunk-street-files/Assets/Version 2/Layers/back.png";
+        private const string StreetV2MiddlePath = "Assets/CyberGuardian/assets/cyberpunk-street-files/cyberpunk-street-files/Assets/Version 2/Layers/middle.png";
+        private const string StreetV2ForegroundPath = "Assets/CyberGuardian/assets/cyberpunk-street-files/cyberpunk-street-files/Assets/Version 2/Layers/foreground-empty.png";
+        private const string NewAssetsFolder = "Assets/CyberGuardian/assets/new";
+        private const string ActionCityAssetsPath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Assets/Assets_City.png";
+        private const string ActionCitySocialPath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Social/Assets_city.png";
+        private const string ActionCityMockupPath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Social/MockUp-01.png";
+        private const string ActionCityTestOnePath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Social/Test_city_1.png";
+        private const string ActionCityTestTwoPath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Social/Test_city_2.png";
+        private const string MineTilesetPath = NewAssetsFolder + "/[FREE] Mine Tileset/FREE/5. Mine Tileset - Starter Pack 32p/1_Mine_Tileset_1.png";
+        private const string MineTilesetAltPath = NewAssetsFolder + "/[FREE] Mine Tileset/FREE/5. Mine Tileset - Starter Pack 32p/Mine_Tileset_1B.png";
+        private const string MineBackgroundPath = NewAssetsFolder + "/[FREE] Mine Tileset/FREE/5. Mine Tileset - Starter Pack 32p/2_Mine_Tileset_1_Background.png";
+        private const string MineFarBackgroundPath = NewAssetsFolder + "/[FREE] Mine Tileset/FREE/5. Mine Tileset - Starter Pack 32p/3_Far_Background_Tile.png";
+        private const string MineForegroundPath = NewAssetsFolder + "/[FREE] Mine Tileset/FREE/5. Mine Tileset - Starter Pack 32p/4_Foreground_1_Tile.png";
+        private const string MineForegroundAltPath = NewAssetsFolder + "/[FREE] Mine Tileset/FREE/5. Mine Tileset - Starter Pack 32p/4_Foreground_1B_Tile.png";
+        private const string ElectricIsoFolder = NewAssetsFolder + "/ELECTRIC_isoBlocks21/isoBlocks21";
+        private const string DlaFolder = NewAssetsFolder + "/dla (1)";
+        private const string BonesBackgroundFolder = NewAssetsFolder + "/bones/bones/library/beijing";
+        private const string ProjectileTextureFolder = NewAssetsFolder + "/projectile/projectiles/projectiles/textures";
+        private const string ProjectileFlameFolder = NewAssetsFolder + "/projectile/flames/flames";
+        private const string HpBarFolder = NewAssetsFolder + "/HP_Bar/HP_Bar";
+        private const string HpBarBackPath = HpBarFolder + "/bg.png";
+        private const string HpBarRedPath = HpBarFolder + "/red.png";
+        private const string HpBarBluePath = HpBarFolder + "/blue.png";
+        private const string HpBarGreenPath = HpBarFolder + "/green.png";
+        private const string HeartSpriteSheetPath = NewAssetsFolder + "/coins-chests-etc-2-0-noborders.png";
+        private const string HeartIconSpritePath = GeneratedArtFolder + "/cg_ui_life_heart.png";
+        private const string ActionCityShotGifPath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Legacy Action Pack - CHARACTER/Gifs/Shot.gif";
+        private const string ActionCityShotSheetPath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Legacy Action Pack - CHARACTER/Sheets/Shot-Sheet.png";
         private const string FlyingMonsterEastSpritePath = "Assets/CyberGuardian/assets/katak/Monster/Monster terbang east.png";
         private const string FlyingMonsterWestSpritePath = "Assets/CyberGuardian/assets/katak/Monster/Monster terbang west.png";
         private const string BossGameplaySpritePath = "Assets/CyberGuardian/assets/katak/Monster/boss 1.png";
@@ -53,6 +97,9 @@ namespace CyberGuardian.Editor
         private const string Level01MusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Level_01_Data_Forest.wav";
         private const string Level02MusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Level_02_Server_Ruins.wav";
         private const string Level03MusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Level_03_Code_Abyss.wav";
+        private const string NewLevel01MusicPath = NewAssetsFolder + "/DavidKBD - Electric Pulse - 01 - Electric Pulse-full.ogg";
+        private const string NewLevel02MusicPath = NewAssetsFolder + "/DavidKBD - Electric Pulse - 02 - Digital Horizon-full.ogg";
+        private const string NewLevel03MusicPath = NewAssetsFolder + "/DavidKBD - Electric Pulse - 10 - Synthetic Power Surge-full.wav";
         private const string BossMusicPath = "Assets/CyberGuardian/Audio/BGM/BGM_Boss_Encounter.wav";
         private const string NamedSfxFolder = "Assets/CyberGuardian/Audio/SFX/Named/";
         private const string MeleeSfxPath = NamedSfxFolder + "SFX_Player_Melee.wav";
@@ -71,11 +118,21 @@ namespace CyberGuardian.Editor
         private static Sprite platformSupportSprite;
         private static Sprite platformSupportAltSprite;
         private static Sprite lightningTrapSprite;
+        private static Sprite[] lightningTrapFrames;
+        private static Sprite[] monsterAuraFrames;
+        private static Sprite[] projectileDlaFrames;
+        private static Sprite[] projectileRadialFrames;
+        private static Sprite[] projectileTrailFrames;
+        private static Sprite[] projectileLightningFrames;
+        private static Sprite[] projectileFlameFrames;
+        private static Sprite slingshotShotSprite;
         private static Sprite referenceTowerLayoutSprite;
         private static Sprite flyingMonsterEastSprite;
         private static Sprite flyingMonsterWestSprite;
         private static Sprite bossGameplaySprite;
         private static Sprite bossGameplaySideSprite;
+        private static Sprite[] level03WingedBossFrames;
+        private static Sprite[] groundBossAttackFrames;
         private static Sprite bossDialoguePortraitSprite;
         private static Sprite bossDialogueIntroSprite;
         private static Sprite dialogueBoxSprite;
@@ -113,6 +170,52 @@ namespace CyberGuardian.Editor
             public Sprite UiMenuHeader;
             public Sprite UiSkullMark;
             public Sprite QuizBlock;
+            public Sprite CitySkylineBack;
+            public Sprite CitySkylineBuildings;
+            public Sprite CitySkylineFront;
+            public Sprite CentralCityBuildings;
+            public Sprite CentralCityProps;
+            public Sprite CentralCityTiles;
+            public Sprite CentralCityBackgroundProps;
+            public Sprite StreetV1BackBuildings;
+            public Sprite StreetV1FarBuildings;
+            public Sprite StreetV1Foreground;
+            public Sprite StreetV2Back;
+            public Sprite StreetV2Middle;
+            public Sprite StreetV2Foreground;
+            public Sprite DamagedCable;
+            public Sprite[] RustedPanels;
+            public Sprite[] LightningFrames;
+            public Sprite ActionCityAssets;
+            public Sprite ActionCitySocial;
+            public Sprite ActionCityMockup;
+            public Sprite ActionCityTestOne;
+            public Sprite ActionCityTestTwo;
+            public Sprite MineTileset;
+            public Sprite MineTilesetAlt;
+            public Sprite MineBackground;
+            public Sprite MineFarBackground;
+            public Sprite MineForeground;
+            public Sprite MineForegroundAlt;
+            public Sprite[] ElectricWires;
+            public Sprite[] ElectricTesla;
+            public Sprite[] ElectricPcb;
+            public Sprite[] ElectricFaraday;
+            public Sprite[] DlaFull;
+            public Sprite[] DlaSprites;
+            public Sprite[] BoneBackgroundFrames;
+            public Sprite[] ProjectileRadials;
+            public Sprite[] ProjectileTrails;
+            public Sprite[] ProjectileLightning;
+            public Sprite[] ProjectileFlares;
+            public Sprite[] ProjectileFlames;
+            public Sprite HpBarBack;
+            public Sprite HpBarRed;
+            public Sprite HpBarBlue;
+            public Sprite HpBarGreen;
+            public Sprite LifeHeartIcon;
+            public Sprite ShotGif;
+            public Sprite ShotSheet;
         }
 
         [MenuItem("Cyber Guardian/Bangun Semua Scene Game")]
@@ -131,6 +234,13 @@ namespace CyberGuardian.Editor
             Sprite sawBladeSprite = EnsureGeneratedSprite(GeneratedArtFolder + "/cg_saw_blade.png", TextureShape.SawBlade);
             Sprite dataBlobSprite = EnsureGeneratedSprite(GeneratedArtFolder + "/cg_data_cloud.png", TextureShape.DataCloud);
             CyberHorrorAssetSprites horrorSprites = EnsureCyberHorrorSprites();
+            monsterAuraFrames = horrorSprites != null ? horrorSprites.BoneBackgroundFrames : null;
+            projectileDlaFrames = horrorSprites != null && horrorSprites.DlaSprites != null && horrorSprites.DlaSprites.Length > 0 ? horrorSprites.DlaSprites : (horrorSprites != null ? horrorSprites.DlaFull : null);
+            projectileRadialFrames = horrorSprites != null ? horrorSprites.ProjectileRadials : null;
+            projectileTrailFrames = horrorSprites != null ? horrorSprites.ProjectileTrails : null;
+            projectileLightningFrames = horrorSprites != null ? horrorSprites.ProjectileLightning : null;
+            projectileFlameFrames = horrorSprites != null ? horrorSprites.ProjectileFlames : null;
+            slingshotShotSprite = horrorSprites != null ? (horrorSprites.ShotGif != null ? horrorSprites.ShotGif : horrorSprites.ShotSheet) : null;
             Sprite virusSprite = EnsureImportedSprite(VirusSpritePath);
             Sprite virusAltSprite = EnsureImportedSprite(VirusAltSpritePath);
             Sprite projectileSprite = EnsureImportedSprite(ProjectileSpritePath);
@@ -142,11 +252,14 @@ namespace CyberGuardian.Editor
             platformSupportSprite = EnsureImportedSprite(PlatformSupportSpritePath);
             platformSupportAltSprite = EnsureImportedSprite(PlatformSupportAltSpritePath);
             lightningTrapSprite = EnsureImportedSprite(LightningTrapSpritePath);
+            lightningTrapFrames = horrorSprites != null ? horrorSprites.LightningFrames : null;
             referenceTowerLayoutSprite = EnsureImportedSprite(ReferenceTowerLayoutSpritePath);
             flyingMonsterEastSprite = EnsureImportedSprite(FlyingMonsterEastSpritePath);
             flyingMonsterWestSprite = EnsureImportedSprite(FlyingMonsterWestSpritePath);
             bossGameplaySprite = EnsureImportedSprite(BossGameplaySpritePath);
             bossGameplaySideSprite = EnsureImportedSprite(BossGameplaySideSpritePath);
+            level03WingedBossFrames = EnsureImportedSpriteSequence(Level03WingedBossSpriteFolder + "/winged_malware_boss_", 6);
+            groundBossAttackFrames = EnsureImportedSpriteSequence(GroundBossSpriteFolder + "/ground_boss_attack_", 6);
             bossDialoguePortraitSprite = EnsureImportedSprite(BossDialoguePortraitSpritePath);
             bossDialogueIntroSprite = EnsureImportedSprite(BossDialogueIntroSpritePath);
             dialogueBoxSprite = EnsureImportedSprite(DialogueBoxSpritePath, new Vector4(40f, 40f, 40f, 40f));
@@ -208,10 +321,11 @@ namespace CyberGuardian.Editor
             menu.creditsButton = AddButton("Credits Button", canvasObject.transform, new Vector2(-760f, -382f), new Vector2(290f, 54f), "KREDIT", 18, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.continueButton = AddButton("Continue Button", canvasObject.transform, new Vector2(-380f, -430f), new Vector2(300f, 58f), "LANJUTKAN", 19, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.startButton = AddButton("Start Button", canvasObject.transform, new Vector2(0f, -468f), new Vector2(318f, 64f), "MULAI", 27, font, Hex("08181D"), Color.white, activeButton, out _, false);
+            menu.developerButton = AddButton("Developer Mode Button", canvasObject.transform, new Vector2(0f, -382f), new Vector2(260f, 50f), "MODE DEV", 17, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.settingsButton = AddButton("Settings Button", canvasObject.transform, new Vector2(380f, -430f), new Vector2(300f, 58f), "PENGATURAN", 18, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.quitButton = AddButton("Quit Button", canvasObject.transform, new Vector2(760f, -382f), new Vector2(290f, 54f), "KELUAR", 19, font, Hex("160810"), Color.white, dangerButton, out _, false);
 
-            BuildMenuInfoPanels(canvasObject.transform, menu, panelFrame, activeButton, font);
+            BuildMenuInfoPanels(canvasObject.transform, menu, horrorSprites, panelFrame, activeButton, dangerButton, font);
             BuildMenuStartTransition(canvasObject.transform, menu, panelFrame, circuitSprite, font);
 
             EditorSceneManager.SaveScene(scene, MainMenuScenePath);
@@ -323,31 +437,48 @@ namespace CyberGuardian.Editor
             }
         }
 
-        private static void BuildMenuInfoPanels(Transform parent, CyberGuardianMainMenu menu, Sprite panelSprite, Sprite buttonSprite, Font font)
+        private static void BuildMenuInfoPanels(Transform parent, CyberGuardianMainMenu menu, CyberHorrorAssetSprites horrorSprites, Sprite panelSprite, Sprite buttonSprite, Sprite dangerButton, Font font)
         {
             GameObject settingsPanel = CreateOverlayPanel("Settings Overlay", parent);
             AddStretchImage("Settings Dim", settingsPanel.transform, new Color(0f, 0f, 0f, 0.58f), panelSprite);
-            AddPanel("Settings Window", settingsPanel.transform, new Vector2(0f, 0f), new Vector2(680f, 420f), Color.black, panelSprite, 0.92f);
-            AddText("Settings Title", settingsPanel.transform, new Vector2(0f, 146f), new Vector2(520f, 48f), "PENGATURAN", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Settings Audio", settingsPanel.transform, new Vector2(0f, 74f), new Vector2(500f, 34f), "AUDIO: AKTIF", 20, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Settings Control", settingsPanel.transform, new Vector2(0f, 22f), new Vector2(600f, 34f), "GERAK: A/D   LOMPAT: SPACE   SERANG: J   ENERGI: SHIFT", 17, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Settings Ranged", settingsPanel.transform, new Vector2(0f, -30f), new Vector2(600f, 34f), "TEMBAK: L ATAU KLIK KIRI   PAUSE: P / ESC", 17, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Settings Note", settingsPanel.transform, new Vector2(0f, -88f), new Vector2(580f, 46f), "Blok kuis membuka jalur serangan saat melawan bos.", 16, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Settings Difficulty Note", settingsPanel.transform, new Vector2(0f, -138f), new Vector2(580f, 34f), "Kesulitan dipilih setelah tombol MULAI.", 16, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            menu.settingsBackButton = AddButton("Settings Back Button", settingsPanel.transform, new Vector2(0f, -184f), new Vector2(220f, 52f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            GameObject settingsWindow = AddPanel("Settings Window", settingsPanel.transform, new Vector2(0f, 0f), new Vector2(900f, 600f), Color.black, panelSprite, 0.92f).gameObject;
+            AddText("Settings Title", settingsWindow.transform, new Vector2(0f, 218f), new Vector2(620f, 54f), "PENGATURAN", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Settings Subtitle", settingsWindow.transform, new Vector2(0f, 174f), new Vector2(680f, 30f), "Atur audio dan cara kontrol sebelum memasuki sistem.", 16, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.settingsMusicToggleButton = AddButton("Settings Music Toggle Button", settingsWindow.transform, new Vector2(-220f, 92f), new Vector2(270f, 54f), "MUSIK: AKTIF", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            menu.settingsSfxToggleButton = AddButton("Settings SFX Toggle Button", settingsWindow.transform, new Vector2(220f, 92f), new Vector2(270f, 54f), "SFX: AKTIF", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            menu.settingsMusicText = AddText("Settings Music Detail", settingsWindow.transform, new Vector2(-220f, 42f), new Vector2(330f, 46f), "Musik dan video menu aktif.", 14, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.settingsSfxText = AddText("Settings SFX Detail", settingsWindow.transform, new Vector2(220f, 42f), new Vector2(330f, 46f), "Efek suara gameplay aktif.", 14, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.settingsControlSchemeButton = AddButton("Settings Control Scheme Button", settingsWindow.transform, new Vector2(0f, -54f), new Vector2(430f, 58f), "KONTROL: HYBRID", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            menu.settingsControlText = AddText("Settings Control Detail", settingsWindow.transform, new Vector2(0f, -122f), new Vector2(720f, 58f), CyberGuardianMainMenu.GetControlSchemeHint(), 14, Hex("DDFBFF"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            AddText("Settings Note", settingsWindow.transform, new Vector2(0f, -190f), new Vector2(720f, 40f), "Pause tetap memakai P atau ESC. Pilihan kontrol tersimpan otomatis.", 14, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.settingsBackButton = AddButton("Settings Back Button", settingsWindow.transform, new Vector2(0f, -246f), new Vector2(240f, 54f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
             menu.settingsPanel = settingsPanel;
             settingsPanel.SetActive(false);
 
             GameObject creditsPanel = CreateOverlayPanel("Credits Overlay", parent);
             AddStretchImage("Credits Dim", creditsPanel.transform, new Color(0f, 0f, 0f, 0.58f), panelSprite);
-            AddPanel("Credits Window", creditsPanel.transform, new Vector2(0f, 0f), new Vector2(680f, 350f), Color.black, panelSprite, 0.92f);
-            AddText("Credits Title", creditsPanel.transform, new Vector2(0f, 112f), new Vector2(540f, 48f), "KREDIT", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Credits Line A", creditsPanel.transform, new Vector2(0f, 44f), new Vector2(560f, 34f), "PROTOTYPE CYBER GUARDIAN", 20, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Credits Line B", creditsPanel.transform, new Vector2(0f, -4f), new Vector2(560f, 34f), "PEMBANGUN ADEGAN UNITY DAN ASSET UI CYBER", 17, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Credits Line C", creditsPanel.transform, new Vector2(0f, -52f), new Vector2(560f, 34f), "TEMA: PETUALANGAN SAMPING DAN KUIS KEAMANAN CYBER", 17, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            menu.creditsBackButton = AddButton("Credits Back Button", creditsPanel.transform, new Vector2(0f, -130f), new Vector2(220f, 52f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            GameObject creditsWindow = AddPanel("Credits Window", creditsPanel.transform, new Vector2(0f, 0f), new Vector2(760f, 470f), Color.black, panelSprite, 0.92f).gameObject;
+            AddText("Credits Title", creditsWindow.transform, new Vector2(0f, 150f), new Vector2(540f, 48f), "KREDIT", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Credits Line A", creditsWindow.transform, new Vector2(0f, 78f), new Vector2(580f, 34f), "PROTOTYPE CYBER GUARDIAN", 20, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            AddText("Credits Line B", creditsWindow.transform, new Vector2(0f, 24f), new Vector2(600f, 34f), "ASSET UI, CARD, AUDIO, DAN SPRITE DITERAPKAN KE UNITY", 16, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            AddText("Credits Line C", creditsWindow.transform, new Vector2(0f, -30f), new Vector2(620f, 44f), "TEMA: PETUALANGAN 2D CYBER, KUIS KEAMANAN, DAN BOSS SLINGSHOT", 16, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.creditsBackButton = AddButton("Credits Back Button", creditsWindow.transform, new Vector2(0f, -156f), new Vector2(220f, 52f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
             menu.creditsPanel = creditsPanel;
             creditsPanel.SetActive(false);
+
+            GameObject developerPanel = CreateOverlayPanel("Developer Login Overlay", parent);
+            AddStretchImage("Developer Login Dim", developerPanel.transform, new Color(0f, 0f, 0f, 0.62f), panelSprite);
+            GameObject developerWindow = AddPanel("Developer Window", developerPanel.transform, new Vector2(0f, 0f), new Vector2(820f, 540f), Color.black, panelSprite, 0.92f).gameObject;
+            AddText("Developer Login Title", developerWindow.transform, new Vector2(0f, 190f), new Vector2(560f, 48f), "MODE DEVELOPER", 34, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Developer Login Body", developerWindow.transform, new Vector2(0f, 136f), new Vector2(640f, 42f), "Masuk untuk uji game dengan HP, energi, dan petunjuk jawaban tanpa batas.", 16, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.developerUserInput = AddInputField("Developer Username Input", developerWindow.transform, new Vector2(0f, 58f), new Vector2(500f, 48f), "username", 18, font, Hex("08181D"), Color.white, buttonSprite, false);
+            menu.developerPasswordInput = AddInputField("Developer Password Input", developerWindow.transform, new Vector2(0f, -8f), new Vector2(500f, 48f), "password", 18, font, Hex("08181D"), Color.white, buttonSprite, true);
+            menu.developerStatusText = AddText("Developer Login Status", developerWindow.transform, new Vector2(0f, -72f), new Vector2(640f, 44f), "Akun uji: developer", 15, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.developerLoginButton = AddButton("Developer Login Button", developerWindow.transform, new Vector2(-230f, -156f), new Vector2(190f, 52f), "MASUK", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            menu.developerDisableButton = AddButton("Developer Disable Button", developerWindow.transform, new Vector2(0f, -156f), new Vector2(210f, 52f), "NONAKTIFKAN", 15, font, Hex("160810"), Color.white, dangerButton != null ? dangerButton : buttonSprite, out _, false);
+            menu.developerCancelButton = AddButton("Developer Cancel Button", developerWindow.transform, new Vector2(230f, -156f), new Vector2(190f, 52f), "BATAL", 18, font, Hex("160810"), Color.white, dangerButton != null ? dangerButton : buttonSprite, out _, false);
+            menu.developerLoginPanel = developerPanel;
+            developerPanel.SetActive(false);
         }
 
         private static void BuildMenuStartTransition(Transform parent, CyberGuardianMainMenu menu, Sprite panelSprite, Sprite circuitSprite, Font font)
@@ -466,6 +597,7 @@ namespace CyberGuardian.Editor
             GameObject world = new GameObject("World");
             CyberGuardianSideScrollerGame game = new GameObject("Cyber Guardian Side Scroller Game").AddComponent<CyberGuardianSideScrollerGame>();
             game.quizQuestionBank = questionBank;
+            game.quizLessonTier = 1;
             game.difficultyProfiles = difficulties;
             game.gameplayCamera = camera;
             game.deathShardSprite = squareSprite;
@@ -474,7 +606,13 @@ namespace CyberGuardian.Editor
             game.bossArenaMinX = 215.0f;
             game.bossArenaMaxX = 226.5f;
             game.slingshotMaxPull = 3.25f;
+            game.slingshotMinPull = 0.34f;
+            game.slingshotPullScreenScale = 0.36f;
             game.slingshotPower = 11.6f;
+            game.slingshotMinLaunchSpeed = 6.2f;
+            game.slingshotMaxLaunchSpeed = 25.5f;
+            game.slingshotDirectShotMaxSpeed = 27.0f;
+            game.slingshotRestOffset = new Vector2(0f, 0.56f);
             game.projectileMaxFlightTime = 5.2f;
             game.cameraMin = new Vector2(-8.8f, -3.8f);
             game.cameraMax = new Vector2(233.0f, 7.4f);
@@ -487,14 +625,25 @@ namespace CyberGuardian.Editor
             game.bossShotSfx = bossShotSfx;
             game.shieldSfx = shieldSfx;
             game.wrongSfx = wrongSfx;
-            ConfigureGameplayAudio(game, Level01MusicPath);
+            ConfigureGameplayAudio(game, NewLevel01MusicPath, Level01MusicPath);
             game.nextSceneName = "CyberGuardian_Level02";
+            game.sceneIntroTitle = "SEKTOR 1: DASAR KEAMANAN GADGET";
+            game.sceneIntroBody = "Komputer kelasmu sedang disusupi malware dasar. Pelajari kebiasaan paling penting: kunci layar, update aplikasi, password unik, 2FA, dan jangan percaya link atau lampiran asing.";
+            game.bossThreatTitle = "BOS 1: PHISHING BRUTE";
+            game.bossThreatBody = "Aku menyamar sebagai pesan hadiah, tugas sekolah, dan login palsu. Salah membaca tanda-tandaku, akunmu akan kucuri.";
+            game.bossInfoTitle = "KARTU ANCAMAN: PHISHING + MALWARE DASAR";
+            game.bossInfoBody = "Phishing menipu korban agar memasukkan password, OTP, atau mengunduh file berbahaya. Tanda bahaya: alamat web mirip tapi salah, permintaan mendesak, lampiran asing, dan janji hadiah terlalu mudah.";
+            game.bossDefeatTitle = "PHISHING BRUTE TERPECAH";
+            game.bossDefeatBody = "Celah tipuannya runtuh karena kamu mengenali link palsu dan menjaga data sensitif.";
+            game.bossLessonTitle = "PELAJARAN SEKTOR 1";
+            game.bossLessonBody = "Amankan gadget dengan password unik, 2FA, update rutin, download dari sumber resmi, dan jangan membagikan OTP. Untuk kuis berikutnya, ingat: periksa domain, pengirim, lampiran, dan izin aplikasi.";
 
             Sprite generatedBossSprite = EnsureImportedSprite(BossGeneratedSpritePath);
             Sprite generatedProjectileSprite = EnsureImportedSprite(ProjectileGeneratedSpritePath);
 
             BuildBackground(world.transform, squareSprite, circuitSprite, dataBlobSprite, horrorSprites);
             BuildCyberAmbientEffects(world.transform, squareSprite, dataBlobSprite, false);
+            BuildAssetPackDressing(world.transform, squareSprite, dataBlobSprite, horrorSprites, 1, -8f, 233f);
             BuildPlatforms(world.transform, squareSprite, panelSprite, rockTileSprite, metalCrateSprite, dataMossSprite, horrorSprites);
             BuildAdventureActors(world.transform, game, squareSprite, circleSprite);
             BuildHazards(world.transform, game, squareSprite, circleSprite, sawBladeSprite, metalCrateSprite, horrorSprites);
@@ -545,6 +694,7 @@ namespace CyberGuardian.Editor
             GameObject world = new GameObject("World HD 2.5D");
             CyberGuardianSideScrollerGame game = new GameObject("Cyber Guardian Side Scroller Game").AddComponent<CyberGuardianSideScrollerGame>();
             game.quizQuestionBank = questionBank;
+            game.quizLessonTier = 2;
             game.difficultyProfiles = difficulties;
             game.gameplayCamera = camera;
             game.deathShardSprite = squareSprite;
@@ -553,7 +703,13 @@ namespace CyberGuardian.Editor
             game.bossArenaMinX = 266.0f;
             game.bossArenaMaxX = 279.0f;
             game.slingshotMaxPull = 3.35f;
+            game.slingshotMinPull = 0.34f;
+            game.slingshotPullScreenScale = 0.35f;
             game.slingshotPower = 11.8f;
+            game.slingshotMinLaunchSpeed = 6.4f;
+            game.slingshotMaxLaunchSpeed = 26.5f;
+            game.slingshotDirectShotMaxSpeed = 28.0f;
+            game.slingshotRestOffset = new Vector2(0f, 0.56f);
             game.projectileMaxFlightTime = 5.4f;
             game.cameraMin = new Vector2(-8.8f, -3.9f);
             game.cameraMax = new Vector2(288.0f, 7.8f);
@@ -566,14 +722,25 @@ namespace CyberGuardian.Editor
             game.bossShotSfx = bossShotSfx;
             game.shieldSfx = shieldSfx;
             game.wrongSfx = wrongSfx;
-            ConfigureGameplayAudio(game, Level02MusicPath);
+            ConfigureGameplayAudio(game, NewLevel02MusicPath, Level02MusicPath);
             game.nextSceneName = "CyberGuardian_Level03";
+            game.sceneIntroTitle = "SEKTOR 2: RERUNTUHAN SERVER";
+            game.sceneIntroBody = "Malware mulai bergerak lebih pintar. Di sini kamu belajar backup, least privilege, firewall, log, patch keamanan, dan cara memisahkan data penting agar serangan tidak menyebar.";
+            game.bossThreatTitle = "BOS 2: DATA REAPER";
+            game.bossThreatBody = "Phishing Brute sudah kau hancurkan. Aku datang membalasnya dengan mengunci file, mencari hak admin, lalu menyebar lewat jaringan yang lalai dipantau.";
+            game.bossInfoTitle = "KARTU ANCAMAN: RANSOMWARE DAN TROJAN";
+            game.bossInfoBody = "Trojan berpura-pura sebagai aplikasi normal, sedangkan ransomware mengenkripsi file dan meminta tebusan. Pertahanan utama: backup teruji, update, izin minimal, antivirus aktif, dan jangan menjalankan file tidak jelas.";
+            game.bossDefeatTitle = "DATA REAPER TERPUTUS";
+            game.bossDefeatBody = "Rantai penyebaran berhenti karena sistem punya backup, pembatasan izin, dan pemantauan alert.";
+            game.bossLessonTitle = "PELAJARAN SEKTOR 2";
+            game.bossLessonBody = "Gunakan prinsip least privilege, backup offline atau cloud yang aman, update sistem, dan cek log keamanan. Kalau file penting terenkripsi, backup yang bersih adalah jalur pemulihan paling kuat.";
 
             Sprite generatedBossSprite = EnsureImportedSprite(BossGeneratedSpritePath);
             Sprite generatedProjectileSprite = EnsureImportedSprite(ProjectileGeneratedSpritePath);
 
             BuildLevel02Background(world.transform, camera, squareSprite, circuitSprite, dataBlobSprite, horrorSprites);
             BuildCyberAmbientEffects(world.transform, squareSprite, dataBlobSprite, true);
+            BuildAssetPackDressing(world.transform, squareSprite, dataBlobSprite, horrorSprites, 2, -8f, 288f);
             BuildLevel02Platforms(world.transform, squareSprite, rockTileSprite, metalCrateSprite, dataMossSprite, horrorSprites);
             BuildAdventureActors(world.transform, game, squareSprite, circleSprite);
             BuildLevel02Hazards(world.transform, game, squareSprite, circleSprite, sawBladeSprite, horrorSprites);
@@ -624,6 +791,7 @@ namespace CyberGuardian.Editor
             GameObject world = new GameObject("World Cloud Core Uplink");
             CyberGuardianSideScrollerGame game = new GameObject("Cyber Guardian Side Scroller Game").AddComponent<CyberGuardianSideScrollerGame>();
             game.quizQuestionBank = questionBank;
+            game.quizLessonTier = 3;
             game.difficultyProfiles = difficulties;
             game.gameplayCamera = camera;
             game.deathShardSprite = squareSprite;
@@ -632,11 +800,21 @@ namespace CyberGuardian.Editor
             game.bossArenaMinX = 337.0f;
             game.bossArenaMaxX = 357.0f;
             game.slingshotMaxPull = 3.85f;
+            game.slingshotMinPull = 0.36f;
+            game.slingshotPullScreenScale = 0.34f;
             game.slingshotPower = 13.2f;
+            game.slingshotMinLaunchSpeed = 6.8f;
+            game.slingshotMaxLaunchSpeed = 31.0f;
+            game.slingshotDirectShotMaxSpeed = 32.0f;
+            game.slingshotRestOffset = new Vector2(0f, 0.58f);
             game.projectileMaxFlightTime = 6.3f;
             game.cameraMin = new Vector2(-8.8f, -4.3f);
             game.cameraMax = new Vector2(366.0f, 10.2f);
             game.aerialBossEncounter = true;
+            game.bossCameraSize = 5.75f;
+            game.aerialBossCameraSize = 8.15f;
+            game.aerialBossCameraXOffset = 4.75f;
+            game.aerialBossCameraYOffset = 1.65f;
             game.bossAttackIntervalScale = 0.72f;
             game.bossVolleyCount = 4;
             game.bossProjectileSpeedBonus = 1.25f;
@@ -649,13 +827,24 @@ namespace CyberGuardian.Editor
             game.bossShotSfx = bossShotSfx;
             game.shieldSfx = shieldSfx;
             game.wrongSfx = wrongSfx;
-            ConfigureGameplayAudio(game, Level03MusicPath);
+            ConfigureGameplayAudio(game, NewLevel03MusicPath, Level03MusicPath);
+            game.sceneIntroTitle = "SEKTOR 3: CODE ABYSS";
+            game.sceneIntroBody = "Ancaman terakhir menyerang dari udara jaringan: botnet, eksploit lanjutan, pencurian kredensial, dan perintah jarak jauh. Kamu perlu berpikir seperti defender sungguhan.";
+            game.bossThreatTitle = "BOS 3: DIGITAL OVERLORD";
+            game.bossThreatBody = "Data Reaper jatuh karena kamu memahami backup dan firewall. Sekarang aku, Digital Overlord, akan membalas dengan node terinfeksi, listrik paket dari langit, dan celah kecil yang bisa mengambil alih seluruh sistem.";
+            game.bossInfoTitle = "KARTU ANCAMAN: APT, BOTNET, DAN PRIVILEGE ESCALATION";
+            game.bossInfoBody = "Ancaman tingkat lanjut bertahan lama, mencari celah update, mencuri token, lalu naik hak akses. Pertahanan: MFA kuat, segmentasi jaringan, EDR/antivirus, patch cepat, backup, dan rencana respons insiden.";
+            game.bossDefeatTitle = "DIGITAL OVERLORD HANCUR";
+            game.bossDefeatBody = "Komputer berhasil direbut kembali. Core malware pecah karena lapisan pertahanan bekerja bersama.";
+            game.bossLessonTitle = "PELAJARAN AKHIR";
+            game.bossLessonBody = "Keamanan bukan satu tombol. Gabungkan kebiasaan aman, update, MFA, backup, segmentasi, monitoring, dan respons cepat. Defender menang karena memahami pola serangan sebelum celah membesar.";
 
             Sprite generatedBossSprite = EnsureImportedSprite(BossGeneratedSpritePath);
             Sprite generatedProjectileSprite = EnsureImportedSprite(ProjectileGeneratedSpritePath);
 
             BuildLevel03Background(world.transform, squareSprite, circuitSprite, dataBlobSprite, horrorSprites);
             BuildCyberAmbientEffects(world.transform, squareSprite, dataBlobSprite, true);
+            BuildAssetPackDressing(world.transform, squareSprite, dataBlobSprite, horrorSprites, 3, -8f, 366f);
             BuildLevel03Platforms(world.transform, squareSprite, rockTileSprite, metalCrateSprite, dataMossSprite, horrorSprites);
             BuildAdventureActors(world.transform, game, squareSprite, circleSprite);
             BuildLevel03Hazards(world.transform, game, squareSprite, circleSprite, sawBladeSprite, horrorSprites);
@@ -779,6 +968,11 @@ namespace CyberGuardian.Editor
             CreateVirusTurret("L03 Boss Gate High Virus Turret", parent, game, new Vector2(306.2f, 5.80f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
             CreateSwingingSawTrap("L03 Boss Gate Final Pendulum", parent, game, new Vector2(321.8f, 5.45f), 1.26f, 2.55f, 35, sawBladeSprite, squareSprite, 2.4f);
             CreateSawTrap("L03 Boss Gate Floor Saw", parent, game, new Vector2(331.5f, 0.98f), 1.0f, 32, sawBladeSprite, squareSprite);
+            CreateElectricNode("L03 Storm Tesla Discharge A", parent, game, new Vector2(189.8f, -3.15f), 27, horrorSprites.ElectricNode, squareSprite);
+            CreateElectricNode("L03 Storm Tesla Discharge B", parent, game, new Vector2(240.2f, 6.95f), 29, horrorSprites.ElectricNode, squareSprite);
+            CreateElectricNode("L03 Boss Approach Storm Node", parent, game, new Vector2(306.2f, 5.55f), 31, horrorSprites.ElectricNode, squareSprite);
+            CreateLaserBarrier("L03 Aerial Storm Cross Gate A", parent, game, new Vector2(216.8f, 3.20f), 2.8f, 4, 28, squareSprite);
+            CreateLaserBarrier("L03 Boss Approach Overload Gate", parent, game, new Vector2(321.2f, 3.28f), 2.4f, 4, 31, squareSprite);
 
             CreateEnemy("L03 Virus Soldier Hash A", parent, game, new Vector2(29.4f, 3.18f), squareSprite, circleSprite, 2.95f, 1.8f);
             CreateEnemy("L03 Virus Soldier Token B", parent, game, new Vector2(84.2f, 4.16f), squareSprite, circleSprite, 3.15f, 1.7f);
@@ -795,11 +989,11 @@ namespace CyberGuardian.Editor
 
         private static void BuildLevel03StoryZones(Transform parent, CyberGuardianSideScrollerGame game)
         {
-            CreateStoryZone("L03 Story Start", parent, game, new Vector2(-6.2f, 1.1f), new Vector2(2.0f, 4.4f), "ADEGAN 03: UPLINK INTI CLOUD", "Cyber Guardian mencapai lapisan cloud tempat session curian, API terbuka, dan token akses lemah digabung menjadi satu pikiran malware raksasa.");
+            CreateStoryZone("L03 Story Start", parent, game, new Vector2(-6.2f, 1.1f), new Vector2(2.0f, 4.4f), "ADEGAN 03: INTERMEDIATE CLOUD", "Cyber Guardian mencapai lapisan cloud tempat token curian, API terbuka, secret bocor, dan jaringan tanpa segmentasi digabung menjadi satu pikiran malware raksasa.");
             CreateStoryZone("L03 Story Tokens", parent, game, new Vector2(29.4f, 2.7f), new Vector2(2.0f, 6.8f), "TOKEN SESSION", "Token session seperti kunci sementara. Jika dicuri, penyerang bisa melewati password, jadi aplikasi aman harus melindungi token, memberi masa berlaku, dan tidak membocorkannya di log.");
             CreateStoryZone("L03 Story API", parent, game, new Vector2(76.2f, 4.6f), new Vector2(2.0f, 7.0f), "GERBANG API", "API perlu autentikasi, batas akses, validasi, dan monitoring. Satu endpoint terbuka bisa menjadi terowongan menuju seluruh sistem.");
-            CreateStoryZone("L03 Story Incident", parent, game, new Vector2(126.0f, -1.4f), new Vector2(2.0f, 6.6f), "RESPONS INSIDEN", "Saat serangan terdeteksi, defender mengisolasi sistem terdampak, menyimpan bukti, mengganti secret, menambal celah masuk, dan berkomunikasi jelas.");
-            CreateStoryZone("L03 Story SIEM", parent, game, new Vector2(153.2f, 3.8f), new Vector2(2.0f, 7.2f), "TULANG PUNGGUNG SIEM", "SIEM menghubungkan alert dari endpoint, server, dan jaringan. Korelasi membantu defender melihat pola serangan, bukan sekadar noise yang terpisah.");
+            CreateStoryZone("L03 Story Incident", parent, game, new Vector2(126.0f, -1.4f), new Vector2(2.0f, 6.6f), "RESPONS INSIDEN", "Saat serangan terdeteksi, defender mengisolasi sistem terdampak, menjaga bukti, mengganti secret, menambal celah masuk, dan mencatat keputusan dengan jelas.");
+            CreateStoryZone("L03 Story SIEM", parent, game, new Vector2(153.2f, 3.8f), new Vector2(2.0f, 7.2f), "SIEM DAN KORELASI", "SIEM menghubungkan alert dari endpoint, server, dan jaringan. Korelasi membantu defender melihat pola serangan, bukan sekadar noise yang terpisah.");
             CreateStoryZone("L03 Story Phishing", parent, game, new Vector2(194.4f, 1.4f), new Vector2(2.0f, 7.0f), "REKAYASA SOSIAL", "Tidak semua serangan dimulai dari kode. Phishing memanfaatkan rasa percaya, panik, dan tergesa-gesa, jadi perlambat langkah dan verifikasi sebelum memasukkan secret.");
             CreateStoryZone("L03 Story Backups", parent, game, new Vector2(229.5f, 5.4f), new Vector2(2.0f, 7.2f), "CERMIN BACKUP", "Backup harus diuji, dipisahkan, dan dilindungi. Backup yang bisa dihapus malware bukan rencana pemulihan yang aman.");
             CreateStoryZone("L03 Story Encryption", parent, game, new Vector2(263.8f, 1.6f), new Vector2(2.0f, 7.0f), "TANGGA ENKRIPSI", "Enkripsi melindungi data saat dikirim dan disimpan, tetapi kuncinya harus dijaga. Kunci yang bocor membuat enkripsi kuat terasa seperti pintu terbuka.");
@@ -854,9 +1048,12 @@ namespace CyberGuardian.Editor
 
             CreatePlatform("L03 Boss Left Firewall Gate", parent, new Vector2(game.bossArenaMinX - 0.75f, 2.8f), new Vector2(0.36f, 7.0f), Hex("172B35"), squareSprite);
             CreatePlatform("L03 Boss Right Cloud Wall", parent, new Vector2(game.bossArenaMaxX + 9.0f, 3.0f), new Vector2(0.36f, 7.2f), Hex("172B35"), squareSprite);
-            CreateHorrorPlatform("L03 Aerial Boss Lower Dodge Bridge", parent, new Vector2(game.bossArenaCenterX - 1.8f, 0.82f), 14, 1, horrorSprites.ServerCore, horrorSprites.NeonPlatform, null, Color.white, Hex("61F7FF"));
-            CreateHorrorPlatform("L03 Aerial Boss Left Floating Shelf", parent, new Vector2(game.bossArenaMinX + 2.4f, 2.95f), 4, 1, horrorSprites.MetaPanel, horrorSprites.GlowEdgePlatform, null, Color.white, Hex("7DFF9B"));
-            CreateHorrorPlatform("L03 Aerial Boss Right Floating Shelf", parent, new Vector2(game.bossArenaMaxX - 2.4f, 3.65f), 4, 1, horrorSprites.MetaPanel, horrorSprites.GlowEdgePlatform, null, Color.white, Hex("FF3B88"));
+            GameObject breakawayBridge = CreateHorrorPlatform("L03 Aerial Boss Lower Dodge Bridge", parent, new Vector2(game.bossArenaCenterX - 1.8f, 0.82f), 14, 1, horrorSprites.ServerCore, horrorSprites.NeonPlatform, null, Color.white, Hex("61F7FF"));
+            GameObject breakawayLeftShelf = CreateHorrorPlatform("L03 Aerial Boss Left Floating Shelf", parent, new Vector2(game.bossArenaMinX + 2.4f, 2.95f), 4, 1, horrorSprites.MetaPanel, horrorSprites.GlowEdgePlatform, null, Color.white, Hex("7DFF9B"));
+            GameObject breakawayRightShelf = CreateHorrorPlatform("L03 Aerial Boss Right Floating Shelf", parent, new Vector2(game.bossArenaMaxX - 2.4f, 3.65f), 4, 1, horrorSprites.MetaPanel, horrorSprites.GlowEdgePlatform, null, Color.white, Hex("FF3B88"));
+            game.aerialBossBreakawayBlocks.Add(breakawayBridge);
+            game.aerialBossBreakawayBlocks.Add(breakawayLeftShelf);
+            game.aerialBossBreakawayBlocks.Add(breakawayRightShelf);
 
             SpriteRenderer bossGlow = CreateWorldSprite("L03 Digital Overlord Hit Core", parent, bossCenter, new Vector2(4.6f, 4.6f), new Color(1f, 0.05f, 0.38f, 0.30f), circleSprite, 18);
             bossGlow.gameObject.AddComponent<CyberGuardianBossCore>().game = game;
@@ -865,20 +1062,60 @@ namespace CyberGuardian.Editor
             bossCollider.radius = 1.62f;
             game.bossCore = bossGlow.GetComponent<CyberGuardianBossCore>();
             AddPulse(bossGlow, 0.08f, 0.12f, 3.0f, 0f);
+            AddBossMotion(bossGlow.transform, new Vector2(0.22f, 0.16f), 0.95f, 0.0f, 0.7f, false);
+            Sprite l03BossAuraSprite = PickSprite(monsterAuraFrames, 4, circleSprite);
+            SpriteRenderer l03BossAura = CreateWorldSprite("L03 Animated Bones Aura Around Boss", parent, bossCenter, new Vector2(9.4f, 9.4f), new Color(0.50f, 1f, 0.95f, 0.22f), l03BossAuraSprite, 17);
+            l03BossAura.gameObject.AddComponent<CyberGuardianRotator>().degreesPerSecond = -8f;
+            AddPulse(l03BossAura, 0.04f, 0.13f, 3.1f, 0.52f);
+            AddFlipbook(l03BossAura, monsterAuraFrames, 8.0f, true);
+            AddBossMotion(l03BossAura.transform, new Vector2(0.22f, 0.16f), 0.95f, 0.0f, 0.7f, false);
 
-            Sprite bossSprite = bossGameplaySprite != null ? bossGameplaySprite : (bossGameplaySideSprite != null ? bossGameplaySideSprite : (bossGeneratedSprite != null ? bossGeneratedSprite : (virusSprite != null ? virusSprite : circleSprite)));
-            SpriteRenderer bossArt = CreateWorldSprite("L03 Super Giant Airborne Digital Overlord", parent, bossCenter, new Vector2(7.4f, 7.4f), Color.white, bossSprite, 20);
-            AddPulse(bossArt, 0.025f, 0.04f, 2.0f, 0.35f);
-            if (bossGameplaySprite == null && bossGameplaySideSprite == null)
+            bool hasWingedBoss = level03WingedBossFrames != null && level03WingedBossFrames.Length > 0;
+            Sprite bossSprite = hasWingedBoss ? level03WingedBossFrames[0] : (bossGameplaySprite != null ? bossGameplaySprite : (bossGameplaySideSprite != null ? bossGameplaySideSprite : (bossGeneratedSprite != null ? bossGeneratedSprite : (virusSprite != null ? virusSprite : circleSprite))));
+            Vector2 bossSize = hasWingedBoss ? new Vector2(8.65f, 8.65f) : new Vector2(7.4f, 7.4f);
+            SpriteRenderer bossArt = CreateWorldSprite(hasWingedBoss ? "L03 Winged Malware Storm Boss" : "L03 Super Giant Airborne Digital Overlord", parent, bossCenter, bossSize, Color.white, bossSprite, 20);
+            game.bossCinematicTarget = bossArt.transform;
+            game.bossVisualRoot = bossArt.transform;
+            AddPulse(bossArt, hasWingedBoss ? 0.018f : 0.025f, hasWingedBoss ? 0.05f : 0.04f, 2.0f, 0.35f);
+            AddBossMotion(bossArt.transform, new Vector2(0.34f, 0.24f), 0.95f, 0.0f, 2.2f, false);
+            if (hasWingedBoss)
+            {
+                CyberGuardianSpriteFlipbookAnimator flipbook = bossArt.gameObject.AddComponent<CyberGuardianSpriteFlipbookAnimator>();
+                flipbook.spriteRenderer = bossArt;
+                flipbook.frames = level03WingedBossFrames;
+                flipbook.framesPerSecond = 7.5f;
+                flipbook.randomStart = false;
+
+                SpriteRenderer aura = CreateWorldSprite("L03 Winged Malware Electric Aura", parent, bossCenter, new Vector2(8.95f, 8.95f), new Color(0.12f, 1f, 1f, 0.18f), circleSprite, 19);
+                AddPulse(aura, 0.09f, 0.16f, 3.2f, 0.4f);
+                AddBossMotion(aura.transform, new Vector2(0.34f, 0.24f), 0.95f, 0.0f, 2.2f, false);
+                SpriteRenderer darkHalo = CreateWorldSprite("L03 Winged Malware Shadow Corona", parent, bossCenter, new Vector2(9.45f, 5.6f), new Color(0f, 0f, 0f, 0.34f), circleSprite, 18);
+                AddPulse(darkHalo, 0.04f, 0.05f, 1.8f, 0.15f);
+                AddBossMotion(darkHalo.transform, new Vector2(0.34f, 0.24f), 0.95f, 0.0f, 2.2f, false);
+                for (int i = 0; i < 8; i++)
+                {
+                    float angle = i * Mathf.PI * 2f / 8f;
+                    Vector2 offset = new Vector2(Mathf.Cos(angle) * 3.65f, Mathf.Sin(angle) * 2.42f);
+                    Sprite boltSprite = PickSprite(lightningTrapFrames, i, lightningTrapSprite != null ? lightningTrapSprite : circleSprite);
+                    SpriteRenderer spark = CreateWorldSprite("L03 Winged Malware Orbit Spark " + i, parent, bossCenter + offset, new Vector2(0.62f, 0.62f), i % 2 == 0 ? Hex("61F7FF") : Hex("FF3B88"), boltSprite, 23);
+                    spark.transform.localRotation = Quaternion.Euler(0f, 0f, i * 32f);
+                    AddPulse(spark, 0.08f, 0.22f, 7.5f, i * 0.22f);
+                }
+            }
+            else if (bossGameplaySprite == null && bossGameplaySideSprite == null)
             {
                 AttachGeneratedGlbVisual(BossGlbPath, bossArt.transform, "Generated Airborne Malware Boss GLB Visual", new Vector3(0f, -1.36f, -0.34f), Vector3.one * 1.18f, new Vector3(0f, 180f, 0f));
             }
 
-            CreateLocalSprite("Overlord Left Data Wing", bossArt.transform, new Vector3(-0.70f, 0.10f, 0.04f), new Vector2(1.65f, 0.42f), new Color(1f, 0.06f, 0.44f, 0.72f), squareSprite, 21);
-            CreateLocalSprite("Overlord Right Data Wing", bossArt.transform, new Vector3(0.70f, 0.10f, 0.04f), new Vector2(1.65f, 0.42f), new Color(0.18f, 0.95f, 1f, 0.64f), squareSprite, 21);
-            CreateLocalSprite("Overlord Crown Node", bossArt.transform, new Vector3(0f, 0.58f, -0.03f), new Vector2(0.56f, 0.56f), Hex("FF3B88"), circleSprite, 23);
-            CreateLocalSprite("Overlord Core Eye", bossArt.transform, new Vector3(0f, 0f, -0.05f), new Vector2(0.72f, 0.72f), Hex("FFFFFF"), circleSprite, 24);
-            if (virusAltSprite != null && bossGameplaySprite == null && bossGameplaySideSprite == null)
+            if (!hasWingedBoss)
+            {
+                CreateLocalSprite("Overlord Left Data Wing", bossArt.transform, new Vector3(-0.70f, 0.10f, 0.04f), new Vector2(1.65f, 0.42f), new Color(1f, 0.06f, 0.44f, 0.72f), squareSprite, 21);
+                CreateLocalSprite("Overlord Right Data Wing", bossArt.transform, new Vector3(0.70f, 0.10f, 0.04f), new Vector2(1.65f, 0.42f), new Color(0.18f, 0.95f, 1f, 0.64f), squareSprite, 21);
+                CreateLocalSprite("Overlord Crown Node", bossArt.transform, new Vector3(0f, 0.58f, -0.03f), new Vector2(0.56f, 0.56f), Hex("FF3B88"), circleSprite, 23);
+                CreateLocalSprite("Overlord Core Eye", bossArt.transform, new Vector3(0f, 0f, -0.05f), new Vector2(0.72f, 0.72f), Hex("FFFFFF"), circleSprite, 24);
+            }
+
+            if (virusAltSprite != null && !hasWingedBoss && bossGameplaySprite == null && bossGameplaySideSprite == null)
             {
                 CreateWorldSprite("L03 Overlord Mutation Shell", parent, bossCenter + new Vector2(0.18f, 0.34f), new Vector2(2.4f, 2.4f), new Color(1f, 0.18f, 0.46f, 0.58f), virusAltSprite, 22);
             }
@@ -913,8 +1150,10 @@ namespace CyberGuardian.Editor
             CreateOrbitingShieldRing("L03 Inner Orbit Quiz Block ", parent, game, bossGlow.transform, 12, 2.95f, 34f, 0.68f, quizBlockSprite, squareSprite, font, 0);
             CreateOrbitingShieldRing("L03 Outer Orbit Quiz Block ", parent, game, bossGlow.transform, 16, 4.25f, -22f, 0.74f, quizBlockSprite, squareSprite, font, 2);
 
-            Sprite projectileActive = projectileGeneratedSprite != null ? projectileGeneratedSprite : (projectileSprite != null ? projectileSprite : circleSprite);
-            GameObject projectile = CreateWorldSprite("L03 Patch Core Slingshot Projectile", parent, new Vector2(game.bossArenaMinX + 1.0f, 1.25f), new Vector2(0.62f, 0.62f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
+            Sprite[] l03ProjectileFrames = projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames;
+            Sprite projectileActive = PickSprite(l03ProjectileFrames, 2, projectileGeneratedSprite != null ? projectileGeneratedSprite : (projectileSprite != null ? projectileSprite : circleSprite));
+            GameObject projectile = CreateWorldSprite("L03 Patch Core Slingshot Projectile", parent, new Vector2(game.bossArenaMinX + 1.0f, 1.25f), new Vector2(0.42f, 0.42f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
+            AddFlipbook(projectile.GetComponent<SpriteRenderer>(), l03ProjectileFrames, 12.0f, true);
             Rigidbody2D projectileBody = projectile.AddComponent<Rigidbody2D>();
             projectileBody.gravityScale = 0.92f;
             projectileBody.simulated = false;
@@ -922,12 +1161,13 @@ namespace CyberGuardian.Editor
             projectileBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             CircleCollider2D projectileCollider = projectile.AddComponent<CircleCollider2D>();
             projectileCollider.isTrigger = true;
+            projectileCollider.radius = 0.14f;
             projectileCollider.enabled = false;
             projectile.AddComponent<CyberGuardianSlingshotProjectile2D>().game = game;
             game.slingshotProjectile = projectile.transform;
             game.slingshotBody = projectileBody;
             game.slingshotCollider = projectileCollider;
-            AttachGeneratedGlbVisual(ProjectileGlbPath, projectile.transform, "Generated Patch Core GLB Visual", new Vector3(0f, -0.42f, -0.18f), Vector3.one * 0.25f, new Vector3(0f, 180f, 0f));
+            AttachProjectileVfx(projectile.transform, circleSprite, 31, true);
             projectile.SetActive(false);
 
             game.slingshotBandA = CreateLine("L03 Slingshot Band A", parent, new Color(0.55f, 1f, 1f, 0.88f), 0.08f);
@@ -1189,27 +1429,398 @@ namespace CyberGuardian.Editor
             }
         }
 
+        private static void BuildAssetPackDressing(Transform parent, Sprite squareSprite, Sprite dataBlobSprite, CyberHorrorAssetSprites horrorSprites, int level, float minX, float maxX)
+        {
+            if (horrorSprites == null)
+            {
+                return;
+            }
+
+            string prefix = "L0" + level;
+            float span = maxX - minX;
+            float centerX = (minX + maxX) * 0.5f;
+            Color cyanMist = level == 1 ? new Color(0.18f, 1f, 0.82f, 0.16f) : new Color(0.20f, 0.95f, 1f, 0.18f);
+            Color magentaMist = level == 3 ? new Color(1f, 0.06f, 0.46f, 0.18f) : new Color(0.96f, 0.08f, 0.58f, 0.13f);
+
+            Sprite far = level == 1 ? horrorSprites.CitySkylineBack : (level == 2 ? horrorSprites.StreetV1FarBuildings : horrorSprites.StreetV2Back);
+            Sprite mid = level == 1 ? horrorSprites.CitySkylineBuildings : (level == 2 ? horrorSprites.StreetV1BackBuildings : horrorSprites.StreetV2Middle);
+            Sprite front = level == 1 ? horrorSprites.CitySkylineFront : (level == 2 ? horrorSprites.StreetV1Foreground : horrorSprites.StreetV2Foreground);
+
+            CreateRepeatingVisualLayer(prefix + " Asset Skyline Far", parent, far, minX, maxX, 26f, 2.75f, new Vector2(26f, 12.0f), new Color(0.38f, 0.92f, 1f, 0.20f), 2, true);
+            CreateRepeatingVisualLayer(prefix + " Asset Skyline Mid", parent, mid, minX, maxX, 22f, 2.25f, new Vector2(23.5f, 10.2f), new Color(0.35f, 1f, 0.88f, 0.24f), 3, true);
+            CreateRepeatingVisualLayer(prefix + " Asset Skyline Front", parent, front, minX, maxX, 23f, -0.78f, new Vector2(25f, 6.7f), new Color(0.16f, 0.28f, 0.32f, 0.62f), 5, false);
+
+            if (horrorSprites.CentralCityBuildings != null)
+            {
+                CreateRepeatingVisualLayer(prefix + " Central City Broken Megastructure", parent, horrorSprites.CentralCityBuildings, minX - 18f, maxX + 18f, 42f, 2.15f, new Vector2(35f, 21f), new Color(0.10f, 0.58f, 0.72f, 0.12f), 2, true);
+            }
+
+            if (horrorSprites.CentralCityBackgroundProps != null)
+            {
+                CreateRepeatingVisualLayer(prefix + " Background Abandoned Machine Props", parent, horrorSprites.CentralCityBackgroundProps, minX, maxX, 19f, -1.95f, new Vector2(6.8f, 6.8f), new Color(0.50f, 1f, 1f, 0.13f), 6, true);
+            }
+
+            if (horrorSprites.CentralCityProps != null)
+            {
+                int props = Mathf.Clamp(Mathf.RoundToInt(span / 24f), 7, 18);
+                for (int i = 0; i < props; i++)
+                {
+                    float x = Mathf.Lerp(minX + 7f, maxX - 9f, i / (float)Mathf.Max(1, props - 1));
+                    float y = -3.85f + (i % 3) * 0.46f;
+                    SpriteRenderer propSheet = CreateWorldSprite(prefix + " Far Scrap Prop Cluster " + i, parent, new Vector2(x, y), new Vector2(3.5f + (i % 2) * 0.55f, 6.2f), new Color(0.32f, 0.95f, 1f, 0.15f), horrorSprites.CentralCityProps, 7);
+                    propSheet.transform.localRotation = Quaternion.Euler(0f, 0f, -4f + (i % 5) * 2f);
+                    AddPulse(propSheet, 0.004f, 0.025f, 1.7f + i * 0.02f, i * 0.16f);
+                }
+            }
+
+            int rustCount = Mathf.Clamp(Mathf.RoundToInt(span / 8.5f), 18, level == 3 ? 46 : 34);
+            for (int i = 0; i < rustCount; i++)
+            {
+                Sprite rust = PickSprite(horrorSprites.RustedPanels, i, null);
+                if (rust == null)
+                {
+                    break;
+                }
+
+                float x = Mathf.Lerp(minX + 3f, maxX - 4f, i / (float)Mathf.Max(1, rustCount - 1));
+                float lane = i % 4;
+                float y = lane == 0 ? -4.45f : (lane == 1 ? -2.15f : (lane == 2 ? 1.2f : 5.95f));
+                Color color = lane < 2 ? new Color(0.40f, 0.50f, 0.55f, 0.20f) : new Color(0.60f, 0.95f, 1f, 0.13f);
+                SpriteRenderer panel = CreateWorldSprite(prefix + " Rusted Data Plate " + i, parent, new Vector2(x, y), new Vector2(3.25f + (i % 4) * 0.55f, 1.8f + (i % 3) * 0.25f), color, rust, 8);
+                panel.transform.localRotation = Quaternion.Euler(0f, 0f, -6f + (i % 7) * 2f);
+                AddPulse(panel, 0.003f, 0.020f, 1.1f + (i % 4) * 0.15f, i * 0.21f);
+            }
+
+            if (horrorSprites.CentralCityTiles != null)
+            {
+                int plates = Mathf.Clamp(Mathf.RoundToInt(span / 28f), 6, 16);
+                for (int i = 0; i < plates; i++)
+                {
+                    float x = Mathf.Lerp(minX + 12f, maxX - 16f, i / (float)Mathf.Max(1, plates - 1));
+                    float y = i % 2 == 0 ? 4.9f : -3.15f;
+                    SpriteRenderer tilePlate = CreateWorldSprite(prefix + " Atlas Texture Warning Plate " + i, parent, new Vector2(x, y), new Vector2(3.8f, 5.7f), i % 2 == 0 ? cyanMist : magentaMist, horrorSprites.CentralCityTiles, 7);
+                    tilePlate.transform.localRotation = Quaternion.Euler(0f, 0f, i % 2 == 0 ? 3.5f : -3.5f);
+                    AddPulse(tilePlate, 0.006f, 0.035f, 1.6f, i * 0.3f);
+                }
+            }
+
+            Sprite cableSprite = horrorSprites.DamagedCable != null ? horrorSprites.DamagedCable : squareSprite;
+            int cables = Mathf.Clamp(Mathf.RoundToInt(span / 12f), 14, level == 3 ? 40 : 28);
+            for (int i = 0; i < cables; i++)
+            {
+                float x = Mathf.Lerp(minX + 2f, maxX - 2f, i / (float)Mathf.Max(1, cables - 1));
+                float y = i % 3 == 0 ? 5.65f : (i % 3 == 1 ? -2.72f : 1.15f);
+                SpriteRenderer cable = CreateWorldSprite(prefix + " Real Damaged Cable Sprite " + i, parent, new Vector2(x, y), new Vector2(0.72f + (i % 4) * 0.12f, 0.72f + (i % 3) * 0.10f), i % 2 == 0 ? new Color(0.16f, 1f, 1f, 0.42f) : new Color(1f, 0.12f, 0.48f, 0.34f), cableSprite, 9);
+                cable.transform.localRotation = Quaternion.Euler(0f, 0f, -42f + (i % 9) * 11f);
+                AddPulse(cable, 0.018f, 0.10f, 3.2f + (i % 5) * 0.2f, i * 0.19f);
+            }
+
+            int lightningDecor = Mathf.Clamp(Mathf.RoundToInt(span / 20f), 8, level == 3 ? 26 : 18);
+            for (int i = 0; i < lightningDecor; i++)
+            {
+                Sprite lightning = PickSprite(horrorSprites.LightningFrames, i, lightningTrapSprite);
+                if (lightning == null)
+                {
+                    continue;
+                }
+
+                float x = Mathf.Lerp(minX + 9f, maxX - 10f, i / (float)Mathf.Max(1, lightningDecor - 1));
+                float y = i % 2 == 0 ? 6.35f : -1.85f;
+                CreateAnimatedLightningDecor(prefix + " Loose Animated Lightning Strip " + i, parent, new Vector2(x, y), new Vector2(1.65f + (i % 3) * 0.2f, 0.48f), lightning, horrorSprites.LightningFrames, i % 2 == 0 ? Hex("61F7FF") : Hex("FF3B88"), 9, -18f + (i % 5) * 9f, i * 0.17f);
+            }
+
+            if (dataBlobSprite != null)
+            {
+                int fogs = Mathf.Clamp(Mathf.RoundToInt(span / 36f), 5, 14);
+                for (int i = 0; i < fogs; i++)
+                {
+                    float x = Mathf.Lerp(minX + 18f, maxX - 18f, i / (float)Mathf.Max(1, fogs - 1));
+                    SpriteRenderer fog = CreateWorldSprite(prefix + " Corrupted Low Fog Volume " + i, parent, new Vector2(x, -4.25f + (i % 3) * 0.22f), new Vector2(10f + (i % 4) * 1.5f, 2.1f), i % 2 == 0 ? cyanMist : magentaMist, dataBlobSprite, 6);
+                    AddPulse(fog, 0.018f, 0.05f, 1.35f + i * 0.05f, i * 0.41f);
+                }
+            }
+
+            BuildDistinctSceneThemeDressing(parent, squareSprite, dataBlobSprite, horrorSprites, level, minX, maxX);
+            CreateWorldSprite(prefix + " Subtle Asset Pack Depth Tint", parent, new Vector2(centerX, 1.4f), new Vector2(span + 28f, 18f), new Color(0f, 0f, 0f, level == 3 ? 0.10f : 0.08f), squareSprite, 1);
+        }
+
+        private static void BuildDistinctSceneThemeDressing(Transform parent, Sprite squareSprite, Sprite dataBlobSprite, CyberHorrorAssetSprites horrorSprites, int level, float minX, float maxX)
+        {
+            if (horrorSprites == null)
+            {
+                return;
+            }
+
+            if (level == 1)
+            {
+                BuildDataCityThemeDressing(parent, squareSprite, dataBlobSprite, horrorSprites, minX, maxX);
+                return;
+            }
+
+            if (level == 2)
+            {
+                BuildServerMineThemeDressing(parent, squareSprite, dataBlobSprite, horrorSprites, minX, maxX);
+                return;
+            }
+
+            BuildAbyssStormThemeDressing(parent, squareSprite, dataBlobSprite, horrorSprites, minX, maxX);
+        }
+
+        private static void BuildDataCityThemeDressing(Transform parent, Sprite squareSprite, Sprite dataBlobSprite, CyberHorrorAssetSprites horrorSprites, float minX, float maxX)
+        {
+            CreateRepeatingVisualLayer("L01 Action City Distant Wall", parent, horrorSprites.ActionCityTestOne, minX - 8f, maxX + 8f, 30f, 1.15f, new Vector2(21f, 9.1f), new Color(0.20f, 0.92f, 1f, 0.16f), 4, true);
+            CreateRepeatingVisualLayer("L01 Action City Upper Catwalk Mural", parent, horrorSprites.ActionCityTestTwo, minX + 5f, maxX - 5f, 38f, 4.45f, new Vector2(17.5f, 7.2f), new Color(0.68f, 0.15f, 0.88f, 0.10f), 5, true);
+            CreateRepeatingVisualLayer("L01 Mine Drain Underside", parent, horrorSprites.MineForegroundAlt, minX, maxX, 12f, -5.25f, new Vector2(9.2f, 2.8f), new Color(0.12f, 0.48f, 0.52f, 0.22f), 6, false);
+
+            Sprite[] glyphs = horrorSprites.DlaSprites != null && horrorSprites.DlaSprites.Length > 0 ? horrorSprites.DlaSprites : horrorSprites.DlaFull;
+            int glyphCount = Mathf.Clamp(Mathf.RoundToInt((maxX - minX) / 16f), 10, 22);
+            for (int i = 0; i < glyphCount; i++)
+            {
+                float x = Mathf.Lerp(minX + 7f, maxX - 10f, i / (float)Mathf.Max(1, glyphCount - 1));
+                float y = i % 3 == 0 ? 4.8f : (i % 3 == 1 ? 1.8f : -2.1f);
+                Sprite glyph = PickSprite(glyphs, i, dataBlobSprite);
+                SpriteRenderer renderer = CreateWorldSprite("L01 Floating Checksum Fractal " + i, parent, new Vector2(x, y), new Vector2(1.45f + (i % 3) * 0.22f, 1.45f + (i % 3) * 0.22f), i % 2 == 0 ? new Color(0.34f, 1f, 0.80f, 0.34f) : new Color(0.64f, 0.18f, 1f, 0.24f), glyph, 10);
+                renderer.transform.localRotation = Quaternion.Euler(0f, 0f, i * 17f);
+                renderer.gameObject.AddComponent<CyberGuardianRotator>().degreesPerSecond = i % 2 == 0 ? 9f : -7f;
+                AddPulse(renderer, 0.02f, 0.08f, 1.6f + i * 0.05f, i * 0.29f);
+            }
+
+            int wireCount = Mathf.Clamp(Mathf.RoundToInt((maxX - minX) / 22f), 7, 16);
+            for (int i = 0; i < wireCount; i++)
+            {
+                float x = Mathf.Lerp(minX + 9f, maxX - 12f, i / (float)Mathf.Max(1, wireCount - 1));
+                Sprite wire = PickSprite(horrorSprites.ElectricWires, i, horrorSprites.DamagedCable);
+                SpriteRenderer renderer = CreateWorldSprite("L01 Hanging Electric Iso Wire Cluster " + i, parent, new Vector2(x, 5.15f - (i % 2) * 0.42f), new Vector2(2.4f, 1.65f), i % 2 == 0 ? new Color(0.52f, 1f, 1f, 0.20f) : new Color(1f, 0.16f, 0.52f, 0.18f), wire, 11);
+                renderer.transform.localRotation = Quaternion.Euler(0f, 0f, -11f + (i % 5) * 5.5f);
+                AddPulse(renderer, 0.015f, 0.065f, 2.3f, i * 0.18f);
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                float x = Mathf.Lerp(minX + 8f, maxX - 14f, i / 9f);
+                float topY = i % 2 == 0 ? 3.4f : 1.2f;
+                float bottomY = -3.85f + (i % 3) * 0.2f;
+                CreateCableStrand("L01 Sagging City Power Cable " + i, parent, new Vector2(x, topY), new Vector2(x + 5.8f, bottomY), 9, i % 2 == 0 ? new Color(0.025f, 0.04f, 0.045f, 0.90f) : new Color(0.10f, 0.85f, 0.95f, 0.38f), squareSprite, 10, i % 2 == 0, i * 0.33f);
+            }
+        }
+
+        private static void BuildServerMineThemeDressing(Transform parent, Sprite squareSprite, Sprite dataBlobSprite, CyberHorrorAssetSprites horrorSprites, float minX, float maxX)
+        {
+            CreateRepeatingVisualLayer("L02 Mine Far Cavern Backdrop", parent, horrorSprites.MineFarBackground, minX - 8f, maxX + 8f, 18f, 1.65f, new Vector2(16f, 9.4f), new Color(0.17f, 0.42f, 0.48f, 0.30f), 3, false);
+            CreateRepeatingVisualLayer("L02 Mine Rock Server Wall", parent, horrorSprites.MineBackground, minX - 6f, maxX + 6f, 14f, -0.85f, new Vector2(13.8f, 7.6f), new Color(0.18f, 0.62f, 0.68f, 0.24f), 5, true);
+            CreateRepeatingVisualLayer("L02 Mine Foreground Broken Lip", parent, horrorSprites.MineForeground, minX, maxX, 10f, -5.18f, new Vector2(9.2f, 2.9f), new Color(0.08f, 0.22f, 0.25f, 0.64f), 30, false);
+            CreateRepeatingVisualLayer("L02 Mine Dark Alternate Wall", parent, horrorSprites.MineTilesetAlt, minX + 5f, maxX - 5f, 24f, 4.85f, new Vector2(10.8f, 4.6f), new Color(0.44f, 0.78f, 0.82f, 0.12f), 6, true);
+
+            int machineCount = Mathf.Clamp(Mathf.RoundToInt((maxX - minX) / 24f), 9, 18);
+            for (int i = 0; i < machineCount; i++)
+            {
+                float x = Mathf.Lerp(minX + 10f, maxX - 14f, i / (float)Mathf.Max(1, machineCount - 1));
+                float y = i % 2 == 0 ? -2.35f : 3.65f;
+                Sprite pcb = PickSprite(horrorSprites.ElectricPcb, i, horrorSprites.MineTileset);
+                SpriteRenderer panel = CreateWorldSprite("L02 PCB Control Slab " + i, parent, new Vector2(x, y), new Vector2(3.2f, 2.25f), i % 2 == 0 ? new Color(0.34f, 1f, 1f, 0.26f) : new Color(1f, 0.20f, 0.58f, 0.18f), pcb, 12);
+                panel.transform.localRotation = Quaternion.Euler(0f, 0f, i % 2 == 0 ? -5f : 5f);
+                AddPulse(panel, 0.008f, 0.055f, 2.1f, i * 0.24f);
+            }
+
+            int teslaCount = Mathf.Clamp(Mathf.RoundToInt((maxX - minX) / 38f), 5, 10);
+            for (int i = 0; i < teslaCount; i++)
+            {
+                float x = Mathf.Lerp(minX + 16f, maxX - 20f, i / (float)Mathf.Max(1, teslaCount - 1));
+                Sprite tesla = PickSprite(horrorSprites.ElectricTesla, i, horrorSprites.ElectricNode);
+                SpriteRenderer coil = CreateWorldSprite("L02 Abandoned Tesla Battery " + i, parent, new Vector2(x, -3.85f + (i % 2) * 0.35f), new Vector2(3.1f, 2.4f), new Color(0.62f, 1f, 1f, 0.26f), tesla, 13);
+                coil.transform.localRotation = Quaternion.Euler(0f, 0f, -6f + i * 2.2f);
+                AddPulse(coil, 0.025f, 0.12f, 3.5f, i * 0.31f);
+                CreateAnimatedLightningDecor("L02 Tesla Leak Arc " + i, parent, new Vector2(x + 1.15f, -3.1f + (i % 2) * 0.26f), new Vector2(1.0f, 1.35f), PickSprite(horrorSprites.LightningFrames, i, lightningTrapSprite), horrorSprites.LightningFrames, new Color(0.70f, 1f, 1f, 0.72f), 18, 78f - i * 8f, i * 0.22f);
+            }
+
+            for (int i = 0; i < 13; i++)
+            {
+                float x = Mathf.Lerp(minX + 4f, maxX - 10f, i / 12f);
+                CreateCableStrand("L02 Mine Ceiling Cable Bundle " + i, parent, new Vector2(x, 5.95f), new Vector2(x + 4.2f, 3.6f - (i % 3) * 0.5f), 8, new Color(0.02f, 0.025f, 0.030f, 0.92f), squareSprite, 14, true, i * 0.41f);
+            }
+        }
+
+        private static void BuildAbyssStormThemeDressing(Transform parent, Sprite squareSprite, Sprite dataBlobSprite, CyberHorrorAssetSprites horrorSprites, float minX, float maxX)
+        {
+            CreateRepeatingVisualLayer("L03 Ghost Memory Frame Back", parent, PickSprite(horrorSprites.BoneBackgroundFrames, 0, null), minX - 8f, maxX + 8f, 28f, 1.4f, new Vector2(20f, 12f), new Color(0.38f, 1f, 0.92f, 0.11f), 3, true);
+            CreateRepeatingVisualLayer("L03 Action City Fallen World", parent, horrorSprites.ActionCityMockup, minX + 10f, maxX - 20f, 42f, -0.15f, new Vector2(21f, 9.2f), new Color(0.22f, 0.95f, 1f, 0.10f), 4, true);
+            CreateRepeatingVisualLayer("L03 Iso Storm Wire Ceiling", parent, PickSprite(horrorSprites.ElectricWires, 1, null), minX, maxX, 19f, 6.4f, new Vector2(4.2f, 2.4f), new Color(0.72f, 1f, 1f, 0.18f), 12, true);
+
+            int glyphCount = Mathf.Clamp(Mathf.RoundToInt((maxX - minX) / 13f), 20, 34);
+            for (int i = 0; i < glyphCount; i++)
+            {
+                float x = Mathf.Lerp(minX + 8f, maxX - 12f, i / (float)Mathf.Max(1, glyphCount - 1));
+                float y = -3.6f + (i % 6) * 1.75f;
+                Sprite glyph = PickSprite(horrorSprites.DlaFull, i, dataBlobSprite);
+                SpriteRenderer renderer = CreateWorldSprite("L03 Code Abyss Fractal Shard " + i, parent, new Vector2(x, y), new Vector2(1.75f + (i % 4) * 0.34f, 1.75f + (i % 4) * 0.34f), i % 3 == 0 ? new Color(1f, 0.10f, 0.48f, 0.30f) : new Color(0.36f, 1f, 1f, 0.24f), glyph, 10);
+                renderer.transform.localRotation = Quaternion.Euler(0f, 0f, i * 23f);
+                renderer.gameObject.AddComponent<CyberGuardianRotator>().degreesPerSecond = i % 2 == 0 ? 13f : -10f;
+                AddPulse(renderer, 0.025f, 0.09f, 2.3f, i * 0.19f);
+            }
+
+            int coilCount = Mathf.Clamp(Mathf.RoundToInt((maxX - minX) / 34f), 8, 15);
+            for (int i = 0; i < coilCount; i++)
+            {
+                float x = Mathf.Lerp(minX + 12f, maxX - 18f, i / (float)Mathf.Max(1, coilCount - 1));
+                float y = i % 2 == 0 ? 5.25f : -2.95f;
+                Sprite tesla = PickSprite(horrorSprites.ElectricTesla, i + 2, horrorSprites.ElectricNode);
+                SpriteRenderer tower = CreateWorldSprite("L03 Storm Tesla Crown " + i, parent, new Vector2(x, y), new Vector2(4.1f, 3.1f), i % 2 == 0 ? new Color(0.60f, 1f, 1f, 0.25f) : new Color(1f, 0.16f, 0.54f, 0.22f), tesla, 13);
+                tower.transform.localRotation = Quaternion.Euler(0f, 0f, i % 2 == 0 ? 7f : -7f);
+                AddPulse(tower, 0.035f, 0.14f, 3.8f, i * 0.27f);
+
+                Sprite faraday = PickSprite(horrorSprites.ElectricFaraday, i, tesla);
+                SpriteRenderer ring = CreateWorldSprite("L03 Faraday Storm Ring " + i, parent, new Vector2(x + 1.4f, y + 0.45f), new Vector2(2.3f, 2.3f), new Color(0.75f, 1f, 1f, 0.22f), faraday, 14);
+                ring.gameObject.AddComponent<CyberGuardianRotator>().degreesPerSecond = i % 2 == 0 ? 18f : -21f;
+                AddPulse(ring, 0.02f, 0.10f, 4.1f, i * 0.17f);
+            }
+
+            for (int i = 0; i < 16; i++)
+            {
+                float x = Mathf.Lerp(minX + 11f, maxX - 16f, i / 15f);
+                float startY = i % 2 == 0 ? 6.5f : 4.5f;
+                float endY = i % 2 == 0 ? 2.0f : -3.35f;
+                CreateCableStrand("L03 Broken High Voltage Spine " + i, parent, new Vector2(x, startY), new Vector2(x + 6.8f, endY), 11, i % 2 == 0 ? new Color(0.08f, 0.92f, 1f, 0.36f) : new Color(1f, 0.05f, 0.42f, 0.30f), squareSprite, 15, true, i * 0.29f);
+            }
+        }
+
+        private static void CreateRepeatingVisualLayer(string name, Transform parent, Sprite sprite, float minX, float maxX, float spacing, float y, Vector2 size, Color color, int sortingOrder, bool pulse)
+        {
+            if (sprite == null)
+            {
+                return;
+            }
+
+            int count = Mathf.CeilToInt((maxX - minX) / spacing) + 2;
+            for (int i = 0; i < count; i++)
+            {
+                float x = minX - spacing * 0.35f + i * spacing;
+                SpriteRenderer renderer = CreateWorldSprite(name + " " + i, parent, new Vector2(x, y + (i % 2) * 0.22f), size, color, sprite, sortingOrder);
+                if (pulse)
+                {
+                    AddPulse(renderer, 0.004f, 0.025f, 1.15f + (i % 5) * 0.12f, i * 0.25f);
+                }
+            }
+        }
+
+        private static void CreateAnimatedLightningDecor(string name, Transform parent, Vector2 position, Vector2 size, Sprite sprite, Sprite[] frames, Color color, int sortingOrder, float rotation, float phase)
+        {
+            SpriteRenderer renderer = CreateWorldSprite(name, parent, position, size, color, sprite, sortingOrder);
+            renderer.transform.localRotation = Quaternion.Euler(0f, 0f, rotation);
+            AddPulse(renderer, 0.045f, 0.24f, 8.6f, phase);
+            AddFlipbook(renderer, frames, 10.5f, true);
+        }
+
+        private static void AddFlipbook(SpriteRenderer renderer, Sprite[] frames, float framesPerSecond, bool randomStart)
+        {
+            if (renderer == null || frames == null || frames.Length <= 1)
+            {
+                return;
+            }
+
+            CyberGuardianSpriteFlipbookAnimator flipbook = renderer.gameObject.AddComponent<CyberGuardianSpriteFlipbookAnimator>();
+            flipbook.spriteRenderer = renderer;
+            flipbook.frames = frames;
+            flipbook.framesPerSecond = framesPerSecond;
+            flipbook.randomStart = randomStart;
+        }
+
+        private static void AttachMonsterAura(Transform target, Vector2 size, int sortingOrder, float phase)
+        {
+            Sprite auraSprite = PickSprite(monsterAuraFrames, Mathf.RoundToInt(phase * 10f), null);
+            if (target == null || auraSprite == null)
+            {
+                return;
+            }
+
+            SpriteRenderer aura = CreateLocalSprite("Animated Malware Aura From Bones", target, new Vector3(0f, 0f, 0.04f), size, new Color(0.45f, 1f, 0.92f, 0.26f), auraSprite, sortingOrder);
+            aura.gameObject.AddComponent<CyberGuardianRotator>().degreesPerSecond = 10f + phase * 1.7f;
+            AddPulse(aura, 0.035f, 0.11f, 2.8f, phase);
+            AddFlipbook(aura, monsterAuraFrames, 8.0f, true);
+        }
+
+        private static void AttachProjectileVfx(Transform target, Sprite fallbackSprite, int sortingOrder, bool includeShotBurst)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            Sprite[] trailFrames = projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames;
+            Sprite trailSprite = PickSprite(trailFrames, 1, fallbackSprite);
+            if (trailSprite != null)
+            {
+                SpriteRenderer trail = CreateLocalSprite("Clean Transparent Projectile Trail", target, new Vector3(-0.22f, 0f, 0.03f), new Vector2(0.44f, 0.15f), new Color(0.30f, 1f, 1f, 0.52f), trailSprite, sortingOrder - 1);
+                AddPulse(trail, 0.018f, 0.07f, 7.2f, 0.17f);
+                AddFlipbook(trail, trailFrames, 13.5f, true);
+            }
+
+            Sprite coreSprite = includeShotBurst && slingshotShotSprite != null ? slingshotShotSprite : PickSprite(projectileFlameFrames, 0, fallbackSprite);
+            if (coreSprite != null)
+            {
+                SpriteRenderer core = CreateLocalSprite("Clean Projectile Core", target, Vector3.zero, new Vector2(includeShotBurst ? 0.28f : 0.38f, includeShotBurst ? 0.28f : 0.38f), new Color(0.88f, 1f, 1f, includeShotBurst ? 0.92f : 0.82f), coreSprite, sortingOrder + 1);
+                AddPulse(core, 0.045f, 0.10f, 8.4f, 0.05f);
+                AddFlipbook(core, includeShotBurst ? null : projectileFlameFrames, 12.5f, true);
+            }
+
+            if (!includeShotBurst)
+            {
+                Sprite[] sparkFrames = lightningTrapFrames != null && lightningTrapFrames.Length > 0 ? lightningTrapFrames : projectileFlameFrames;
+                Sprite lightningSprite = PickSprite(sparkFrames, 0, null);
+                if (lightningSprite != null)
+                {
+                    SpriteRenderer spark = CreateLocalSprite("Clean Electric Projectile Skin", target, new Vector3(0.04f, 0.02f, 0.02f), new Vector2(0.42f, 0.24f), new Color(0.62f, 1f, 1f, 0.44f), lightningSprite, sortingOrder + 2);
+                    AddPulse(spark, 0.03f, 0.12f, 10.5f, 0.31f);
+                    AddFlipbook(spark, sparkFrames, 14.0f, true);
+                }
+            }
+        }
+
+        private static Sprite PickSprite(Sprite[] sprites, int index, Sprite fallback)
+        {
+            if (sprites == null || sprites.Length == 0)
+            {
+                return fallback;
+            }
+
+            int safeIndex = index == int.MinValue ? 0 : Mathf.Abs(index);
+            return sprites[safeIndex % sprites.Length];
+        }
+
+        private static int StableTextHash(string text)
+        {
+            unchecked
+            {
+                int hash = 23;
+                for (int i = 0; i < text.Length; i++)
+                {
+                    hash = hash * 31 + text[i];
+                }
+
+                return hash == int.MinValue ? 0 : Mathf.Abs(hash);
+            }
+        }
+
         private static void BuildStoryZones(Transform parent, CyberGuardianSideScrollerGame game, bool level2)
         {
             if (level2)
             {
-                CreateStoryZone("L02 Story Start", parent, game, new Vector2(-6.0f, 0.8f), new Vector2(2.0f, 4.0f), "ADEGAN 02: RERUNTUHAN SERVER", "Malware sudah mempelajari rute kamu. Dalam keamanan nyata, penyerang juga beradaptasi, jadi defender perlu mengganti password, menambal sistem, dan tidak bergantung pada satu lapis proteksi.");
-                CreateStoryZone("L02 Story Split Route", parent, game, new Vector2(54.0f, 0.6f), new Vector2(2.0f, 6.6f), "PERINGATAN RUTE", "Beberapa platform runtuh setelah disentuh. Perlakukan link mencurigakan dengan cara yang sama: periksa dulu, karena satu klik ceroboh bisa menjatuhkanmu ke halaman login palsu.");
-                CreateStoryZone("L02 Story Audit Trail", parent, game, new Vector2(108.0f, 1.2f), new Vector2(2.0f, 6.2f), "JEJAK AUDIT", "Sistem yang baik menyimpan log. Jika ada kejadian aneh, log membantu menemukan sumber, waktu kejadian, dan akun terdampak sebelum kerusakan menyebar.");
-                CreateStoryZone("L02 Story Zero Day", parent, game, new Vector2(123.0f, 2.1f), new Vector2(2.0f, 6.8f), "FIREWALL ZERO-DAY", "Zero-day adalah celah yang belum dikenal. Pertahanan terbaik adalah keamanan berlapis: update, hak akses minimal, backup, dan perilaku hati-hati.");
-                CreateStoryZone("L02 Story Privilege", parent, game, new Vector2(151.5f, 2.2f), new Vector2(2.0f, 6.8f), "HAK AKSES MINIMAL", "Jangan memberi akses administrator ke semua aplikasi. Least privilege membatasi kerusakan saat satu akun atau program disusupi.");
-                CreateStoryZone("L02 Story Telemetry", parent, game, new Vector2(195.0f, 2.4f), new Vector2(2.0f, 6.8f), "LOG KEAMANAN", "Telemetry mengubah kekacauan menjadi bukti. Saat alert tersambung ke log, defender bisa menemukan titik masuk dan menutupnya lebih cepat.");
-                CreateStoryZone("L02 Story Backup", parent, game, new Vector2(238.0f, 1.1f), new Vector2(2.0f, 7.0f), "RUTE BACKUP", "Backup adalah armor pemulihan. Jika malware mengenkripsi data, backup bersih menjaga misi tetap hidup tanpa membayar penyerang.");
+                CreateStoryZone("L02 Story Start", parent, game, new Vector2(-6.0f, 0.8f), new Vector2(2.0f, 4.0f), "ADEGAN 02: RERUNTUHAN SERVER MENENGAH", "Malware sudah mempelajari rute kamu. Di tingkat menengah, defender mulai menggabungkan password manager, MFA, patch rutin, backup, dan kebiasaan memeriksa link.");
+                CreateStoryZone("L02 Story Split Route", parent, game, new Vector2(54.0f, 0.6f), new Vector2(2.0f, 6.6f), "ANALISIS LINK", "Beberapa platform runtuh setelah disentuh. Link phishing juga begitu: lihat domain, jangan terburu-buru login, dan buka layanan penting dari aplikasi atau alamat resmi.");
+                CreateStoryZone("L02 Story Audit Trail", parent, game, new Vector2(108.0f, 1.2f), new Vector2(2.0f, 6.2f), "JEJAK AUDIT", "Log membantu menemukan kapan file aneh berjalan, akun mana yang dipakai, dan koneksi apa yang keluar. Tanpa log, defender hanya menebak.");
+                CreateStoryZone("L02 Story Zero Day", parent, game, new Vector2(123.0f, 2.1f), new Vector2(2.0f, 6.8f), "PERTAHANAN BERLAPIS", "Celah baru bisa muncul kapan saja. Pertahanan berlapis berarti update, firewall, hak akses minimal, backup, dan kebiasaan tidak menjalankan file mencurigakan.");
+                CreateStoryZone("L02 Story Privilege", parent, game, new Vector2(151.5f, 2.2f), new Vector2(2.0f, 6.8f), "HAK AKSES MINIMAL", "Aplikasi biasa tidak perlu izin administrator. Least privilege membuat kerusakan tetap terbatas saat satu program atau akun disusupi.");
+                CreateStoryZone("L02 Story Telemetry", parent, game, new Vector2(195.0f, 2.4f), new Vector2(2.0f, 6.8f), "TELEMETRI ANCAMAN", "Antivirus, firewall, dan sistem operasi memberi sinyal. Gabungkan alert itu agar pola malware terlihat sebelum menyebar.");
+                CreateStoryZone("L02 Story Backup", parent, game, new Vector2(238.0f, 1.1f), new Vector2(2.0f, 7.0f), "BACKUP BERSIH", "Backup yang diuji dan dipisahkan adalah jalan keluar dari ransomware. Simpan salinan penting di tempat yang tidak mudah dihapus malware.");
                 CreateStoryZone("L02 Story Boss Gate", parent, game, new Vector2(263.0f, 1.1f), new Vector2(2.0f, 5.4f), "BOS: DATA REAPER", "Grid perisai di sini lebih rapat. Hancurkan blok kuis, hindari paket serangan, dan pakai cache overclock sebelum celah terakhir tertutup.");
                 return;
             }
 
-            CreateStoryZone("L01 Story Start", parent, game, new Vector2(-6.5f, 0.9f), new Vector2(2.0f, 4.0f), "ADEGAN 01: HUTAN DATA", "Cyber Guardian manusia memasuki memori yang terinfeksi. Setiap malware beast mewakili unduhan tidak aman, lampiran asing, dan file yang harus dipindai sebelum dibuka.");
-            CreateStoryZone("L01 Story Fork", parent, game, new Vector2(8.0f, -0.2f), new Vector2(2.0f, 6.0f), "PILIHAN RUTE PERTAMA", "Jalur bawah menyimpan power, tetapi platformnya tidak stabil. Dalam keamanan cyber, jalan pintas sering tampak menguntungkan tetapi bisa membawa phishing, malware, atau kredensial curian.");
-            CreateStoryZone("L01 Story Password", parent, game, new Vector2(34.0f, 0.2f), new Vector2(2.0f, 6.0f), "PELAJARAN PASSWORD", "Password kuat harus panjang, unik, dan dilindungi autentikasi dua faktor. Memakai ulang satu password membuat satu kebocoran berubah menjadi banyak kebocoran.");
-            CreateStoryZone("L01 Story Patch Vault", parent, game, new Vector2(86.0f, 1.0f), new Vector2(2.0f, 6.0f), "RUANG PATCH", "Update bukan hanya fitur baru. Update menutup celah keamanan yang sudah diketahui, jadi menunda patch memberi malware lebih banyak waktu untuk menyerang sistem.");
-            CreateStoryZone("L01 Story Integrity", parent, game, new Vector2(126.0f, 1.4f), new Vector2(2.0f, 6.4f), "INTEGRITAS FILE", "Checksum membantu memastikan file tidak berubah. Jika nilainya salah, file bisa rusak atau berbahaya.");
-            CreateStoryZone("L01 Story MFA", parent, game, new Vector2(194.4f, 2.3f), new Vector2(2.0f, 6.8f), "AKSES MULTI-FAKTOR", "Password adalah satu kunci. Autentikasi multi-faktor menambah kunci lain, sehingga password curian saja tidak cukup.");
+            CreateStoryZone("L01 Story Start", parent, game, new Vector2(-6.5f, 0.9f), new Vector2(2.0f, 4.0f), "ADEGAN 01: DASAR KEAMANAN GADGET", "Gadget menyimpan foto, chat, akun, dan data sekolah. Mengamankannya berarti melindungi identitas, uang digital, dan privasi dari malware, phishing, dan pencuri akun.");
+            CreateStoryZone("L01 Story Fork", parent, game, new Vector2(8.0f, -0.2f), new Vector2(2.0f, 6.0f), "JANGAN AMBIL JALAN PINTAS", "Unduhan gratis, APK tidak resmi, dan link hadiah sering tampak menarik. Periksa sumbernya dulu karena jalan pintas bisa membawa virus atau halaman login palsu.");
+            CreateStoryZone("L01 Story Password", parent, game, new Vector2(34.0f, 0.2f), new Vector2(2.0f, 6.0f), "KUNCI LAYAR DAN PASSWORD", "Pakai kunci layar, password unik, dan PIN yang tidak mudah ditebak. Jangan memakai tanggal lahir atau satu password untuk semua akun.");
+            CreateStoryZone("L01 Story Patch Vault", parent, game, new Vector2(86.0f, 1.0f), new Vector2(2.0f, 6.0f), "UPDATE ITU PELINDUNG", "Update bukan hanya fitur baru. Update menutup celah keamanan yang sudah diketahui, jadi menunda patch memberi malware lebih banyak waktu menyerang.");
+            CreateStoryZone("L01 Story Integrity", parent, game, new Vector2(126.0f, 1.4f), new Vector2(2.0f, 6.4f), "HINDARI VIRUS", "Jangan membuka lampiran asing, jangan menjalankan file dari sumber tidak jelas, dan scan file mencurigakan. Malware sering menyamar sebagai dokumen, game, atau installer.");
+            CreateStoryZone("L01 Story MFA", parent, game, new Vector2(194.4f, 2.3f), new Vector2(2.0f, 6.8f), "WASPADA PHISHING", "Phishing memancing panik agar kamu memasukkan password atau OTP. Berhenti sebentar, cek alamat situs, dan jangan pernah membagikan kode OTP.");
             CreateStoryZone("L01 Story Boss Gate", parent, game, new Vector2(212.4f, 1.0f), new Vector2(2.0f, 5.4f), "BOS: FIREWALL VIRUS", "Perisai bos adalah dinding kuis. Jawab dengan benar untuk menghapus blok, membuat jalur serangan bersih, dan membuktikan sistem aman.");
         }
 
@@ -1407,10 +2018,15 @@ namespace CyberGuardian.Editor
             projectile.transform.localScale = Vector3.one;
 
             SpriteRenderer renderer = projectile.GetComponent<SpriteRenderer>();
-            renderer.sprite = circleSprite;
-            renderer.color = new Color(0.42f, 1f, 1f, 0.92f);
+            Sprite[] fireballFrames = projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames;
+            renderer.sprite = slingshotShotSprite != null ? slingshotShotSprite : PickSprite(fireballFrames, 1, circleSprite);
+            renderer.color = new Color(0.88f, 1f, 1f, 0.94f);
             renderer.sortingOrder = 31;
-            ScaleSprite(renderer, new Vector2(0.38f, 0.38f));
+            ScaleSprite(renderer, new Vector2(0.32f, 0.32f));
+            if (slingshotShotSprite == null)
+            {
+                AddFlipbook(renderer, fireballFrames, 13.5f, true);
+            }
 
             Rigidbody2D body = projectile.GetComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Kinematic;
@@ -1419,7 +2035,7 @@ namespace CyberGuardian.Editor
 
             CircleCollider2D collider = projectile.GetComponent<CircleCollider2D>();
             collider.isTrigger = true;
-            collider.radius = 0.18f;
+            collider.radius = 0.12f;
 
             CyberGuardianPlayerProjectile2D projectileLogic = projectile.GetComponent<CyberGuardianPlayerProjectile2D>();
             projectileLogic.game = game;
@@ -1427,7 +2043,7 @@ namespace CyberGuardian.Editor
             projectileLogic.lifetime = 1.55f;
             AddPulse(renderer, 0.10f, 0.12f, 9.2f, 0f);
 
-            CreateLocalSprite("Fireball Hot Core", projectile.transform, Vector3.zero, new Vector2(0.17f, 0.17f), Color.white, circleSprite, 32);
+            AttachProjectileVfx(projectile.transform, circleSprite, 32, true);
             projectile.SetActive(false);
             return projectile;
         }
@@ -1463,13 +2079,13 @@ namespace CyberGuardian.Editor
             CreateElectricNode("Upload Tower Electric Node", parent, game, new Vector2(67.0f, 1.10f), 16, horrorSprites.ElectricNode, squareSprite);
             CreateLaserBarrier("Risk Span Laser Wall", parent, game, new Vector2(71.1f, 2.42f), 1.8f, 2, 17, squareSprite);
             CreateGlitchMine("False Drop Glitch Mine", parent, game, new Vector2(69.2f, -2.74f), 18, horrorSprites.GlitchMine, squareSprite);
-            CreateVirusTurret("Virus Turret Upload Exit", parent, game, new Vector2(75.2f, 1.32f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
-            CreateSawTrap("Old Gate Training Saw", parent, game, new Vector2(76.1f, 0.72f), 0.95f, 18, sawBladeSprite, squareSprite);
+            CreateVirusTurret("Virus Turret Upload Exit", parent, game, new Vector2(75.6f, 1.32f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
+            CreateSawTrap("Old Gate Training Saw", parent, game, new Vector2(78.6f, 0.82f), 0.95f, 18, sawBladeSprite, squareSprite);
             CreateLaserBarrier("Checksum Vault Laser Stack", parent, game, new Vector2(86.2f, 0.95f), 2.3f, 3, 18, squareSprite);
             CreateGlitchMine("Checksum Vault Glitch Mine A", parent, game, new Vector2(89.0f, 2.08f), 20, horrorSprites.GlitchMine, squareSprite);
             CreateCrushingBlock("Hash Tower Crusher", parent, game, new Vector2(96.0f, 4.62f), new Vector3(0f, -1.55f, 0f), 22, horrorSprites.CrushingBlock, squareSprite);
             CreateVirusTurret("Zero Trust Corridor Turret", parent, game, new Vector2(101.0f, 1.62f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
-            CreateSawTrap("Boss Gate Saw", parent, game, new Vector2(104.2f, 0.62f), 0.95f, 24, sawBladeSprite, squareSprite);
+            CreateSawTrap("Boss Gate Saw", parent, game, new Vector2(106.2f, 0.74f), 0.95f, 24, sawBladeSprite, squareSprite);
             CreateSwingingSawTrap("Integrity Hanging Saw A", parent, game, new Vector2(119.5f, 4.48f), 1.0f, 2.25f, 25, sawBladeSprite, squareSprite, 0f);
             CreateLaserBarrier("Integrity Checksum Laser", parent, game, new Vector2(132.0f, 3.65f), 2.1f, 2, 19, squareSprite);
             CreateSwingingSawTrap("Checksum Hanging Saw B", parent, game, new Vector2(140.4f, 5.55f), 1.08f, 2.05f, 26, sawBladeSprite, squareSprite, 0.65f);
@@ -1478,8 +2094,12 @@ namespace CyberGuardian.Editor
             CreateCrushingBlock("Firewall Tunnel Crusher", parent, game, new Vector2(178.2f, 2.20f), new Vector3(0f, -1.28f, 0f), 24, horrorSprites.CrushingBlock, squareSprite);
             CreateVirusTurret("MFA Upper Span Turret", parent, game, new Vector2(194.4f, 4.02f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
             CreateSwingingSawTrap("MFA Hanging Saw C", parent, game, new Vector2(205.0f, 4.60f), 1.02f, 2.20f, 28, sawBladeSprite, squareSprite, 1.85f);
-            CreateLaserBarrier("Final Gate Packet Laser", parent, game, new Vector2(212.1f, 1.06f), 2.2f, 3, 22, squareSprite);
-            CreateSawTrap("Final Boss Gate Floor Saw", parent, game, new Vector2(213.8f, 0.98f), 0.92f, 25, sawBladeSprite, squareSprite);
+            CreateLaserBarrier("Final Gate Packet Laser", parent, game, new Vector2(209.8f, 1.10f), 2.2f, 3, 22, squareSprite);
+            CreateSawTrap("Final Boss Gate Floor Saw", parent, game, new Vector2(216.2f, 0.98f), 0.92f, 25, sawBladeSprite, squareSprite);
+            CreateElectricNode("L01 Data City Transformer Node A", parent, game, new Vector2(132.2f, 3.25f), 19, horrorSprites.ElectricNode, squareSprite);
+            CreateElectricNode("L01 Data City Transformer Node B", parent, game, new Vector2(185.6f, 0.88f), 21, horrorSprites.ElectricNode, squareSprite);
+            CreateLaserBarrier("L01 Abandoned City Security Gate", parent, game, new Vector2(151.7f, 1.60f), 2.4f, 3, 20, squareSprite);
+            CreateLaserBarrier("L01 MFA Cable Leak Barrier", parent, game, new Vector2(198.4f, 3.26f), 2.2f, 2, 20, squareSprite);
 
             CreateEnemy("Virus Soldier Integrity M", parent, game, new Vector2(112.6f, 1.54f), squareSprite, circleSprite, 2.55f, 1.7f);
             CreateEnemy("Virus Soldier Checksum N", parent, game, new Vector2(140.0f, 3.96f), squareSprite, circleSprite, 2.80f, 2.0f);
@@ -1522,13 +2142,13 @@ namespace CyberGuardian.Editor
             CreateElectricNode("L02 Lower Elevator Electric Node", parent, game, new Vector2(54.0f, -1.88f), 18, horrorSprites.ElectricNode, squareSprite);
             CreateLaserBarrier("L02 Split Route Laser Fence", parent, game, new Vector2(63.8f, 1.35f), 2.5f, 2, 18, squareSprite);
             CreateSawTrap("L02 Risk Hover Saw", parent, game, new Vector2(78.7f, 1.05f), 0.92f, 20, sawBladeSprite, squareSprite);
-            CreateVirusTurret("L02 Upload Gate Virus Turret", parent, game, new Vector2(89.2f, 1.64f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
-            CreateGlitchMine("L02 Boss Approach Mine", parent, game, new Vector2(95.2f, 1.38f), 20, horrorSprites.GlitchMine, squareSprite);
+            CreateVirusTurret("L02 Upload Gate Virus Turret", parent, game, new Vector2(91.2f, 1.64f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
+            CreateGlitchMine("L02 Boss Approach Mine", parent, game, new Vector2(98.0f, 1.38f), 20, horrorSprites.GlitchMine, squareSprite);
             CreateLaserBarrier("L02 Encrypted Cache Laser Grid", parent, game, new Vector2(104.0f, 2.05f), 2.4f, 3, 20, squareSprite);
             CreateCrushingBlock("L02 Audit Trail Crusher", parent, game, new Vector2(117.2f, 4.55f), new Vector3(0f, -1.65f, 0f), 24, horrorSprites.CrushingBlock, squareSprite);
-            CreateVirusTurret("L02 Zero Day Firewall Turret", parent, game, new Vector2(124.4f, 3.98f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
-            CreateSawTrap("L02 Boss Gate Twin Saw A", parent, game, new Vector2(129.2f, 1.05f), 0.85f, 24, sawBladeSprite, squareSprite);
-            CreateSawTrap("L02 Boss Gate Twin Saw B", parent, game, new Vector2(132.2f, 2.15f), 0.85f, 24, sawBladeSprite, squareSprite);
+            CreateVirusTurret("L02 Zero Day Firewall Turret", parent, game, new Vector2(126.2f, 3.98f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
+            CreateSawTrap("L02 Boss Gate Twin Saw A", parent, game, new Vector2(130.8f, 1.05f), 0.85f, 24, sawBladeSprite, squareSprite);
+            CreateSawTrap("L02 Boss Gate Twin Saw B", parent, game, new Vector2(134.6f, 2.15f), 0.85f, 24, sawBladeSprite, squareSprite);
             CreateSwingingSawTrap("L02 Auth Vault Hanging Saw", parent, game, new Vector2(138.8f, 4.65f), 1.06f, 2.35f, 28, sawBladeSprite, squareSprite, 0.15f);
             CreateLaserBarrier("L02 Privilege Escalation Laser", parent, game, new Vector2(152.0f, 3.82f), 2.4f, 3, 22, squareSprite);
             CreateSwingingSawTrap("L02 Memory Leak Pendulum Saw", parent, game, new Vector2(164.5f, 4.58f), 1.10f, 2.50f, 29, sawBladeSprite, squareSprite, 0.9f);
@@ -1538,7 +2158,11 @@ namespace CyberGuardian.Editor
             CreateSwingingSawTrap("L02 Kernel Panic Saw", parent, game, new Vector2(221.2f, 4.86f), 1.08f, 2.65f, 30, sawBladeSprite, squareSprite, 2.1f);
             CreateVirusTurret("L02 Enclave Run Virus Turret", parent, game, new Vector2(246.0f, 3.88f), Vector2.left, horrorSprites.VirusTurret, squareSprite);
             CreateSwingingSawTrap("L02 Final Gate Hanging Saw", parent, game, new Vector2(257.0f, 4.42f), 1.06f, 2.28f, 31, sawBladeSprite, squareSprite, 2.7f);
-            CreateLaserBarrier("L02 Last Firewall Laser", parent, game, new Vector2(263.0f, 1.18f), 2.15f, 3, 24, squareSprite);
+            CreateLaserBarrier("L02 Last Firewall Laser", parent, game, new Vector2(260.4f, 1.18f), 2.15f, 3, 24, squareSprite);
+            CreateElectricNode("L02 Server Mine Tesla Leak A", parent, game, new Vector2(168.2f, 1.52f), 23, horrorSprites.ElectricNode, squareSprite);
+            CreateElectricNode("L02 Server Mine Tesla Leak B", parent, game, new Vector2(228.8f, 3.45f), 24, horrorSprites.ElectricNode, squareSprite);
+            CreateLaserBarrier("L02 Mine Elevator Lockdown Beam", parent, game, new Vector2(187.6f, 2.95f), 2.6f, 3, 23, squareSprite);
+            CreateLaserBarrier("L02 Backup Vault Cross Beam", parent, game, new Vector2(238.2f, 0.72f), 2.2f, 2, 23, squareSprite);
 
             CreateEnemy("Virus Soldier K", parent, game, new Vector2(88.2f, -1.60f), squareSprite, circleSprite, 2.55f, 2.2f);
             CreateEnemy("Virus Soldier L", parent, game, new Vector2(96.0f, 1.28f), squareSprite, circleSprite, 2.70f, 1.8f);
@@ -1562,6 +2186,7 @@ namespace CyberGuardian.Editor
             float leftGateX = game.bossArenaMinX - 0.7f;
             float rightWallX = game.bossArenaMaxX + 5.1f;
             float bossX = game.bossArenaMaxX + 3.0f;
+            float bossGroundCenterY = 1.46f;
             float shieldStartX = game.bossArenaMaxX - 3.3f;
             float projectileX = game.bossArenaMinX + 0.9f;
 
@@ -1576,28 +2201,45 @@ namespace CyberGuardian.Editor
             CreatePlatform("Boss Left Gate", parent, new Vector2(leftGateX, 2.15f), new Vector2(0.35f, 4.7f), Hex("1C343C"), squareSprite);
             CreatePlatform("Boss Right Wall", parent, new Vector2(rightWallX, 2.15f), new Vector2(0.35f, 4.7f), Hex("1C343C"), squareSprite);
 
-            SpriteRenderer bossGlow = CreateWorldSprite("Boss Glow", parent, new Vector2(bossX, 2.15f), new Vector2(3.6f, 3.6f), new Color(1f, 0.07f, 0.14f, 0.26f), circleSprite, 15);
+            SpriteRenderer bossGlow = CreateWorldSprite("Boss Hit Core Invisible", parent, new Vector2(bossX, bossGroundCenterY), new Vector2(2.75f, 2.75f), new Color(1f, 0.07f, 0.14f, 0.018f), circleSprite, 13);
             bossGlow.gameObject.AddComponent<CyberGuardianBossCore>().game = game;
             CircleCollider2D bossCollider = bossGlow.gameObject.AddComponent<CircleCollider2D>();
             bossCollider.isTrigger = true;
-            bossCollider.radius = 1.18f;
+            bossCollider.radius = 1.05f;
             game.bossCore = bossGlow.GetComponent<CyberGuardianBossCore>();
-            Sprite bossSprite = bossGameplaySprite != null ? bossGameplaySprite : (bossGameplaySideSprite != null ? bossGameplaySideSprite : (bossGeneratedSprite != null ? bossGeneratedSprite : (virusSprite != null ? virusSprite : circleSprite)));
-            Vector2 bossSize = bossGameplaySprite != null || bossGameplaySideSprite != null ? new Vector2(4.05f, 4.05f) : (bossGeneratedSprite != null ? new Vector2(2.55f, 2.55f) : new Vector2(1.95f, 1.95f));
-            SpriteRenderer bossArt = CreateWorldSprite("Boss Malware Core Art", parent, new Vector2(bossX, 2.15f), bossSize, Color.white, bossSprite, 18);
-            if (bossGameplaySprite == null && bossGameplaySideSprite == null)
+            AddBossMotion(bossGlow.transform, new Vector2(0.12f, 0.045f), 1.18f, 0.18f, 0.55f, true);
+            Sprite regularBossAuraSprite = PickSprite(monsterAuraFrames, 2, circleSprite);
+            SpriteRenderer regularBossAura = CreateWorldSprite("Boss Animated Bones Aura", parent, new Vector2(bossX, bossGroundCenterY), new Vector2(4.95f, 4.95f), new Color(0.52f, 1f, 0.95f, 0.22f), regularBossAuraSprite, 14);
+            regularBossAura.gameObject.AddComponent<CyberGuardianRotator>().degreesPerSecond = -7f;
+            AddPulse(regularBossAura, 0.035f, 0.12f, 2.7f, 0.26f);
+            AddFlipbook(regularBossAura, monsterAuraFrames, 8.0f, true);
+            AddBossMotion(regularBossAura.transform, new Vector2(0.12f, 0.045f), 1.18f, 0.18f, 0.55f, true);
+            bool hasGroundBossAnimation = groundBossAttackFrames != null && groundBossAttackFrames.Length > 0;
+            Sprite bossSprite = hasGroundBossAnimation ? groundBossAttackFrames[0] : (bossGameplaySprite != null ? bossGameplaySprite : (bossGameplaySideSprite != null ? bossGameplaySideSprite : (bossGeneratedSprite != null ? bossGeneratedSprite : (virusSprite != null ? virusSprite : circleSprite))));
+            Vector2 bossSize = hasGroundBossAnimation || bossGameplaySprite != null || bossGameplaySideSprite != null ? new Vector2(4.05f, 4.05f) : (bossGeneratedSprite != null ? new Vector2(2.55f, 2.55f) : new Vector2(1.95f, 1.95f));
+            SpriteRenderer bossArt = CreateWorldSprite("Boss Malware Core Art", parent, new Vector2(bossX, bossGroundCenterY), bossSize, Color.white, bossSprite, 18);
+            game.bossCinematicTarget = bossArt.transform;
+            game.bossVisualRoot = bossArt.transform;
+            AddBossMotion(bossArt.transform, new Vector2(0.12f, 0.045f), 1.18f, 0.18f, 1.15f, true);
+            if (hasGroundBossAnimation)
+            {
+                AddFlipbook(bossArt, groundBossAttackFrames, 7.0f, true);
+            }
+
+            if (!hasGroundBossAnimation && bossGameplaySprite == null && bossGameplaySideSprite == null)
             {
                 AttachGeneratedGlbVisual(BossGlbPath, bossArt.transform, "Generated Malware Boss GLB Visual", new Vector3(0f, -0.88f, -0.28f), Vector3.one * 0.55f, new Vector3(0f, 180f, 0f));
             }
 
-            if (virusAltSprite != null && bossGameplaySprite == null && bossGameplaySideSprite == null)
+            if (virusAltSprite != null && !hasGroundBossAnimation && bossGameplaySprite == null && bossGameplaySideSprite == null)
             {
-                CreateWorldSprite("Boss Mutation Overlay", parent, new Vector2(bossX + 0.28f, 2.35f), new Vector2(1.1f, 1.1f), new Color(1f, 0.35f, 0.45f, 0.68f), virusAltSprite, 19);
+                CreateWorldSprite("Boss Mutation Overlay", parent, new Vector2(bossX + 0.28f, bossGroundCenterY + 0.2f), new Vector2(1.1f, 1.1f), new Color(1f, 0.35f, 0.45f, 0.68f), virusAltSprite, 19);
             }
 
             Transform bossSpawn = new GameObject("Boss Projectile Spawn").transform;
             bossSpawn.SetParent(parent, false);
-            bossSpawn.position = new Vector3(bossX - 1.2f, 2.25f, 0f);
+            bossSpawn.position = new Vector3(bossX - 1.2f, bossGroundCenterY + 0.42f, 0f);
+            AddBossMotion(bossSpawn, new Vector2(0.12f, 0.045f), 1.18f, 0.18f, 0f, true);
             game.bossProjectileSpawn = bossSpawn;
 
             if (crosshairSprite != null)
@@ -1619,8 +2261,10 @@ namespace CyberGuardian.Editor
                 }
             }
 
-            Sprite projectileActive = projectileGeneratedSprite != null ? projectileGeneratedSprite : (projectileSprite != null ? projectileSprite : circleSprite);
-            GameObject projectile = CreateWorldSprite("Patch Core Slingshot Projectile", parent, new Vector2(projectileX, 1.1f), new Vector2(0.58f, 0.58f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
+            Sprite[] bossSlingshotProjectileFrames = projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames;
+            Sprite projectileActive = PickSprite(bossSlingshotProjectileFrames, 1, projectileGeneratedSprite != null ? projectileGeneratedSprite : (projectileSprite != null ? projectileSprite : circleSprite));
+            GameObject projectile = CreateWorldSprite("Patch Core Slingshot Projectile", parent, new Vector2(projectileX, 1.1f), new Vector2(0.40f, 0.40f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
+            AddFlipbook(projectile.GetComponent<SpriteRenderer>(), bossSlingshotProjectileFrames, 12.0f, true);
             Rigidbody2D projectileBody = projectile.AddComponent<Rigidbody2D>();
             projectileBody.gravityScale = 1f;
             projectileBody.simulated = false;
@@ -1628,12 +2272,13 @@ namespace CyberGuardian.Editor
             projectileBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             CircleCollider2D projectileCollider = projectile.AddComponent<CircleCollider2D>();
             projectileCollider.isTrigger = true;
+            projectileCollider.radius = 0.14f;
             projectileCollider.enabled = false;
             projectile.AddComponent<CyberGuardianSlingshotProjectile2D>().game = game;
             game.slingshotProjectile = projectile.transform;
             game.slingshotBody = projectileBody;
             game.slingshotCollider = projectileCollider;
-            AttachGeneratedGlbVisual(ProjectileGlbPath, projectile.transform, "Generated Patch Core GLB Visual", new Vector3(0f, -0.42f, -0.18f), Vector3.one * 0.24f, new Vector3(0f, 180f, 0f));
+            AttachProjectileVfx(projectile.transform, circleSprite, 31, true);
             projectile.SetActive(false);
 
             game.slingshotBandA = CreateLine("Slingshot Band A", parent, new Color(0.55f, 1f, 1f, 0.88f), 0.08f);
@@ -1644,19 +2289,28 @@ namespace CyberGuardian.Editor
         private static void BuildHud(CyberGuardianSideScrollerGame game, Sprite panelSprite, Sprite buttonSprite, Sprite frameSprite, CyberHorrorAssetSprites horrorSprites, Font font)
         {
             GameObject canvasObject = CreateCanvas("Cyber Guardian HUD");
-            Sprite barBack = horrorSprites.UiBarBack != null ? horrorSprites.UiBarBack : panelSprite;
+            Sprite barBack = horrorSprites.HpBarBack != null ? horrorSprites.HpBarBack : (horrorSprites.UiBarBack != null ? horrorSprites.UiBarBack : panelSprite);
+            Sprite hpFill = horrorSprites.HpBarRed != null ? horrorSprites.HpBarRed : (horrorSprites.UiHpBarFill != null ? horrorSprites.UiHpBarFill : panelSprite);
+            Sprite boostFill = horrorSprites.HpBarBlue != null ? horrorSprites.HpBarBlue : (horrorSprites.UiBoostBarFill != null ? horrorSprites.UiBoostBarFill : panelSprite);
+            Sprite bossFill = horrorSprites.HpBarGreen != null ? horrorSprites.HpBarGreen : (horrorSprites.UiBossBarFill != null ? horrorSprites.UiBossBarFill : panelSprite);
             Sprite panelFrame = horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite;
 
-            AddPanel("Player Combat Bars Back", canvasObject.transform, new Vector2(-700f, 498f), new Vector2(630f, 112f), Color.black, panelFrame, 0.58f);
-            AddImage("HP Icon Frame", canvasObject.transform, new Vector2(-960f, 522f), new Vector2(68f, 58f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
-            game.healthText = AddText("HP Icon", canvasObject.transform, new Vector2(-960f, 522f), new Vector2(62f, 36f), "HP", 22, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.playerHealthFill = AddCyberBar(canvasObject.transform, new Vector2(-690f, 522f), new Vector2(440f, 40f), Hex("FF2F83"), barBack, horrorSprites.UiHpBarFill != null ? horrorSprites.UiHpBarFill : panelSprite);
-            game.livesText = AddText("Lives Text", canvasObject.transform, new Vector2(-420f, 522f), new Vector2(120f, 30f), "NYAWA 3", 14, Hex("FFD85E"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddPanel("Player Combat Bars Back", canvasObject.transform, new Vector2(-620f, 498f), new Vector2(630f, 112f), Color.black, panelFrame, 0.58f);
+            AddImage("HP Icon Frame", canvasObject.transform, new Vector2(-880f, 522f), new Vector2(68f, 58f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
+            game.healthText = AddText("HP Icon", canvasObject.transform, new Vector2(-880f, 522f), new Vector2(62f, 36f), "HP", 22, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.playerHealthFill = AddCyberBar(canvasObject.transform, new Vector2(-610f, 522f), new Vector2(440f, 40f), Hex("FF2F83"), barBack, hpFill);
+            Sprite heartIcon = horrorSprites.LifeHeartIcon != null ? horrorSprites.LifeHeartIcon : (horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
+            game.lifeIconImages = new Image[3];
+            for (int i = 0; i < game.lifeIconImages.Length; i++)
+            {
+                game.lifeIconImages[i] = AddImage("Life Heart " + (i + 1).ToString("0"), canvasObject.transform, new Vector2(-382f + i * 38f, 522f), new Vector2(32f, 32f), Color.white, heartIcon);
+                game.lifeIconImages[i].preserveAspect = true;
+            }
 
-            AddText("Boost Label", canvasObject.transform, new Vector2(-960f, 470f), new Vector2(86f, 26f), "ENERGI", 13, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.boostEnergyFill = AddCyberBar(canvasObject.transform, new Vector2(-690f, 470f), new Vector2(440f, 34f), Hex("16E8FF"), barBack, horrorSprites.UiBoostBarFill != null ? horrorSprites.UiBoostBarFill : panelSprite);
-            game.modeText = AddText("Mode Text", canvasObject.transform, new Vector2(-466f, 470f), new Vector2(74f, 24f), "ENERGI", 11, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.statusText = AddText("Status Text", canvasObject.transform, new Vector2(-700f, 426f), new Vector2(560f, 28f), "MODE PETUALANGAN", 13, Hex("B7F7FF"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
+            AddText("Boost Label", canvasObject.transform, new Vector2(-880f, 470f), new Vector2(86f, 26f), "ENERGI", 13, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.boostEnergyFill = AddCyberBar(canvasObject.transform, new Vector2(-610f, 470f), new Vector2(440f, 34f), Hex("16E8FF"), barBack, boostFill);
+            game.modeText = AddText("Mode Text", canvasObject.transform, new Vector2(-386f, 470f), new Vector2(74f, 24f), "ENERGI", 11, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.statusText = AddText("Status Text", canvasObject.transform, new Vector2(-620f, 426f), new Vector2(560f, 28f), "MODE PETUALANGAN", 13, Hex("B7F7FF"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
 
             AddImage("Score Cyber Card", canvasObject.transform, new Vector2(720f, 518f), new Vector2(320f, 64f), Color.white, horrorSprites.UiScorePanel != null ? horrorSprites.UiScorePanel : panelSprite);
             AddText("Score Label", canvasObject.transform, new Vector2(612f, 532f), new Vector2(92f, 22f), "SKOR", 14, Hex("FF5B9B"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
@@ -1667,12 +2321,14 @@ namespace CyberGuardian.Editor
             bossHud.transform.SetParent(canvasObject.transform, false);
             game.bossHudGroup = bossHud;
             AddImage("Boss Core Icon", bossHud.transform, new Vector2(-376f, 424f), new Vector2(76f, 76f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
-            game.bossHealthFill = AddCyberBar(bossHud.transform, new Vector2(-8f, 424f), new Vector2(630f, 38f), Hex("FF2F83"), barBack, horrorSprites.UiBossBarFill != null ? horrorSprites.UiBossBarFill : panelSprite);
+            game.bossHealthFill = AddCyberBar(bossHud.transform, new Vector2(-8f, 424f), new Vector2(630f, 38f), Hex("FF2F83"), barBack, bossFill);
             game.bossText = AddText("Boss Text", bossHud.transform, new Vector2(-8f, 464f), new Vector2(500f, 28f), "HP BOS", 21, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             bossHud.SetActive(false);
-            BuildStoryPanel(canvasObject.transform, game, horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite, font);
-            BuildBossDialoguePanel(canvasObject.transform, game, dialogueBoxSprite != null ? dialogueBoxSprite : panelFrame, font);
-            Sprite modalPanel = horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite;
+            Sprite cardPanel = horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite;
+            BuildStoryPanel(canvasObject.transform, game, cardPanel, font);
+            BuildBossDialoguePanel(canvasObject.transform, game, dialogueBoxSprite != null ? dialogueBoxSprite : cardPanel, font);
+            BuildEducationCard(canvasObject.transform, game, cardPanel, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite, font);
+            Sprite modalPanel = cardPanel;
             Sprite modalButton = horrorSprites.UiButtonCyan != null ? horrorSprites.UiButtonCyan : buttonSprite;
             BuildQuizModal(canvasObject.transform, game, modalPanel, modalButton, frameSprite, font);
             BuildPauseModal(canvasObject.transform, game, modalPanel, modalButton, frameSprite, horrorSprites.UiButtonMagenta != null ? horrorSprites.UiButtonMagenta : buttonSprite, font);
@@ -1709,7 +2365,7 @@ namespace CyberGuardian.Editor
             panel.transform.SetParent(parent, false);
             CanvasGroup canvasGroup = panel.AddComponent<CanvasGroup>();
             canvasGroup.alpha = 0f;
-            canvasGroup.blocksRaycasts = false;
+            canvasGroup.blocksRaycasts = true;
             RectTransform rect = panel.GetComponent<RectTransform>();
             rect.anchorMin = new Vector2(0.5f, 0.5f);
             rect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -1734,6 +2390,7 @@ namespace CyberGuardian.Editor
 
             game.bossDialogueTitleText = AddText("Boss Dialogue Title", panel.transform, new Vector2(74f, 76f), new Vector2(820f, 48f), "BOS MALWARE", 34, Hex("FF5B9B"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
             game.bossDialogueBodyText = AddText("Boss Dialogue Body", panel.transform, new Vector2(120f, -10f), new Vector2(850f, 132f), "Buka celah dengan menjawab kuis keamanan siber.", 22, Color.white, font, TextAnchor.MiddleLeft, FontStyle.Bold);
+            game.bossDialogueContinueButton = AddButton("Boss Dialogue Continue Button", panel.transform, new Vector2(474f, -116f), new Vector2(210f, 48f), "LANJUT", 18, font, Hex("08181D"), Color.white, panelSprite, out _, false);
             game.bossDialoguePanel = panel;
             game.bossDialoguePanelRect = rect;
             game.bossDialoguePortraitImage = portrait;
@@ -1741,6 +2398,38 @@ namespace CyberGuardian.Editor
             game.bossDialogueCanvasGroup = canvasGroup;
             game.bossDialogueIdlePortraitSprite = bossDialoguePortraitSprite != null ? bossDialoguePortraitSprite : introSprite;
             game.bossDialogueIntroPortraitSprite = introSprite;
+            panel.SetActive(false);
+        }
+
+        private static void BuildEducationCard(Transform parent, CyberGuardianSideScrollerGame game, Sprite panelSprite, Sprite iconSprite, Font font)
+        {
+            GameObject panel = new GameObject("Cyber Education Threat Card", typeof(RectTransform), typeof(CanvasGroup));
+            panel.transform.SetParent(parent, false);
+            CanvasGroup canvasGroup = panel.GetComponent<CanvasGroup>();
+            canvasGroup.alpha = 0f;
+            canvasGroup.blocksRaycasts = true;
+
+            RectTransform rect = panel.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = new Vector2(0f, 82f);
+            rect.sizeDelta = new Vector2(1040f, 360f);
+
+            Image frame = AddPanel("Education Card Frame", panel.transform, Vector2.zero, new Vector2(1040f, 360f), Color.black, panelSprite, 0.88f);
+            frame.raycastTarget = false;
+            AddImage("Education Card Cyan Line", panel.transform, new Vector2(0f, 148f), new Vector2(930f, 4f), Hex("61F7FF"), panelSprite).raycastTarget = false;
+            AddImage("Education Card Magenta Line", panel.transform, new Vector2(0f, -148f), new Vector2(930f, 4f), Hex("FF3B88"), panelSprite).raycastTarget = false;
+
+            Image icon = AddImage("Education Threat Icon", panel.transform, new Vector2(-408f, 30f), new Vector2(146f, 146f), Color.white, iconSprite);
+            icon.raycastTarget = false;
+            icon.preserveAspect = true;
+
+            game.educationTitleText = AddText("Education Card Title", panel.transform, new Vector2(88f, 86f), new Vector2(720f, 52f), "KARTU ANCAMAN", 32, Hex("61F7FF"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
+            game.educationBodyText = AddText("Education Card Body", panel.transform, new Vector2(108f, -42f), new Vector2(760f, 178f), "Pelajaran keamanan siber.", 21, Color.white, font, TextAnchor.MiddleLeft, FontStyle.Normal);
+            game.educationContinueButton = AddButton("Education Continue Button", panel.transform, new Vector2(344f, -136f), new Vector2(220f, 52f), "LANJUT", 18, font, Hex("08181D"), Color.white, panelSprite, out _, false);
+            game.educationPanel = panel;
+            game.educationIconImage = icon;
             panel.SetActive(false);
         }
 
@@ -2064,8 +2753,7 @@ namespace CyberGuardian.Editor
             animator.walkFps = 1f;
             animator.attackFps = 1f;
 
-            SpriteRenderer aura = CreateLocalSprite("Flying Malware Hover Aura", visualRoot, new Vector3(0f, -0.48f, 0.08f), new Vector2(1.46f, 0.30f), new Color(0.20f, 1f, 1f, 0.30f), startSprite, 18);
-            AddPulse(aura, 0.08f, 0.16f, 4.8f, 0.5f);
+            AttachMonsterAura(visualRoot, new Vector2(2.05f, 2.05f), 18, game.enemies.Count * 0.13f);
             return enemy;
         }
 
@@ -2101,6 +2789,7 @@ namespace CyberGuardian.Editor
                 CreateVirusSoldierRig(visualRoot, squareSprite, circleSprite, animator);
             }
 
+            AttachMonsterAura(visualRoot, new Vector2(1.42f, 1.42f), 16, game.enemies.Count * 0.17f);
             return enemy;
         }
 
@@ -2204,14 +2893,16 @@ namespace CyberGuardian.Editor
             TextMesh label = labelObject.GetComponent<TextMesh>();
             label.text = GetCategoryCode(category);
             label.font = font;
-            label.fontSize = 28;
-            label.characterSize = 0.055f;
+            label.fontSize = 72;
+            label.fontStyle = FontStyle.Normal;
+            label.characterSize = 0.0215f;
             label.anchor = TextAnchor.MiddleCenter;
             label.alignment = TextAlignment.Center;
             label.color = Color.white;
             MeshRenderer labelRenderer = labelObject.GetComponent<MeshRenderer>();
             if (labelRenderer != null)
             {
+                labelRenderer.sharedMaterial = font != null ? font.material : labelRenderer.sharedMaterial;
                 labelRenderer.sortingOrder = 19;
             }
             return block;
@@ -2311,8 +3002,8 @@ namespace CyberGuardian.Editor
             AddPulse(glow, 0.10f, 0.12f, 3.6f, 0.4f);
             if (lightningTrapSprite != null)
             {
-                SpriteRenderer lightning = CreateWorldSprite(name + " Lightning Trap Arc", parent, position + new Vector2(0f, 0.34f), new Vector2(1.48f, 2.05f), new Color(0.72f, 1f, 1f, 0.96f), lightningTrapSprite, 25);
-                AddPulse(lightning, 0.055f, 0.18f, 8.4f, 0.15f);
+                Sprite lightningSprite = PickSprite(lightningTrapFrames, StableTextHash(name), lightningTrapSprite);
+                CreateAnimatedLightningDecor(name + " Lightning Trap Arc", parent, position + new Vector2(0f, 0.34f), new Vector2(1.48f, 2.05f), lightningSprite, lightningTrapFrames, new Color(0.72f, 1f, 1f, 0.96f), 25, 90f, 0.15f);
             }
 
             GameObject node = CreateWorldSprite(name, parent, position, new Vector2(0.72f, 0.92f), Color.white, nodeSprite != null ? nodeSprite : fallbackSprite, 24).gameObject;
@@ -2400,43 +3091,34 @@ namespace CyberGuardian.Editor
 
         private static void CreateRecoveryZone(string name, Transform parent, CyberGuardianSideScrollerGame game, Vector2 position, Vector2 size, Sprite fallbackSprite)
         {
-            SpriteRenderer depth = CreateWorldSprite(name + " Electric River Depth", parent, position, size + new Vector2(0f, 0.65f), new Color(0.01f, 0.04f, 0.08f, 0.88f), fallbackSprite, 3);
+            SpriteRenderer depth = CreateWorldSprite(name + " Electric River Dark Depth", parent, position, size + new Vector2(0f, 0.62f), new Color(0.002f, 0.005f, 0.008f, 0.72f), fallbackSprite, 3);
             AddPulse(depth, 0.004f, 0.035f, 1.8f, 0.2f);
 
-            SpriteRenderer surface = CreateWorldSprite(name + " Electric River Surface", parent, position + new Vector2(0f, size.y * 0.46f), new Vector2(size.x, 0.20f), new Color(0.20f, 1f, 1f, 0.78f), fallbackSprite, 17);
-            AddPulse(surface, 0.006f, 0.16f, 5.6f, 0.4f);
-
-            int currentBands = Mathf.Clamp(Mathf.RoundToInt(size.x / 18f), 10, 34);
-            for (int i = 0; i < currentBands; i++)
-            {
-                float t = i / (float)Mathf.Max(1, currentBands - 1);
-                float x = Mathf.Lerp(position.x - size.x * 0.48f, position.x + size.x * 0.48f, t);
-                float y = position.y + Mathf.Sin(i * 1.37f) * 0.18f;
-                float width = 5.0f + (i % 5) * 1.35f;
-                Color currentColor = i % 3 == 0 ? new Color(0.05f, 0.18f, 0.20f, 0.58f) : (i % 3 == 1 ? new Color(0.24f, 1f, 1f, 0.34f) : new Color(1f, 0.05f, 0.38f, 0.22f));
-                SpriteRenderer current = CreateWorldSprite(name + " Dirty Electric Current Band " + i, parent, new Vector2(x, y), new Vector2(width, 0.07f), currentColor, fallbackSprite, 16);
-                current.transform.localRotation = Quaternion.Euler(0f, 0f, Mathf.Sin(i * 0.73f) * 5f);
-                AddPulse(current, 0.010f, 0.11f, 3.4f + (i % 4) * 0.35f, i * 0.19f);
-            }
-
             Sprite arcSprite = lightningTrapSprite != null ? lightningTrapSprite : fallbackSprite;
-            int arcCount = Mathf.Clamp(Mathf.RoundToInt(size.x / 8f), 10, 46);
+            int arcCount = Mathf.Clamp(Mathf.RoundToInt(size.x / 3.2f), 24, 120);
             for (int i = 0; i < arcCount; i++)
             {
                 float t = arcCount <= 1 ? 0.5f : i / (float)(arcCount - 1);
-                float x = Mathf.Lerp(position.x - size.x * 0.48f, position.x + size.x * 0.48f, t);
-                float y = position.y + size.y * 0.12f + Mathf.Sin(i * 1.73f) * 0.18f;
-                SpriteRenderer arc = CreateWorldSprite(name + " Electric River Lightning " + i, parent, new Vector2(x, y), new Vector2(1.25f + (i % 3) * 0.22f, 1.55f + (i % 4) * 0.16f), new Color(0.66f, 1f, 1f, 0.84f), arcSprite, 19);
-                arc.transform.localRotation = Quaternion.Euler(0f, 0f, -10f + (i % 5) * 5f);
-                AddPulse(arc, 0.035f, 0.24f, 7.2f, i * 0.17f);
+                float x = Mathf.Lerp(position.x - size.x * 0.495f, position.x + size.x * 0.495f, t);
+                float row = i % 3;
+                float y = position.y + size.y * (0.08f + row * 0.20f) + Mathf.Sin(i * 1.73f) * 0.13f;
+                Sprite currentArcSprite = PickSprite(lightningTrapFrames, i, arcSprite);
+                Color arcColor = i % 4 == 0 ? new Color(1f, 0.12f, 0.48f, 0.78f) : new Color(0.66f, 1f, 1f, 0.88f);
+                CreateAnimatedLightningDecor(name + " Tiled Animated Electric River " + i, parent, new Vector2(x, y), new Vector2(1.36f + (i % 4) * 0.16f, 1.42f + (i % 5) * 0.12f), currentArcSprite, lightningTrapFrames, arcColor, 19, -14f + (i % 7) * 5f, i * 0.17f);
+                if (i % 6 == 0)
+                {
+                    CreateAnimatedLightningDecor(name + " High Voltage Splash " + i, parent, new Vector2(x + 0.62f, y + 0.38f), new Vector2(0.86f, 0.92f), currentArcSprite, lightningTrapFrames, new Color(0.86f, 1f, 1f, 0.62f), 20, 42f - (i % 5) * 9f, i * 0.24f);
+                }
             }
 
-            for (int i = 0; i < 7; i++)
+            int vaporCount = Mathf.Clamp(Mathf.RoundToInt(size.x / 22f), 8, 22);
+            for (int i = 0; i < vaporCount; i++)
             {
-                float x = Mathf.Lerp(position.x - size.x * 0.45f, position.x + size.x * 0.45f, i / 6f);
-                SpriteRenderer warning = CreateWorldSprite(name + " Electric River Warning Line " + i, parent, new Vector2(x, position.y + size.y * 0.55f), new Vector2(5.8f, 0.055f), i % 2 == 0 ? Hex("FF2F83") : Hex("61F7FF"), fallbackSprite, 20);
-                warning.transform.localRotation = Quaternion.Euler(0f, 0f, i % 2 == 0 ? 4f : -4f);
-                AddPulse(warning, 0.01f, 0.18f, 4.9f, i * 0.28f);
+                float x = Mathf.Lerp(position.x - size.x * 0.46f, position.x + size.x * 0.46f, i / (float)Mathf.Max(1, vaporCount - 1));
+                float y = position.y + size.y * 0.63f + Mathf.Sin(i * 0.77f) * 0.18f;
+                SpriteRenderer vapor = CreateWorldSprite(name + " Charged Vapor Wisp " + i, parent, new Vector2(x, y), new Vector2(0.12f, 0.9f + (i % 4) * 0.22f), new Color(0.62f, 1f, 1f, 0.14f), fallbackSprite, 18);
+                vapor.transform.localRotation = Quaternion.Euler(0f, 0f, -9f + (i % 5) * 4.5f);
+                AddPulse(vapor, 0.045f, 0.16f, 3.1f + (i % 3) * 0.45f, i * 0.24f);
             }
 
             int wreckCount = Mathf.Clamp(Mathf.RoundToInt(size.x / 26f), 6, 16);
@@ -2456,6 +3138,9 @@ namespace CyberGuardian.Editor
 
                 SpriteRenderer debris = CreateWorldSprite(name + " Abandoned Metal Debris " + i, parent, new Vector2(x + 1.2f, position.y + size.y * 0.50f + Mathf.Sin(i) * 0.22f), new Vector2(1.3f + (i % 4) * 0.35f, 0.10f), new Color(0.03f, 0.04f, 0.045f, 0.82f), fallbackSprite, 15);
                 debris.transform.localRotation = Quaternion.Euler(0f, 0f, -12f + (i % 5) * 6f);
+
+                SpriteRenderer cableShadow = CreateWorldSprite(name + " Cable Shadow Reflection " + i, parent, new Vector2(x + 0.35f, position.y + size.y * 0.27f), new Vector2(1.55f + (i % 3) * 0.38f, 0.045f), new Color(0f, 0f, 0f, 0.36f), fallbackSprite, 13);
+                cableShadow.transform.localRotation = Quaternion.Euler(0f, 0f, -7f + (i % 4) * 4f);
             }
 
             GameObject zone = new GameObject(name, typeof(BoxCollider2D), typeof(CyberGuardianRecoveryZone));
@@ -2710,6 +3395,21 @@ namespace CyberGuardian.Editor
             pulse.phase = phase;
         }
 
+        private static void AddBossMotion(Transform target, Vector2 amplitude, float speed, float phase, float tiltDegrees, bool liftOnly)
+        {
+            if (target == null)
+            {
+                return;
+            }
+
+            CyberGuardianBossVisualMotion motion = target.gameObject.AddComponent<CyberGuardianBossVisualMotion>();
+            motion.amplitude = amplitude;
+            motion.speed = speed;
+            motion.phase = phase;
+            motion.tiltDegrees = tiltDegrees;
+            motion.liftOnly = liftOnly;
+        }
+
         private static SpriteRenderer CreateLocalSprite(string name, Transform parent, Vector3 localPosition, Vector2 size, Color color, Sprite sprite, int sortingOrder)
         {
             GameObject gameObject = new GameObject(name, typeof(SpriteRenderer));
@@ -2773,6 +3473,9 @@ namespace CyberGuardian.Editor
             line.endColor = color;
             line.startWidth = width;
             line.endWidth = width;
+            line.numCapVertices = 6;
+            line.numCornerVertices = 4;
+            line.alignment = LineAlignment.View;
             line.positionCount = 0;
             line.enabled = false;
             return line;
@@ -2870,7 +3573,7 @@ namespace CyberGuardian.Editor
             return source;
         }
 
-        private static void ConfigureGameplayAudio(CyberGuardianSideScrollerGame game, string levelMusicPath)
+        private static void ConfigureGameplayAudio(CyberGuardianSideScrollerGame game, string levelMusicPath, string fallbackMusicPath = null)
         {
             if (game == null)
             {
@@ -2882,6 +3585,11 @@ namespace CyberGuardian.Editor
             game.musicSource.loop = true;
             game.musicSource.volume = 0.46f;
             game.adventureMusic = EnsureImportedAudioClip(levelMusicPath);
+            if (game.adventureMusic == null && !string.IsNullOrEmpty(fallbackMusicPath))
+            {
+                game.adventureMusic = EnsureImportedAudioClip(fallbackMusicPath);
+            }
+
             game.bossMusic = EnsureImportedAudioClip(BossMusicPath);
             game.jumpSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Jump.wav");
             game.playerHitSfx = EnsureImportedAudioClip(NamedSfxFolder + "SFX_Player_Hit.wav");
@@ -2950,6 +3658,25 @@ namespace CyberGuardian.Editor
             label = AddText(name + " Label", buttonObject.transform, labelOffset, labelSize, text, fontSize, textColor, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             label.raycastTarget = false;
             return button;
+        }
+
+        private static InputField AddInputField(string name, Transform parent, Vector2 position, Vector2 size, string placeholder, int fontSize, Font font, Color background, Color textColor, Sprite sprite, bool password)
+        {
+            Image image = AddPanel(name, parent, position, size, background, sprite, 0.96f);
+            InputField input = image.gameObject.AddComponent<InputField>();
+            Text text = AddText(name + " Text", image.transform, Vector2.zero, size - new Vector2(32f, 12f), string.Empty, fontSize, textColor, font, TextAnchor.MiddleLeft, FontStyle.Bold);
+            Text placeholderText = AddText(name + " Placeholder", image.transform, Vector2.zero, size - new Vector2(32f, 12f), placeholder, fontSize, new Color(textColor.r, textColor.g, textColor.b, 0.42f), font, TextAnchor.MiddleLeft, FontStyle.Bold);
+
+            text.raycastTarget = false;
+            placeholderText.raycastTarget = false;
+            input.textComponent = text;
+            input.placeholder = placeholderText;
+            input.targetGraphic = image;
+            input.lineType = InputField.LineType.SingleLine;
+            input.contentType = password ? InputField.ContentType.Password : InputField.ContentType.Standard;
+            input.caretColor = Hex("69F7FF");
+            input.selectionColor = new Color(0.38f, 1f, 1f, 0.35f);
+            return input;
         }
 
         private static string GetButtonIcon(string text)
@@ -3070,14 +3797,17 @@ namespace CyberGuardian.Editor
             textComponent.text = text;
             textComponent.font = font;
             textComponent.fontSize = fontSize;
-            textComponent.fontStyle = style;
+            textComponent.fontStyle = FontStyle.Normal;
             textComponent.color = color;
             textComponent.alignment = anchor;
-            textComponent.resizeTextForBestFit = true;
-            textComponent.resizeTextMinSize = Mathf.Max(8, fontSize - 8);
+            textComponent.resizeTextForBestFit = false;
+            textComponent.resizeTextMinSize = fontSize;
             textComponent.resizeTextMaxSize = fontSize;
             textComponent.horizontalOverflow = HorizontalWrapMode.Wrap;
             textComponent.verticalOverflow = VerticalWrapMode.Overflow;
+            Outline outline = textObject.AddComponent<Outline>();
+            outline.effectColor = new Color(0f, 0f, 0f, 0.82f);
+            outline.effectDistance = new Vector2(1.15f, -1.15f);
             return textComponent;
         }
 
@@ -3103,23 +3833,81 @@ namespace CyberGuardian.Editor
                 AssetDatabase.CreateAsset(bank, StarterQuestionBankPath);
             }
 
-            if (bank.questions.Count == 0)
-            {
-                bank.questions.AddRange(new[]
-                {
-                    new QuizQuestion(CyberQuestionCategory.Password, "GERBANG PASSWORD", "Password yang baik sebaiknya...", new[] { "Panjang, unik, dan sulit ditebak", "Sama untuk semua akun", "Berisi tanggal lahir", "Dibagikan ke teman" }, 0, "Benar. Password perlu panjang, unik, dan tidak dipakai ulang."),
-                    new QuizQuestion(CyberQuestionCategory.Password, "PERISAI LOGIN", "Autentikasi dua faktor berguna untuk...", new[] { "Menambah lapisan verifikasi", "Menghapus password", "Membuka semua akun", "Melemahkan akun" }, 0, "Benar. 2FA menambah bukti verifikasi selain password."),
-                    new QuizQuestion(CyberQuestionCategory.Malware, "BLOK MALWARE", "Lampiran asing dari email tidak dikenal sebaiknya...", new[] { "Tidak dibuka sembarangan", "Langsung dijalankan", "Dibagikan ulang", "Diubah namanya saja" }, 0, "Benar. Lampiran asing bisa membawa malware."),
-                    new QuizQuestion(CyberQuestionCategory.Malware, "FILTER PHISHING", "Tanda umum phishing adalah...", new[] { "Alamat pengirim mencurigakan", "Bahasa selalu sempurna", "Tidak pernah ada link", "Selalu dari teman" }, 0, "Benar. Pengirim dan domain harus diperiksa."),
-                    new QuizQuestion(CyberQuestionCategory.Network, "DINDING JARINGAN", "Firewall membantu kita untuk...", new[] { "Menyaring koneksi berbahaya", "Membuka semua port", "Membuat virus", "Mematikan update" }, 0, "Benar. Firewall membantu mengontrol koneksi masuk dan keluar."),
-                    new QuizQuestion(CyberQuestionCategory.Network, "RUTE PATCH", "Mengapa update sistem penting?", new[] { "Menutup celah keamanan", "Melepas proteksi", "Membagikan data", "Mematikan enkripsi" }, 0, "Benar. Update sering membawa patch keamanan."),
-                    new QuizQuestion(CyberQuestionCategory.Privacy, "KUNCI PRIVASI", "Data yang tidak boleh dibagikan sembarangan adalah...", new[] { "OTP, password, NIK", "Genre game favorit", "Warna kesukaan", "Nama panggilan" }, 0, "Benar. Data sensitif dapat dipakai untuk penipuan."),
-                    new QuizQuestion(CyberQuestionCategory.Privacy, "MINIMISASI DATA", "Prinsip minimisasi data berarti...", new[] { "Hanya memakai data yang perlu", "Mengumpulkan semua data", "Menyimpan tanpa batas", "Membagikan cadangan" }, 0, "Benar. Data harus sesuai kebutuhan.")
-                });
-                EditorUtility.SetDirty(bank);
-            }
-
+            bank.questions.Clear();
+            bank.questions.AddRange(CreateCyberSecurityQuestionDataset());
+            EditorUtility.SetDirty(bank);
             return bank;
+        }
+
+        private static QuizQuestion Q(int tier, CyberQuestionCategory category, string title, string prompt, string correct, string wrongA, string wrongB, string wrongC, string feedback)
+        {
+            return new QuizQuestion(tier, category, title, prompt, new[] { correct, wrongA, wrongB, wrongC }, 0, feedback);
+        }
+
+        private static QuizQuestion[] CreateCyberSecurityQuestionDataset()
+        {
+            return new[]
+            {
+                Q(1, CyberQuestionCategory.Password, "KUNCI GADGET", "Mengapa gadget perlu dikunci dengan PIN, pola, sidik jari, atau password?", "Agar orang lain tidak mudah membuka akun dan data pribadi", "Agar baterai lebih cepat habis", "Agar semua aplikasi bebas mengirim data", "Agar Wi-Fi selalu gratis", "Benar. Kunci layar melindungi akun, chat, foto, dan data pribadi saat gadget hilang atau dipinjam."),
+                Q(1, CyberQuestionCategory.Password, "PASSWORD UNIK", "Pilihan password yang paling aman untuk akun penting adalah...", "Panjang, unik, dan tidak dipakai ulang", "Nama sendiri ditambah tanggal lahir", "123456 yang mudah diingat", "Password yang sama untuk semua akun", "Benar. Password unik mencegah satu kebocoran membuka semua akun."),
+                Q(1, CyberQuestionCategory.Password, "JANGAN BAGI OTP", "Kode OTP dari SMS atau aplikasi autentikator sebaiknya...", "Tidak dibagikan kepada siapa pun", "Dikirim ke orang yang mengaku admin", "Diunggah ke status media sosial", "Disimpan di komentar publik", "Benar. OTP adalah kunci sementara. Penipu sering meminta OTP untuk mengambil alih akun."),
+                Q(1, CyberQuestionCategory.Password, "AKTIFKAN MFA", "Autentikasi multi-faktor berguna karena...", "Menambah lapisan verifikasi selain password", "Menghapus semua kebutuhan password", "Membuat akun bisa dibuka siapa saja", "Membuat virus otomatis hilang", "Benar. MFA membuat password curian saja tidak cukup untuk masuk."),
+
+                Q(1, CyberQuestionCategory.Malware, "UNDUHAN AMAN", "Cara paling aman memasang aplikasi di gadget adalah...", "Mengunduh dari toko resmi atau situs resmi pembuatnya", "Mengambil APK dari link acak", "Memasang file dari pesan berantai", "Mematikan semua perlindungan dulu", "Benar. Sumber resmi mengurangi risiko aplikasi palsu atau malware."),
+                Q(1, CyberQuestionCategory.Malware, "LAMPIRAN ASING", "Lampiran email dari pengirim tidak dikenal sebaiknya...", "Jangan dibuka sebelum diverifikasi", "Langsung dijalankan agar cepat selesai", "Dibagikan ke teman dulu", "Diubah nama filenya agar aman", "Benar. Lampiran asing bisa membawa malware atau macro berbahaya."),
+                Q(1, CyberQuestionCategory.Malware, "TANDA VIRUS", "Salah satu tanda gadget mungkin terinfeksi malware adalah...", "Aplikasi asing muncul, iklan berlebihan, atau performa tiba-tiba turun", "Wallpaper tidak berubah", "Jam selalu tepat", "Bluetooth bisa menyala", "Benar. Perubahan aneh, iklan agresif, dan aplikasi tak dikenal perlu diperiksa."),
+                Q(1, CyberQuestionCategory.Malware, "SCAN FILE", "Sebelum membuka file dari sumber meragukan, langkah yang tepat adalah...", "Pindai dengan fitur keamanan atau antivirus tepercaya", "Matikan antivirus", "Buka berkali-kali agar yakin", "Kirim ke semua grup", "Benar. Pemindaian membantu mendeteksi file berbahaya sebelum dijalankan."),
+
+                Q(1, CyberQuestionCategory.Network, "WI-FI PUBLIK", "Saat memakai Wi-Fi publik, tindakan paling aman adalah...", "Hindari login akun penting dan gunakan koneksi tepercaya jika memungkinkan", "Masukkan semua password agar cepat", "Matikan layar kunci", "Bagikan hotspot ke orang asing", "Benar. Wi-Fi publik bisa dipantau atau dipalsukan, jadi gunakan dengan hati-hati."),
+                Q(1, CyberQuestionCategory.Network, "UPDATE SISTEM", "Mengapa update sistem operasi dan aplikasi penting?", "Karena sering menutup celah keamanan", "Karena membuat password terlihat", "Karena membuka semua izin aplikasi", "Karena menonaktifkan enkripsi", "Benar. Patch keamanan menutup celah yang sudah diketahui."),
+                Q(1, CyberQuestionCategory.Network, "LINK AMAN", "Sebelum membuka link login dari pesan, yang harus diperiksa adalah...", "Domain atau alamat situsnya benar", "Warna tombolnya menarik", "Link dikirim malam hari", "Jumlah emoji di pesan", "Benar. Phishing sering memakai domain mirip untuk mencuri login."),
+                Q(1, CyberQuestionCategory.Network, "BLUETOOTH", "Fitur koneksi seperti Bluetooth sebaiknya...", "Dimatikan saat tidak digunakan", "Selalu terbuka untuk semua perangkat", "Dipakai tanpa konfirmasi", "Dibiarkan dengan nama password", "Benar. Mematikan koneksi yang tidak dipakai mengurangi peluang akses tidak perlu."),
+
+                Q(1, CyberQuestionCategory.Privacy, "DATA SENSITIF", "Data yang tidak boleh dibagikan sembarangan adalah...", "Password, OTP, NIK, nomor kartu, dan kode pemulihan", "Warna favorit", "Genre game favorit", "Nama makanan favorit", "Benar. Data sensitif bisa dipakai untuk penipuan atau pengambilalihan akun."),
+                Q(1, CyberQuestionCategory.Privacy, "IZIN APLIKASI", "Jika aplikasi kalkulator meminta akses kontak dan lokasi, sikap terbaik adalah...", "Tolak izin yang tidak relevan", "Berikan semua izin", "Hapus kunci layar", "Bagikan akun utama", "Benar. Izin aplikasi harus sesuai fungsi agar data tidak bocor."),
+                Q(1, CyberQuestionCategory.Privacy, "BACKUP DASAR", "Backup data penting berguna untuk...", "Memulihkan data saat gadget rusak, hilang, atau terkena malware", "Membuat malware lebih kuat", "Membagikan password", "Menghapus semua update", "Benar. Backup menjaga data tetap bisa dipulihkan."),
+                Q(1, CyberQuestionCategory.Privacy, "JEJAK DIGITAL", "Contoh kebiasaan baik menjaga privasi adalah...", "Berpikir sebelum membagikan lokasi, foto dokumen, atau informasi pribadi", "Mengunggah semua kartu identitas", "Membagikan OTP ke teman", "Memasang aplikasi tak dikenal", "Benar. Data yang sudah tersebar sulit ditarik kembali."),
+
+                Q(2, CyberQuestionCategory.Password, "PASSWORD MANAGER", "Mengapa password manager membantu keamanan?", "Menyimpan password unik dan kuat tanpa harus menghafal semuanya", "Membuat satu password dipakai semua akun", "Mengirim OTP ke publik", "Menghapus MFA", "Benar. Password manager memudahkan penggunaan password unik di banyak akun."),
+                Q(2, CyberQuestionCategory.Password, "RECOVERY CODE", "Kode pemulihan MFA sebaiknya disimpan...", "Di tempat aman dan terpisah dari gadget utama", "Di bio media sosial", "Di chat grup umum", "Di nama Wi-Fi rumah", "Benar. Recovery code membantu saat perangkat hilang, tetapi harus dijaga seperti kunci."),
+                Q(2, CyberQuestionCategory.Password, "CEK KEBOCORAN", "Jika password akun diketahui bocor, langkah pertama adalah...", "Ganti password unik dan cek sesi login aktif", "Pakai password yang sama lagi", "Bagikan password baru", "Matikan semua update", "Benar. Ganti password dan keluarkan sesi asing untuk menutup akses."),
+                Q(2, CyberQuestionCategory.Password, "PASSKEY", "Passkey atau login biometrik modern lebih aman karena...", "Mengurangi risiko password dicuri lewat phishing", "Menampilkan password di layar", "Membuat OTP bisa ditebak", "Membuka akun tanpa verifikasi", "Benar. Passkey memakai kriptografi dan lebih tahan terhadap phishing."),
+
+                Q(2, CyberQuestionCategory.Malware, "QUARANTINE", "Saat antivirus mengarantina file, artinya...", "File dipisahkan agar tidak berjalan dan merusak sistem", "File otomatis dibagikan", "File dijadikan password", "File pasti aman untuk dibuka", "Benar. Karantina mencegah file mencurigakan aktif sampai diperiksa."),
+                Q(2, CyberQuestionCategory.Malware, "MACRO DOKUMEN", "Dokumen yang meminta mengaktifkan macro dari sumber asing sebaiknya...", "Ditolak dan diverifikasi dulu", "Langsung diaktifkan", "Dikirim ke semua kontak", "Dibuka sebagai administrator", "Benar. Macro bisa menjalankan kode berbahaya."),
+                Q(2, CyberQuestionCategory.Malware, "RANSOMWARE", "Ransomware berbahaya karena...", "Mengenkripsi data dan meminta tebusan", "Membuat layar lebih terang", "Mengatur volume suara", "Mengubah wallpaper saja", "Benar. Backup bersih dan patch rutin membantu mengurangi dampaknya."),
+                Q(2, CyberQuestionCategory.Malware, "APLIKASI PALSU", "Ciri aplikasi palsu yang perlu dicurigai adalah...", "Nama mirip aplikasi terkenal, izin berlebihan, dan sumber tidak jelas", "Ada ikon", "Bisa dibuka", "Memiliki warna cerah", "Benar. Aplikasi palsu sering meniru merek dan meminta izin yang tidak perlu."),
+
+                Q(2, CyberQuestionCategory.Network, "FIREWALL", "Firewall membantu dengan cara...", "Mengontrol koneksi masuk dan keluar berdasarkan aturan", "Membuka semua port", "Membuat password terlihat", "Menghapus log", "Benar. Firewall membatasi koneksi yang tidak perlu atau berbahaya."),
+                Q(2, CyberQuestionCategory.Network, "WPA3", "Untuk Wi-Fi rumah, pilihan keamanan yang lebih baik adalah...", "WPA2/WPA3 dengan password kuat", "Jaringan terbuka tanpa password", "Password Wi-Fi 12345678", "Nama Wi-Fi berisi nomor kartu", "Benar. Enkripsi Wi-Fi dan password kuat melindungi jaringan rumah."),
+                Q(2, CyberQuestionCategory.Network, "VPN", "VPN berguna terutama untuk...", "Membuat jalur koneksi terenkripsi ke jaringan tepercaya", "Menjamin semua link pasti aman", "Menghapus kebutuhan password", "Mencegah semua phishing otomatis", "Benar. VPN membantu koneksi, tetapi pengguna tetap harus waspada terhadap phishing."),
+                Q(2, CyberQuestionCategory.Network, "LOG AKSES", "Log akses penting karena...", "Membantu melihat aktivitas mencurigakan dan waktu kejadian", "Membuat game lebih cepat", "Menghapus backup", "Membagikan data pribadi", "Benar. Log adalah bukti saat investigasi keamanan."),
+
+                Q(2, CyberQuestionCategory.Privacy, "MINIMISASI DATA", "Prinsip minimisasi data berarti...", "Hanya mengumpulkan dan memakai data yang benar-benar diperlukan", "Mengumpulkan semua data selamanya", "Membagikan data ke semua pihak", "Menyimpan password di komentar", "Benar. Semakin sedikit data sensitif yang disimpan, semakin kecil dampak kebocoran."),
+                Q(2, CyberQuestionCategory.Privacy, "PRIVASI LOKASI", "Aplikasi cuaca meminta lokasi terus-menerus. Pengaturan yang lebih aman adalah...", "Izinkan hanya saat aplikasi digunakan jika memang perlu", "Izinkan sepanjang waktu untuk semua aplikasi", "Matikan kunci layar", "Bagikan lokasi real-time ke publik", "Benar. Izin lokasi perlu dibatasi sesuai kebutuhan."),
+                Q(2, CyberQuestionCategory.Privacy, "SOSIAL ENGINEERING", "Social engineering menyerang dengan cara...", "Memanipulasi manusia agar memberi akses atau informasi", "Memperbaiki baterai", "Menambah ruang penyimpanan", "Membuat sinyal Wi-Fi lebih kuat", "Benar. Penyerang sering memanfaatkan panik, percaya, atau rasa ingin cepat selesai."),
+                Q(2, CyberQuestionCategory.Privacy, "ENKRIPSI BACKUP", "Backup berisi data pribadi sebaiknya...", "Dienkripsi dan diuji pemulihannya", "Dibuka untuk semua orang", "Diletakkan di forum umum", "Dinamai password akun", "Benar. Enkripsi dan uji restore membuat backup lebih aman dan berguna."),
+
+                Q(3, CyberQuestionCategory.Password, "PHISHING RESISTANT MFA", "MFA yang lebih tahan phishing adalah...", "Passkey atau security key berbasis kriptografi", "OTP yang dikirim ke penipu", "Password yang sama di semua sistem", "Kode pemulihan di dokumen publik", "Benar. Security key dan passkey mengurangi risiko kode dicuri lewat situs palsu."),
+                Q(3, CyberQuestionCategory.Password, "SECRET ROTATION", "Jika token API bocor, tindakan yang tepat adalah...", "Cabut token, buat token baru, dan audit pemakaian lama", "Ubah nama file token saja", "Biarkan token aktif", "Kirim token ke tim publik", "Benar. Secret yang bocor harus dicabut dan dampaknya diaudit."),
+                Q(3, CyberQuestionCategory.Password, "LEAST PRIVILEGE", "Akun layanan sebaiknya diberi akses...", "Hanya sesuai tugas yang diperlukan", "Administrator penuh untuk semua sistem", "Tanpa batas waktu dan tanpa log", "Sama dengan akun pribadi", "Benar. Least privilege membatasi dampak jika akun layanan disusupi."),
+                Q(3, CyberQuestionCategory.Password, "SESSION TOKEN", "Token session harus dilindungi karena...", "Bisa dipakai masuk tanpa mengetik password lagi", "Hanya mengubah warna layar", "Tidak pernah bernilai rahasia", "Selalu aman di log publik", "Benar. Token session adalah kunci sementara yang perlu masa berlaku dan penyimpanan aman."),
+
+                Q(3, CyberQuestionCategory.Malware, "LATERAL MOVEMENT", "Lateral movement berarti penyerang...", "Berpindah dari satu sistem yang disusupi ke sistem lain", "Memperbarui antivirus", "Menghapus akun palsu", "Mempercepat koneksi resmi", "Benar. Segmentasi jaringan dan least privilege membantu menahan pergerakan ini."),
+                Q(3, CyberQuestionCategory.Malware, "SUPPLY CHAIN", "Risiko supply chain terjadi ketika...", "Dependensi, plugin, atau update pihak ketiga disusupi", "Monitor terlalu terang", "Keyboard kotor", "Wallpaper berubah", "Benar. Periksa sumber paket, versi, dan reputasi dependensi."),
+                Q(3, CyberQuestionCategory.Malware, "IOC", "Dalam respons insiden, IOC adalah...", "Indikator kompromi seperti hash file, IP, domain, atau pola log", "Nama skin karakter", "Kode cheat game", "Jenis kabel monitor", "Benar. IOC membantu mencari jejak serangan di sistem lain."),
+                Q(3, CyberQuestionCategory.Malware, "EDR", "EDR membantu defender dengan cara...", "Memantau endpoint, mendeteksi perilaku aneh, dan membantu investigasi", "Menonaktifkan semua log", "Membuat akun tanpa password", "Membuka firewall", "Benar. EDR memberi visibilitas aktivitas endpoint."),
+
+                Q(3, CyberQuestionCategory.Network, "SEGMENTASI", "Segmentasi jaringan berguna untuk...", "Membatasi penyebaran serangan antar area", "Membuka semua server ke internet", "Menghapus backup", "Menyamakan semua hak akses", "Benar. Segmentasi membuat penyerang sulit bergerak bebas."),
+                Q(3, CyberQuestionCategory.Network, "ZERO TRUST", "Prinsip zero trust adalah...", "Selalu verifikasi akses, perangkat, dan konteks", "Percaya semua koneksi internal", "Matikan semua autentikasi", "Bagikan semua token", "Benar. Zero trust tidak menganggap jaringan internal otomatis aman."),
+                Q(3, CyberQuestionCategory.Network, "RATE LIMIT", "Rate limit pada API membantu untuk...", "Membatasi percobaan berlebihan seperti brute force atau abuse", "Menyimpan password di URL", "Membuka semua endpoint", "Menghapus autentikasi", "Benar. Rate limit mengurangi penyalahgunaan dan beban serangan."),
+                Q(3, CyberQuestionCategory.Network, "SIEM", "SIEM paling berguna saat...", "Mengorelasikan log dari banyak sumber untuk menemukan pola serangan", "Hanya menyimpan warna tema", "Menghapus semua alert", "Membagikan secret ke publik", "Benar. Korelasi log membantu melihat serangan yang tersebar."),
+
+                Q(3, CyberQuestionCategory.Privacy, "DATA CLASSIFICATION", "Klasifikasi data membantu karena...", "Menentukan perlindungan sesuai tingkat sensitif data", "Membuat data rahasia jadi publik", "Menghapus semua audit", "Mengganti password otomatis", "Benar. Data rahasia perlu kontrol lebih kuat daripada data publik."),
+                Q(3, CyberQuestionCategory.Privacy, "KEY MANAGEMENT", "Kunci enkripsi sebaiknya...", "Disimpan aman, dibatasi aksesnya, dan dirotasi saat perlu", "Ditaruh di repository publik", "Dikirim lewat chat umum", "Ditulis di nama file", "Benar. Enkripsi kuat tetap lemah jika kuncinya bocor."),
+                Q(3, CyberQuestionCategory.Privacy, "RETENTION", "Kebijakan retensi data berarti...", "Menentukan berapa lama data disimpan dan kapan dihapus aman", "Menyimpan semua data selamanya", "Membagikan data ke semua aplikasi", "Menghapus backup tanpa rencana", "Benar. Retensi mengurangi risiko dari data lama yang tidak diperlukan."),
+                Q(3, CyberQuestionCategory.Privacy, "INCIDENT COMMUNICATION", "Saat insiden data terjadi, komunikasi yang baik harus...", "Jelas, faktual, tepat waktu, dan tidak menebak tanpa bukti", "Menyembunyikan semua informasi selamanya", "Menyalahkan pengguna tanpa investigasi", "Membagikan password baru di publik", "Benar. Komunikasi insiden perlu transparan dan berdasarkan fakta.")
+            };
         }
 
         private static DifficultyProfile[] EnsureDifficultyProfiles()
@@ -3218,6 +4006,85 @@ namespace CyberGuardian.Editor
             }
 
             return sprites.ToArray();
+        }
+
+        private static Sprite[] EnsureImportedSpriteSequence(string pathPrefix, int count)
+        {
+            List<Sprite> sprites = new List<Sprite>();
+            for (int i = 0; i < count; i++)
+            {
+                string path = pathPrefix + i.ToString("00") + ".png";
+                Sprite sprite = EnsureEnemySprite(path);
+                if (sprite != null)
+                {
+                    sprites.Add(sprite);
+                }
+            }
+
+            return sprites.ToArray();
+        }
+
+        private static Sprite[] EnsureImportedSpritesFromFolder(string folderAssetPath, string searchPattern, int maxCount)
+        {
+            string absoluteFolder = ToAbsolutePath(folderAssetPath);
+            if (!Directory.Exists(absoluteFolder))
+            {
+                return new Sprite[0];
+            }
+
+            List<string> files = new List<string>(Directory.GetFiles(absoluteFolder, searchPattern, SearchOption.TopDirectoryOnly));
+            files.Sort((a, b) =>
+            {
+                int numberA = ExtractTrailingNumber(a);
+                int numberB = ExtractTrailingNumber(b);
+                int numberCompare = numberA.CompareTo(numberB);
+                return numberCompare != 0 ? numberCompare : string.Compare(a, b, System.StringComparison.OrdinalIgnoreCase);
+            });
+
+            List<Sprite> sprites = new List<Sprite>();
+            for (int i = 0; i < files.Count && sprites.Count < maxCount; i++)
+            {
+                string assetPath = ToProjectAssetPath(files[i]);
+                Sprite sprite = EnsureImportedSprite(assetPath);
+                if (sprite != null)
+                {
+                    sprites.Add(sprite);
+                }
+            }
+
+            return sprites.ToArray();
+        }
+
+        private static int ExtractTrailingNumber(string path)
+        {
+            string name = Path.GetFileNameWithoutExtension(path);
+            int end = -1;
+            for (int i = name.Length - 1; i >= 0; i--)
+            {
+                if (char.IsDigit(name[i]))
+                {
+                    end = i;
+                    break;
+                }
+            }
+
+            if (end < 0)
+            {
+                return int.MaxValue;
+            }
+
+            int start = end;
+            while (start > 0 && char.IsDigit(name[start - 1]))
+            {
+                start--;
+            }
+
+            if (int.TryParse(name.Substring(start, end - start + 1), out int number))
+            {
+                return number;
+            }
+
+            return int.MaxValue;
         }
 
         private static Sprite EnsurePlayerSprite(string assetPath)
@@ -3378,8 +4245,111 @@ namespace CyberGuardian.Editor
                 UiAlertPanel = EnsureGeneratedSprite(GeneratedArtFolder + "/cg_ui_alert_panel.png", TextureShape.UiAlertPanel),
                 UiMenuHeader = EnsureGeneratedSprite(GeneratedArtFolder + "/cg_ui_menu_header.png", TextureShape.UiMenuHeader),
                 UiSkullMark = EnsureGeneratedSprite(GeneratedArtFolder + "/cg_ui_skull_mark.png", TextureShape.UiSkullMark),
-                QuizBlock = EnsureGeneratedSprite(GeneratedArtFolder + "/cg_quiz_block.png", TextureShape.QuizBlock)
+                QuizBlock = EnsureGeneratedSprite(GeneratedArtFolder + "/cg_quiz_block.png", TextureShape.QuizBlock),
+                CitySkylineBack = EnsureImportedSprite(CitySkylineBackPath),
+                CitySkylineBuildings = EnsureImportedSprite(CitySkylineBuildingsPath),
+                CitySkylineFront = EnsureImportedSprite(CitySkylineFrontPath),
+                CentralCityBuildings = EnsureImportedSprite(CentralCityBuildingsPath),
+                CentralCityProps = EnsureImportedSprite(CentralCityPropsPath),
+                CentralCityTiles = EnsureImportedSprite(CentralCityTilesPath),
+                CentralCityBackgroundProps = EnsureImportedSprite(CentralCityBackgroundPropsPath),
+                StreetV1BackBuildings = EnsureImportedSprite(StreetV1BackBuildingsPath),
+                StreetV1FarBuildings = EnsureImportedSprite(StreetV1FarBuildingsPath),
+                StreetV1Foreground = EnsureImportedSprite(StreetV1ForegroundPath),
+                StreetV2Back = EnsureImportedSprite(StreetV2BackPath),
+                StreetV2Middle = EnsureImportedSprite(StreetV2MiddlePath),
+                StreetV2Foreground = EnsureImportedSprite(StreetV2ForegroundPath),
+                DamagedCable = EnsureImportedSprite(DamagedCableSpritePath),
+                RustedPanels = EnsureImportedSpritesFromFolder(KatakAssetFolder, "Rusted*.png", 27),
+                LightningFrames = EnsureImportedSpritesFromFolder(LightningTrapFolder, "lightning_v2_*.png", 13),
+                ActionCityAssets = EnsureImportedSprite(ActionCityAssetsPath),
+                ActionCitySocial = EnsureImportedSprite(ActionCitySocialPath),
+                ActionCityMockup = EnsureImportedSprite(ActionCityMockupPath),
+                ActionCityTestOne = EnsureImportedSprite(ActionCityTestOnePath),
+                ActionCityTestTwo = EnsureImportedSprite(ActionCityTestTwoPath),
+                MineTileset = EnsureImportedSprite(MineTilesetPath),
+                MineTilesetAlt = EnsureImportedSprite(MineTilesetAltPath),
+                MineBackground = EnsureImportedSprite(MineBackgroundPath),
+                MineFarBackground = EnsureImportedSprite(MineFarBackgroundPath),
+                MineForeground = EnsureImportedSprite(MineForegroundPath),
+                MineForegroundAlt = EnsureImportedSprite(MineForegroundAltPath),
+                ElectricWires = EnsureImportedSpritesFromFolder(ElectricIsoFolder, "WIRES*.png", 4),
+                ElectricTesla = EnsureImportedSpritesFromFolder(ElectricIsoFolder, "TESLA*.png", 4),
+                ElectricPcb = EnsureImportedSpritesFromFolder(ElectricIsoFolder, "PCB*.png", 4),
+                ElectricFaraday = EnsureImportedSpritesFromFolder(ElectricIsoFolder, "FARADAY*.png", 2),
+                DlaFull = EnsureImportedSpritesFromFolder(DlaFolder, "dla_128_full_*.png", 12),
+                DlaSprites = EnsureImportedSpritesFromFolder(DlaFolder, "dla_128_sprite_*.png", 12),
+                BoneBackgroundFrames = EnsureImportedSpritesFromFolder(BonesBackgroundFolder, "renwubaij_*.png", 15),
+                ProjectileRadials = EnsureImportedSpritesFromFolder(ProjectileTextureFolder, "radial*.png", 8),
+                ProjectileTrails = EnsureImportedSpritesFromFolder(ProjectileTextureFolder, "trail*.png", 8),
+                ProjectileLightning = EnsureImportedSpritesFromFolder(ProjectileTextureFolder, "lightning*.png", 4),
+                ProjectileFlares = EnsureImportedSpritesFromFolder(ProjectileTextureFolder, "flare*.png", 4),
+                ProjectileFlames = EnsureImportedSpritesFromFolder(ProjectileFlameFolder, "flame*.png", 10),
+                HpBarBack = EnsureImportedSprite(HpBarBackPath, new Vector4(18f, 18f, 18f, 18f)),
+                HpBarRed = EnsureImportedSprite(HpBarRedPath, new Vector4(18f, 18f, 18f, 18f)),
+                HpBarBlue = EnsureImportedSprite(HpBarBluePath, new Vector4(18f, 18f, 18f, 18f)),
+                HpBarGreen = EnsureImportedSprite(HpBarGreenPath, new Vector4(18f, 18f, 18f, 18f)),
+                LifeHeartIcon = EnsureHeartIconSpriteFromSheet(),
+                ShotGif = EnsureImportedSprite(ActionCityShotGifPath),
+                ShotSheet = EnsureImportedSprite(ActionCityShotSheetPath)
             };
+        }
+
+        private static Sprite EnsureHeartIconSpriteFromSheet()
+        {
+            if (!File.Exists(ToAbsolutePath(HeartSpriteSheetPath)))
+            {
+                return null;
+            }
+
+            Texture2D source = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!source.LoadImage(File.ReadAllBytes(ToAbsolutePath(HeartSpriteSheetPath))))
+            {
+                Object.DestroyImmediate(source);
+                return null;
+            }
+
+            const int cropX = 302;
+            const int cropTopY = 384;
+            const int cropSize = 18;
+            int cropY = Mathf.Clamp(source.height - cropTopY - cropSize, 0, source.height - cropSize);
+            Texture2D heart = new Texture2D(cropSize, cropSize, TextureFormat.RGBA32, false);
+            heart.filterMode = FilterMode.Point;
+
+            for (int y = 0; y < cropSize; y++)
+            {
+                for (int x = 0; x < cropSize; x++)
+                {
+                    Color pixel = source.GetPixel(cropX + x, cropY + y);
+                    if (pixel.a < 0.05f || (pixel.r < 0.03f && pixel.g < 0.03f && pixel.b < 0.03f))
+                    {
+                        pixel = Color.clear;
+                    }
+
+                    heart.SetPixel(x, y, pixel);
+                }
+            }
+
+            heart.Apply();
+            File.WriteAllBytes(ToAbsolutePath(HeartIconSpritePath), heart.EncodeToPNG());
+            Object.DestroyImmediate(source);
+            Object.DestroyImmediate(heart);
+
+            AssetDatabase.ImportAsset(HeartIconSpritePath, ImportAssetOptions.ForceUpdate);
+            TextureImporter importer = AssetImporter.GetAtPath(HeartIconSpritePath) as TextureImporter;
+            if (importer != null)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.spritePixelsPerUnit = 48;
+                importer.alphaIsTransparency = true;
+                importer.mipmapEnabled = false;
+                importer.filterMode = FilterMode.Point;
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.SaveAndReimport();
+            }
+
+            return AssetDatabase.LoadAssetAtPath<Sprite>(HeartIconSpritePath);
         }
 
         private static Sprite EnsureGeneratedSprite(string assetPath, TextureShape shape)
@@ -4243,16 +5213,16 @@ namespace CyberGuardian.Editor
 
         private static Font GetUiFont()
         {
-            Font cyberpunkFont = AssetDatabase.LoadAssetAtPath<Font>("Assets/CyberGuardian/Art/UI/CyberpunkPixelUI/10 Font/CyberpunkCraftpixPixel.otf");
-            if (cyberpunkFont != null)
-            {
-                return cyberpunkFont;
-            }
-
             Font kenneyFuture = AssetDatabase.LoadAssetAtPath<Font>("Assets/CyberGuardian/Art/UI/KenneySpaceUI/Font/Kenney Future.ttf");
             if (kenneyFuture != null)
             {
                 return kenneyFuture;
+            }
+
+            Font cyberpunkFont = AssetDatabase.LoadAssetAtPath<Font>("Assets/CyberGuardian/Art/UI/CyberpunkPixelUI/10 Font/CyberpunkCraftpixPixel.otf");
+            if (cyberpunkFont != null)
+            {
+                return cyberpunkFont;
             }
 
             Font font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -4269,6 +5239,18 @@ namespace CyberGuardian.Editor
         {
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
             return Path.Combine(projectRoot, assetPath.Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        private static string ToProjectAssetPath(string absolutePath)
+        {
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            string normalizedRoot = projectRoot.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+            if (absolutePath.StartsWith(normalizedRoot, System.StringComparison.OrdinalIgnoreCase))
+            {
+                return absolutePath.Substring(normalizedRoot.Length).Replace('\\', '/');
+            }
+
+            return absolutePath.Replace('\\', '/');
         }
     }
 }

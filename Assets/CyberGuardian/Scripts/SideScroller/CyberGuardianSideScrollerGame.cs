@@ -23,6 +23,7 @@ namespace CyberGuardian
         public CyberGuardianBossCore bossCore;
         public List<CyberGuardianEnemy> enemies = new List<CyberGuardianEnemy>();
         public List<CyberGuardianBossShieldBlock> bossBlocks = new List<CyberGuardianBossShieldBlock>();
+        public List<GameObject> aerialBossBreakawayBlocks = new List<GameObject>();
         public Camera gameplayCamera;
         public Transform bossProjectileSpawn;
         public Transform[] bossProjectileSpawns;
@@ -39,6 +40,7 @@ namespace CyberGuardian
 
         public Text healthText;
         public Text livesText;
+        public Image[] lifeIconImages;
         public Text bossText;
         public Text scoreText;
         public Text modeText;
@@ -46,10 +48,16 @@ namespace CyberGuardian
         public GameObject storyPanel;
         public Text storyTitleText;
         public Text storyBodyText;
+        public GameObject educationPanel;
+        public Text educationTitleText;
+        public Text educationBodyText;
+        public Image educationIconImage;
+        public Button educationContinueButton;
         public GameObject bossDialoguePanel;
         public Text bossDialogueTitleText;
         public Text bossDialogueBodyText;
         public Image bossDialoguePortraitImage;
+        public Button bossDialogueContinueButton;
         public RectTransform bossDialoguePanelRect;
         public RectTransform bossDialoguePortraitRect;
         public CanvasGroup bossDialogueCanvasGroup;
@@ -119,17 +127,41 @@ namespace CyberGuardian
         public float bossArenaCenterX = 35.5f;
         public float bossArenaMinX = 28.0f;
         public float bossArenaMaxX = 37.2f;
+        public Vector2 slingshotRestOffset = new Vector2(0f, 0.54f);
         public float slingshotMaxPull = 2.35f;
+        public float slingshotMinPull = 0.36f;
+        public float slingshotPullScreenScale = 0.35f;
         public float slingshotPower = 8.8f;
+        public float slingshotMinLaunchSpeed = 5.0f;
+        public float slingshotMaxLaunchSpeed = 24.0f;
+        public float slingshotDirectShotMaxSpeed = 25.0f;
         public float projectileMaxFlightTime = 4.8f;
         public bool aerialBossEncounter;
         public float bossAttackIntervalScale = 1f;
         public int bossVolleyCount = 1;
         public float bossProjectileSpeedBonus;
+        public float bossCameraSize = 5.4f;
+        public float aerialBossCameraSize = 7.6f;
+        public float aerialBossCameraXOffset = 3.8f;
+        public float aerialBossCameraYOffset = 1.35f;
+        public float electricDeathCameraSize = 2.05f;
         public Vector2 cameraMin = new Vector2(-8f, -3.4f);
         public Vector2 cameraMax = new Vector2(78f, 5.4f);
         public Vector3 startingRecoveryPoint = new Vector3(-8f, 0.65f, 0f);
+        public Transform bossCinematicTarget;
+        public Transform bossVisualRoot;
+        public string sceneIntroTitle = "SEKTOR BARU";
+        [TextArea(2, 4)] public string sceneIntroBody = "Pelajari pola ancaman, lewati rintangan, lalu gunakan jawaban kuis untuk membuka celah serangan.";
+        public string bossThreatTitle = "BOS MALWARE";
+        [TextArea(2, 4)] public string bossThreatBody = "Aku mengunci jalur ini. Jawab blok kuis, buka celah, dan tembak inti patch jika berani.";
+        public string bossInfoTitle = "KARTU ANCAMAN";
+        [TextArea(2, 5)] public string bossInfoBody = "Malware mencoba mencuri data, merusak sistem, dan membuka pintu bagi serangan berikutnya.";
+        public string bossDefeatTitle = "ANCAMAN DINETRALISIR";
+        [TextArea(2, 4)] public string bossDefeatBody = "Inti malware pecah. Sistem kembali stabil karena kamu memahami lapisan pertahanan yang tepat.";
+        public string bossLessonTitle = "PELAJARAN SEKTOR";
+        [TextArea(2, 5)] public string bossLessonBody = "Gunakan kebiasaan aman: cek sumber, perbarui sistem, aktifkan perlindungan akun, dan jangan menjalankan file mencurigakan.";
         public int maxLives = 3;
+        [Range(1, 3)] public int quizLessonTier = 1;
 
         private static readonly QuizQuestion[] FallbackQuestions =
         {
@@ -151,6 +183,8 @@ namespace CyberGuardian
 
         private GameMode mode = GameMode.Adventure;
         private CyberGuardianBossShieldBlock activeQuizBlock;
+        private QuizQuestion activeQuizQuestion;
+        private int[] displayedAnswerIndices = new int[0];
         private DifficultyProfile activeDifficulty;
         private int currentDifficultyIndex = 1;
         private int playerHealth;
@@ -173,13 +207,31 @@ namespace CyberGuardian
         private Coroutine bossDialogueRoutine;
         private float bossDialoguePreviousTimeScale = 1f;
         private float bossDialoguePreviousFixedDeltaTime = 0.02f;
+        private float bossDialogueHoldSeconds = 3.45f;
+        private bool bossDialogueRequiresContinue;
         private bool bossDialogueSlowActive;
+        private bool developerMode;
+        private bool electricShockSequenceActive;
+        private bool cinematicCameraActive;
+        private Vector3 cinematicCameraTarget;
+        private float cinematicCameraSize = 5.4f;
+        private bool bossDefeatSequenceActive;
+        private bool narrativeOpen;
+        private bool narrativeContinueRequested;
+        private bool aerialBossTransitionStarted;
 
-        public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen && !paused && !introCountdownActive;
+        public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen && !paused && !introCountdownActive && !electricShockSequenceActive && !narrativeOpen;
 
         private void Awake()
         {
             currentDifficultyIndex = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.DifficultyKey, 1), 0, 2);
+            developerMode = CyberGuardianMainMenu.IsDeveloperModeEnabled();
+            CyberGuardianMainMenu.ApplyAudioPreferencesToScene();
+            if (developerMode)
+            {
+                maxLives = Mathf.Max(maxLives, 99);
+            }
+
             activeDifficulty = GetActiveDifficulty();
             playerHealth = activeDifficulty != null ? activeDifficulty.startingShield : 100;
             playerLives = Mathf.Max(1, maxLives);
@@ -195,6 +247,7 @@ namespace CyberGuardian
             }
 
             resumedFromCheckpoint = TryApplySavedContinue();
+            ApplyDeveloperModeVitals(false);
 
             for (int i = 0; i < enemies.Count; i++)
             {
@@ -234,6 +287,11 @@ namespace CyberGuardian
                 storyPanel.SetActive(false);
             }
 
+            if (educationPanel != null)
+            {
+                educationPanel.SetActive(false);
+            }
+
             if (bossDialoguePanel != null)
             {
                 bossDialoguePanel.SetActive(false);
@@ -247,7 +305,7 @@ namespace CyberGuardian
             StartLoopingMusic(adventureMusic);
             SetStatus("MODE PETUALANGAN: A/D GERAK, SPACE LOMPAT, J SERANG, SHIFT ENERGI");
             RefreshHud();
-            StartCoroutine(ReadyCountdownSequence());
+            StartCoroutine(SceneOpeningSequence());
         }
 
         private void Update()
@@ -264,6 +322,7 @@ namespace CyberGuardian
 
             invulnerabilityTimer = Mathf.Max(0f, invulnerabilityTimer - Time.deltaTime);
             RegenerateBoost();
+            ApplyDeveloperModeVitals(true);
             UpdateCamera();
 
             if (mode == GameMode.Adventure && player != null && player.transform.position.x >= bossArenaMinX - 0.35f)
@@ -274,8 +333,11 @@ namespace CyberGuardian
             if (mode == GameMode.BossSlingshot)
             {
                 ClampPlayerToBossArena();
-                HandleSlingshotInput();
-                HandleBossAttack();
+                if (!narrativeOpen)
+                {
+                    HandleSlingshotInput();
+                    HandleBossAttack();
+                }
             }
 
             if (projectileInFlight)
@@ -287,6 +349,69 @@ namespace CyberGuardian
             {
                 FallIntoElectricRiver();
             }
+        }
+
+        private IEnumerator SceneOpeningSequence()
+        {
+            introCountdownActive = true;
+            Time.timeScale = 1f;
+            RestoreBossDialogueTimeScale();
+            HideStoryPanel();
+            if (educationPanel != null)
+            {
+                educationPanel.SetActive(false);
+            }
+
+            Vector3 playerFocus = player != null ? player.transform.position + new Vector3(2.2f, 1.0f, -10f) : new Vector3(startingRecoveryPoint.x, startingRecoveryPoint.y + 1.0f, -10f);
+            Vector3 bossFocus = ResolveBossCinematicPosition();
+            cinematicCameraActive = true;
+            cinematicCameraSize = aerialBossEncounter ? Mathf.Max(bossCameraSize, aerialBossCameraSize) : Mathf.Max(4.8f, bossCameraSize);
+            cinematicCameraTarget = bossFocus;
+            if (gameplayCamera != null)
+            {
+                gameplayCamera.transform.position = bossFocus;
+                gameplayCamera.orthographicSize = cinematicCameraSize;
+            }
+
+            ShowBossDialogue(bossThreatTitle, bossThreatBody, 1.45f, true);
+            while (bossDialogueRoutine != null)
+            {
+                yield return null;
+            }
+
+            yield return ShowEducationCardRoutine(bossInfoTitle, bossInfoBody, 3.1f);
+            ShowStory(sceneIntroTitle, sceneIntroBody, 3.0f);
+            yield return new WaitForSecondsRealtime(1.35f);
+
+            float flyDuration = 2.45f;
+            float elapsed = 0f;
+            Vector3 start = gameplayCamera != null ? gameplayCamera.transform.position : bossFocus;
+            float startSize = gameplayCamera != null ? gameplayCamera.orthographicSize : cinematicCameraSize;
+            while (elapsed < flyDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / flyDuration);
+                float eased = t * t * (3f - 2f * t);
+                cinematicCameraTarget = Vector3.Lerp(start, playerFocus, eased);
+                cinematicCameraSize = Mathf.Lerp(startSize, 5.4f, eased);
+                yield return null;
+            }
+
+            cinematicCameraActive = false;
+            HideStoryPanel();
+            yield return ReadyCountdownSequence();
+        }
+
+        private Vector3 ResolveBossCinematicPosition()
+        {
+            Transform target = bossCinematicTarget != null ? bossCinematicTarget : (bossCore != null ? bossCore.transform : null);
+            if (target != null)
+            {
+                return new Vector3(target.position.x, target.position.y + 0.35f, -10f);
+            }
+
+            float y = aerialBossEncounter ? 5.4f : 2.1f;
+            return new Vector3(bossArenaCenterX + (aerialBossEncounter ? aerialBossCameraXOffset : 0f), y, -10f);
         }
 
         private IEnumerator ReadyCountdownSequence()
@@ -385,9 +510,13 @@ namespace CyberGuardian
             }
 
             mode = GameMode.BossSlingshot;
-            if (player != null)
+            SyncPlayerBossMovementMode();
+            if (aerialBossEncounter && player != null)
             {
-                player.InBossMode = true;
+                currentRecoveryPoint = new Vector3(bossArenaMinX + 1.25f, Mathf.Clamp(player.transform.position.y + 1.15f, 3.35f, 5.65f), player.transform.position.z);
+                player.transform.position = currentRecoveryPoint;
+                SaveProgress(currentRecoveryPoint);
+                StartAerialBossTransition();
             }
 
             bossFireTimer = 1.25f;
@@ -395,8 +524,170 @@ namespace CyberGuardian
             PlaySfx(bossWarningSfx);
             StartLoopingMusic(bossMusic);
             ShowBossDialogue();
-            SetStatus("MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH");
+            SetStatus(aerialBossEncounter ? "MODE BOS UDARA: TERBANG DENGAN WASD/PANAH, TARIK INTI PATCH UNTUK MENEMBUS PERISAI" : "MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH");
             RefreshHud();
+        }
+
+        private void SyncPlayerBossMovementMode()
+        {
+            if (player == null)
+            {
+                return;
+            }
+
+            bool bossMode = mode == GameMode.BossSlingshot;
+            player.InBossMode = bossMode;
+            player.SetFlightMode(bossMode && aerialBossEncounter);
+        }
+
+        private void StartAerialBossTransition()
+        {
+            if (!aerialBossEncounter || aerialBossTransitionStarted)
+            {
+                return;
+            }
+
+            EnsureAerialBossBreakawayBlocks();
+            aerialBossTransitionStarted = true;
+            StartCoroutine(AerialBossEntryBreakawaySequence());
+        }
+
+        private void EnsureAerialBossBreakawayBlocks()
+        {
+            if (aerialBossBreakawayBlocks == null)
+            {
+                aerialBossBreakawayBlocks = new List<GameObject>();
+            }
+
+            aerialBossBreakawayBlocks.RemoveAll(block => block == null);
+            if (aerialBossBreakawayBlocks.Count > 0)
+            {
+                return;
+            }
+
+            string[] breakawayNames =
+            {
+                "L03 Aerial Boss Lower Dodge Bridge",
+                "L03 Aerial Boss Left Floating Shelf",
+                "L03 Aerial Boss Right Floating Shelf"
+            };
+
+            for (int i = 0; i < breakawayNames.Length; i++)
+            {
+                GameObject block = GameObject.Find(breakawayNames[i]);
+                if (block != null)
+                {
+                    aerialBossBreakawayBlocks.Add(block);
+                }
+            }
+        }
+
+        private IEnumerator AerialBossEntryBreakawaySequence()
+        {
+            SetStatus("ARENA DARAT RUNTUH - MODE TERBANG AKTIF");
+            PlaySfx(bossShieldBreakSfx != null ? bossShieldBreakSfx : shieldSfx);
+            if (aerialBossBreakawayBlocks == null)
+            {
+                yield break;
+            }
+
+            for (int i = 0; i < aerialBossBreakawayBlocks.Count; i++)
+            {
+                GameObject block = aerialBossBreakawayBlocks[i];
+                if (block == null || !block.activeInHierarchy)
+                {
+                    continue;
+                }
+
+                StartCoroutine(CollapseAerialBossBlock(block, i));
+                yield return new WaitForSecondsRealtime(0.07f);
+            }
+        }
+
+        private IEnumerator CollapseAerialBossBlock(GameObject block, int index)
+        {
+            Collider2D[] colliders = block.GetComponentsInChildren<Collider2D>();
+            for (int i = 0; i < colliders.Length; i++)
+            {
+                if (colliders[i] != null)
+                {
+                    colliders[i].enabled = false;
+                }
+            }
+
+            SpriteRenderer[] renderers = block.GetComponentsInChildren<SpriteRenderer>();
+            int fragmentBudget = 18;
+            for (int i = 0; i < renderers.Length && fragmentBudget > 0; i++)
+            {
+                SpriteRenderer renderer = renderers[i];
+                if (renderer == null || renderer.sprite == null || renderer.color.a < 0.05f)
+                {
+                    continue;
+                }
+
+                SpawnAerialBreakawayFragment(renderer, i + index * 7);
+                fragmentBudget--;
+            }
+
+            float elapsed = 0f;
+            const float duration = 0.42f;
+            Vector3 baseScale = block.transform.localScale;
+            while (elapsed < duration && block != null)
+            {
+                float deltaTime = Time.unscaledDeltaTime;
+                elapsed += deltaTime;
+                float t = Mathf.Clamp01(elapsed / duration);
+                float shake = Mathf.Sin(t * Mathf.PI * 8f) * (1f - t) * 0.05f;
+                block.transform.localScale = baseScale * Mathf.Lerp(1f, 0.72f, t);
+                block.transform.position += new Vector3(shake, -deltaTime * 1.2f, 0f);
+                for (int i = 0; i < renderers.Length; i++)
+                {
+                    SpriteRenderer renderer = renderers[i];
+                    if (renderer == null)
+                    {
+                        continue;
+                    }
+
+                    Color color = renderer.color;
+                    color.a = Mathf.Lerp(color.a, 0f, t);
+                    renderer.color = color;
+                }
+
+                yield return null;
+            }
+
+            if (block != null)
+            {
+                block.SetActive(false);
+            }
+        }
+
+        private void SpawnAerialBreakawayFragment(SpriteRenderer source, int seed)
+        {
+            if (source == null || source.sprite == null)
+            {
+                return;
+            }
+
+            GameObject fragment = new GameObject("Aerial Boss Arena Data Fragment", typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(CircleCollider2D));
+            fragment.transform.position = source.transform.position + new Vector3(Random.Range(-0.18f, 0.18f), Random.Range(-0.14f, 0.14f), 0f);
+            fragment.transform.localScale = Vector3.one * Random.Range(0.06f, 0.18f);
+            fragment.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
+
+            SpriteRenderer renderer = fragment.GetComponent<SpriteRenderer>();
+            renderer.sprite = source.sprite;
+            renderer.color = Color.Lerp(source.color, seed % 2 == 0 ? new Color(0.35f, 1f, 1f, 1f) : new Color(1f, 0.24f, 0.55f, 1f), 0.45f);
+            renderer.sortingOrder = Mathf.Max(30, source.sortingOrder + 6);
+
+            Rigidbody2D body = fragment.GetComponent<Rigidbody2D>();
+            body.gravityScale = Random.Range(0.18f, 0.48f);
+            body.linearVelocity = new Vector2(Random.Range(-3.2f, 3.2f), Random.Range(1.2f, 5.8f));
+            body.angularVelocity = Random.Range(-520f, 520f);
+
+            CircleCollider2D collider = fragment.GetComponent<CircleCollider2D>();
+            collider.isTrigger = true;
+            collider.radius = 0.08f;
+            Destroy(fragment, 1.35f);
         }
 
         public void PlayerMelee(Vector2 center, float radius, int damage)
@@ -446,6 +737,11 @@ namespace CyberGuardian
             if (normalized.Contains("boss packet"))
             {
                 return "serangan paket bos";
+            }
+
+            if (normalized.Contains("boss electric") || normalized.Contains("listrik bos"))
+            {
+                return "serangan listrik bos";
             }
 
             if (normalized.Contains("sungai") || normalized.Contains("electric river") || normalized.Contains("abyss") || normalized.Contains("jurang"))
@@ -503,6 +799,15 @@ namespace CyberGuardian
                 return;
             }
 
+            if (developerMode)
+            {
+                invulnerabilityTimer = 0.15f;
+                ApplyDeveloperModeVitals(false);
+                SetStatus("MODE DEVELOPER: DAMAGE DARI " + TranslateDamageSource(source).ToUpperInvariant() + " DIABAIKAN");
+                RefreshHud();
+                return;
+            }
+
             invulnerabilityTimer = 0.75f;
             playerHealth = Mathf.Max(0, playerHealth - damage);
             PlaySfx(GetDamageSfx(source));
@@ -535,6 +840,7 @@ namespace CyberGuardian
             quizOpen = false;
             draggingSlingshot = false;
             projectileInFlight = false;
+            electricShockSequenceActive = false;
             projectileFlightTimer = 0f;
             HideSlingshotLines();
 
@@ -561,7 +867,7 @@ namespace CyberGuardian
 
                 SetPlayerRenderersEnabled(true);
                 player.transform.position = currentRecoveryPoint;
-                player.InBossMode = mode == GameMode.BossSlingshot;
+                SyncPlayerBossMovementMode();
             }
 
             ResetSlingshotProjectile();
@@ -582,6 +888,8 @@ namespace CyberGuardian
             defeatSequenceStarted = true;
             SetPaused(false);
             mode = GameMode.Defeat;
+            electricShockSequenceActive = false;
+            introCountdownActive = false;
             PlaySfx(playerDeathSfx);
             quizOpen = false;
             draggingSlingshot = false;
@@ -595,6 +903,7 @@ namespace CyberGuardian
             if (player != null)
             {
                 player.InBossMode = false;
+                player.SetFlightMode(false);
                 Rigidbody2D playerBody = player.GetComponent<Rigidbody2D>();
                 if (playerBody != null)
                 {
@@ -658,6 +967,40 @@ namespace CyberGuardian
                 collider.isTrigger = true;
                 collider.radius = 0.10f;
                 Destroy(shard, 1.8f);
+            }
+        }
+
+        private void SpawnElectricShockBurst(Vector3 origin)
+        {
+            SpriteRenderer playerRenderer = player != null ? player.GetComponentInChildren<SpriteRenderer>() : null;
+            Sprite sparkSprite = deathShardSprite != null ? deathShardSprite : (playerRenderer != null ? playerRenderer.sprite : null);
+            for (int i = 0; i < 8; i++)
+            {
+                GameObject spark = new GameObject("Electric River Shock Spark", typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(CircleCollider2D));
+                spark.transform.position = origin + new Vector3(Random.Range(-0.18f, 0.18f), Random.Range(-0.12f, 0.18f), 0f);
+                spark.transform.localScale = new Vector3(Random.Range(0.055f, 0.13f), Random.Range(0.018f, 0.05f), 1f);
+                spark.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
+
+                SpriteRenderer renderer = spark.GetComponent<SpriteRenderer>();
+                renderer.sprite = sparkSprite;
+                renderer.color = i % 2 == 0 ? new Color(0.34f, 1f, 1f, 1f) : new Color(1f, 0.18f, 0.55f, 0.9f);
+                renderer.sortingOrder = 44;
+
+                Rigidbody2D body = spark.GetComponent<Rigidbody2D>();
+                Vector2 direction = Random.insideUnitCircle.normalized;
+                if (direction.sqrMagnitude < 0.1f)
+                {
+                    direction = Vector2.up;
+                }
+
+                body.gravityScale = 0.15f;
+                body.linearVelocity = direction * Random.Range(2.6f, 6.4f);
+                body.angularVelocity = Random.Range(-720f, 720f);
+
+                CircleCollider2D collider = spark.GetComponent<CircleCollider2D>();
+                collider.isTrigger = true;
+                collider.radius = 0.06f;
+                Destroy(spark, 0.72f);
             }
         }
 
@@ -740,17 +1083,98 @@ namespace CyberGuardian
 
             if (bossHealth <= 0)
             {
-                mode = GameMode.Victory;
-                if (player != null)
+                StartCoroutine(BossDefeatSequence());
+            }
+        }
+
+        private IEnumerator BossDefeatSequence()
+        {
+            if (bossDefeatSequenceActive)
+            {
+                yield break;
+            }
+
+            bossDefeatSequenceActive = true;
+            mode = GameMode.Victory;
+            introCountdownActive = true;
+            draggingSlingshot = false;
+            projectileInFlight = false;
+            HideSlingshotLines();
+            if (player != null)
+            {
+                player.InBossMode = false;
+                player.SetFlightMode(false);
+            }
+
+            SetStatus("INTI MALWARE RETAK - ANALISIS HASIL");
+            cinematicCameraActive = true;
+            cinematicCameraTarget = ResolveBossCinematicPosition();
+            cinematicCameraSize = aerialBossEncounter ? Mathf.Max(6.6f, aerialBossCameraSize - 0.5f) : Mathf.Max(3.8f, bossCameraSize - 1.2f);
+            yield return new WaitForSecondsRealtime(0.85f);
+            SpawnBossDestructionFragments();
+            yield return new WaitForSecondsRealtime(0.55f);
+            ShowStory(bossDefeatTitle, bossDefeatBody, 2.6f);
+            yield return new WaitForSecondsRealtime(2.7f);
+            yield return ShowEducationCardRoutine(bossLessonTitle, bossLessonBody, 4.25f);
+
+            cinematicCameraActive = false;
+            introCountdownActive = false;
+            if (!string.IsNullOrEmpty(nextSceneName))
+            {
+                SetStatus("LEVEL SELESAI - MEMBUKA SEKTOR BERIKUTNYA");
+                SaveProgressForScene(nextSceneName, GetNextSceneStartPoint(), true);
+                LoadNextScene();
+            }
+            else
+            {
+                SetStatus("SEMUA SEKTOR DIBERSIHKAN - KOMPUTER AMAN");
+            }
+        }
+
+        private void SpawnBossDestructionFragments()
+        {
+            Vector3 origin = bossVisualRoot != null ? bossVisualRoot.position : (bossCore != null ? bossCore.transform.position : new Vector3(bossArenaCenterX, 2f, 0f));
+            SpriteRenderer bossRenderer = bossVisualRoot != null ? bossVisualRoot.GetComponentInChildren<SpriteRenderer>() : (bossCore != null ? bossCore.GetComponentInChildren<SpriteRenderer>() : null);
+            Sprite shardSprite = deathShardSprite != null ? deathShardSprite : (bossRenderer != null ? bossRenderer.sprite : null);
+            for (int i = 0; i < 42; i++)
+            {
+                GameObject shard = new GameObject("Boss Malware Data Fragment", typeof(SpriteRenderer), typeof(Rigidbody2D), typeof(CircleCollider2D));
+                shard.transform.position = origin + new Vector3(Random.Range(-0.85f, 0.85f), Random.Range(-0.65f, 0.85f), 0f);
+                shard.transform.localScale = new Vector3(Random.Range(0.06f, 0.22f), Random.Range(0.035f, 0.16f), 1f);
+                shard.transform.rotation = Quaternion.Euler(0f, 0f, Random.Range(0f, 360f));
+
+                SpriteRenderer renderer = shard.GetComponent<SpriteRenderer>();
+                renderer.sprite = shardSprite;
+                renderer.color = i % 3 == 0 ? new Color(0.25f, 1f, 1f, 0.96f) : (i % 3 == 1 ? new Color(1f, 0.12f, 0.52f, 0.95f) : new Color(0.95f, 1f, 1f, 0.9f));
+                renderer.sortingOrder = 45;
+
+                Rigidbody2D body = shard.GetComponent<Rigidbody2D>();
+                Vector2 direction = Random.insideUnitCircle.normalized;
+                if (direction.sqrMagnitude < 0.1f)
                 {
-                    player.InBossMode = false;
+                    direction = Vector2.up;
                 }
 
-                if (!string.IsNullOrEmpty(nextSceneName))
+                body.gravityScale = Random.Range(0.18f, 0.55f);
+                body.linearVelocity = direction * Random.Range(3.4f, 8.6f) + Vector2.up * Random.Range(0.2f, 2.2f);
+                body.angularVelocity = Random.Range(-740f, 740f);
+
+                CircleCollider2D collider = shard.GetComponent<CircleCollider2D>();
+                collider.isTrigger = true;
+                collider.radius = 0.10f;
+                Destroy(shard, 2.25f);
+            }
+
+            Transform visualRoot = bossVisualRoot != null ? bossVisualRoot : (bossCore != null ? bossCore.transform : null);
+            if (visualRoot != null)
+            {
+                Renderer[] renderers = visualRoot.GetComponentsInChildren<Renderer>();
+                for (int i = 0; i < renderers.Length; i++)
                 {
-                    SetStatus("LEVEL SELESAI - MEMBUKA SEKTOR BERIKUTNYA");
-                    SaveProgressForScene(nextSceneName, GetNextSceneStartPoint(), true);
-                    Invoke(nameof(LoadNextScene), 1.35f);
+                    if (renderers[i] != null)
+                    {
+                        renderers[i].enabled = false;
+                    }
                 }
             }
         }
@@ -793,13 +1217,77 @@ namespace CyberGuardian
                 return;
             }
 
-            invulnerabilityTimer = 0f;
+            if (developerMode)
+            {
+                player.transform.position = currentRecoveryPoint;
+                Rigidbody2D body = player.GetComponent<Rigidbody2D>();
+                if (body != null)
+                {
+                    body.linearVelocity = Vector2.zero;
+                    body.angularVelocity = 0f;
+                }
+
+                ApplyDeveloperModeVitals(false);
+                SetStatus("MODE DEVELOPER: SUNGAI LISTRIK DIABAIKAN");
+                RefreshHud();
+                return;
+            }
+
+            if (!electricShockSequenceActive)
+            {
+                StartCoroutine(ElectricRiverShockSequence());
+            }
+        }
+
+        private IEnumerator ElectricRiverShockSequence()
+        {
+            electricShockSequenceActive = true;
+            introCountdownActive = true;
+            invulnerabilityTimer = 999f;
             PlaySfx(GetDamageSfx("sungai listrik"));
+            SetStatus("TERSENGAT SUNGAI LISTRIK - SISTEM TERBAKAR");
+
+            Rigidbody2D playerBody = player != null ? player.GetComponent<Rigidbody2D>() : null;
+            Collider2D playerCollider = player != null ? player.GetComponent<Collider2D>() : null;
+            if (playerBody != null)
+            {
+                playerBody.linearVelocity = Vector2.zero;
+                playerBody.angularVelocity = 0f;
+                playerBody.simulated = false;
+            }
+
+            if (playerCollider != null)
+            {
+                playerCollider.enabled = false;
+            }
+
+            float elapsed = 0f;
+            while (elapsed < 0.92f)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                bool visible = Mathf.FloorToInt(elapsed * 18f) % 2 == 0;
+                SetPlayerRenderersEnabled(visible);
+                if (Time.frameCount % 5 == 0 && player != null)
+                {
+                    SpawnElectricShockBurst(player.transform.position + new Vector3(0f, 0.24f, 0f));
+                }
+
+                yield return null;
+            }
+
+            SetPlayerRenderersEnabled(false);
+            SpawnDeathFragments();
+            yield return new WaitForSecondsRealtime(0.24f);
+
+            introCountdownActive = false;
+            electricShockSequenceActive = false;
+            invulnerabilityTimer = 0f;
+
             if (!TrySpendLifeAndRespawn("sungai listrik"))
             {
                 SetStatus("SISTEM JEBOL - TERSENGAT SUNGAI LISTRIK");
                 BeginDefeatSequence("sungai listrik");
-                return;
+                yield break;
             }
 
             SetStatus("TERSENGAT SUNGAI LISTRIK - NYAWA BERKURANG");
@@ -808,7 +1296,21 @@ namespace CyberGuardian
 
         public bool TryUseBoost(float cost)
         {
-            if (mode == GameMode.Defeat || mode == GameMode.Victory || quizOpen || boostEnergy < cost)
+            if (mode == GameMode.Defeat || mode == GameMode.Victory || quizOpen)
+            {
+                return false;
+            }
+
+            if (developerMode)
+            {
+                ApplyDeveloperModeVitals(false);
+                PlaySfx(playerBoostSfx);
+                SetStatus("MODE DEVELOPER: ENERGI BOOST TANPA BATAS");
+                RefreshHud();
+                return true;
+            }
+
+            if (boostEnergy < cost)
             {
                 return false;
             }
@@ -883,11 +1385,118 @@ namespace CyberGuardian
             Invoke(nameof(HideStoryPanel), Mathf.Max(1f, duration));
         }
 
+        private IEnumerator ShowEducationCardRoutine(string title, string body, float duration)
+        {
+            if (educationPanel == null)
+            {
+                ShowStory(title, body, duration);
+                yield return new WaitForSecondsRealtime(Mathf.Max(1f, duration));
+                yield break;
+            }
+
+            narrativeOpen = true;
+            narrativeContinueRequested = false;
+            if (educationTitleText != null)
+            {
+                educationTitleText.text = title;
+            }
+
+            if (educationBodyText != null)
+            {
+                educationBodyText.text = body;
+            }
+
+            educationPanel.SetActive(true);
+            if (educationContinueButton != null)
+            {
+                educationContinueButton.gameObject.SetActive(false);
+            }
+
+            RectTransform rect = educationPanel.GetComponent<RectTransform>();
+            Vector3 baseScale = rect != null ? rect.localScale : Vector3.one;
+            float fadeDuration = 0.28f;
+            float elapsed = 0f;
+            CanvasGroup group = educationPanel.GetComponent<CanvasGroup>();
+            if (group != null)
+            {
+                group.alpha = 0f;
+            }
+
+            while (elapsed < fadeDuration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = Mathf.Clamp01(elapsed / fadeDuration);
+                float eased = t * t * (3f - 2f * t);
+                if (group != null)
+                {
+                    group.alpha = eased;
+                }
+
+                if (rect != null)
+                {
+                    rect.localScale = Vector3.one * Mathf.Lerp(0.94f, 1f, eased);
+                }
+
+                yield return null;
+            }
+
+            if (group != null)
+            {
+                group.alpha = 1f;
+            }
+
+            if (educationContinueButton != null)
+            {
+                educationContinueButton.gameObject.SetActive(true);
+            }
+
+            SetStatus("BACA KARTU EDUKASI - KLIK LANJUT ATAU TEKAN ENTER");
+            yield return WaitForNarrativeContinue(Mathf.Max(0.65f, duration));
+            if (rect != null)
+            {
+                rect.localScale = baseScale;
+            }
+
+            educationPanel.SetActive(false);
+            narrativeOpen = false;
+        }
+
+        private void RequestNarrativeContinue()
+        {
+            narrativeContinueRequested = true;
+        }
+
+        private IEnumerator WaitForNarrativeContinue(float minimumReadSeconds)
+        {
+            float elapsed = 0f;
+            float minimum = Mathf.Max(0.25f, minimumReadSeconds);
+            while (elapsed < minimum || !narrativeContinueRequested)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter) || Input.GetKeyDown(KeyCode.Space))
+                {
+                    narrativeContinueRequested = true;
+                }
+
+                yield return null;
+            }
+        }
+
         private void ShowBossDialogue()
+        {
+            ShowBossDialogue(bossThreatTitle, bossThreatBody, 3.45f, true);
+        }
+
+        private void ShowBossDialogue(string title, string body, float holdSeconds)
+        {
+            ShowBossDialogue(title, body, holdSeconds, false);
+        }
+
+        private void ShowBossDialogue(string title, string body, float holdSeconds, bool requiresContinue)
         {
             if (bossDialoguePanel == null)
             {
-                ShowStory("BOS MALWARE", "Akhirnya kamu sampai di firewall inti. Jawab blok kuis, buka celah, lalu tembak inti patch sebelum sistem direbut.", 4.2f);
+                ShowStory(string.IsNullOrEmpty(title) ? "BOS MALWARE" : title, string.IsNullOrEmpty(body) ? "Akhirnya kamu sampai di firewall inti. Jawab blok kuis, buka celah, lalu tembak inti patch sebelum sistem direbut." : body, holdSeconds + 0.8f);
                 return;
             }
 
@@ -900,12 +1509,12 @@ namespace CyberGuardian
 
             if (bossDialogueTitleText != null)
             {
-                bossDialogueTitleText.text = "BOS MALWARE";
+                bossDialogueTitleText.text = string.IsNullOrEmpty(title) ? "BOS MALWARE" : title;
             }
 
             if (bossDialogueBodyText != null)
             {
-                bossDialogueBodyText.text = "Kamu masuk ke domainku, Guardian. Setiap blok kuis adalah firewall palsu. Salah menjawab, seranganku makin kuat. Buka celahnya kalau berani.";
+                bossDialogueBodyText.text = string.IsNullOrEmpty(body) ? "Kamu masuk ke domainku, Guardian. Setiap blok kuis adalah firewall palsu. Salah menjawab, seranganku makin kuat. Buka celahnya kalau berani." : body;
             }
 
             if (bossDialoguePortraitImage != null)
@@ -915,6 +1524,8 @@ namespace CyberGuardian
             }
 
             bossDialoguePanel.SetActive(true);
+            bossDialogueHoldSeconds = Mathf.Max(0.8f, holdSeconds);
+            bossDialogueRequiresContinue = requiresContinue;
             bossDialogueRoutine = StartCoroutine(BossDialogueRevealRoutine());
         }
 
@@ -931,10 +1542,19 @@ namespace CyberGuardian
             {
                 bossDialoguePanel.SetActive(false);
             }
+
+            narrativeOpen = false;
         }
 
         private IEnumerator BossDialogueRevealRoutine()
         {
+            narrativeOpen = true;
+            narrativeContinueRequested = false;
+            if (bossDialogueContinueButton != null)
+            {
+                bossDialogueContinueButton.gameObject.SetActive(false);
+            }
+
             bossDialoguePreviousTimeScale = Time.timeScale <= 0f ? 1f : Time.timeScale;
             bossDialoguePreviousFixedDeltaTime = Time.fixedDeltaTime <= 0f ? 0.02f : Time.fixedDeltaTime;
             Time.timeScale = Mathf.Min(bossDialoguePreviousTimeScale, 0.38f);
@@ -1015,12 +1635,27 @@ namespace CyberGuardian
             }
 
             RestoreBossDialogueTimeScale();
-            yield return new WaitForSecondsRealtime(3.45f);
+            if (bossDialogueContinueButton != null)
+            {
+                bossDialogueContinueButton.gameObject.SetActive(true);
+            }
+
+            if (bossDialogueRequiresContinue)
+            {
+                SetStatus("DIALOG BOS - KLIK LANJUT ATAU TEKAN ENTER");
+                yield return WaitForNarrativeContinue(bossDialogueHoldSeconds);
+            }
+            else
+            {
+                yield return new WaitForSecondsRealtime(bossDialogueHoldSeconds);
+            }
+
             if (bossDialoguePanel != null)
             {
                 bossDialoguePanel.SetActive(false);
             }
 
+            narrativeOpen = false;
             bossDialogueRoutine = null;
         }
 
@@ -1038,6 +1673,12 @@ namespace CyberGuardian
 
         private void RegenerateBoost()
         {
+            if (developerMode)
+            {
+                ApplyDeveloperModeVitals(true);
+                return;
+            }
+
             if (mode == GameMode.Defeat || mode == GameMode.Victory || quizOpen)
             {
                 return;
@@ -1107,6 +1748,18 @@ namespace CyberGuardian
                 closeQuizButton.onClick.AddListener(CloseQuizWithoutAnswer);
             }
 
+            if (bossDialogueContinueButton != null)
+            {
+                bossDialogueContinueButton.onClick.RemoveAllListeners();
+                bossDialogueContinueButton.onClick.AddListener(RequestNarrativeContinue);
+            }
+
+            if (educationContinueButton != null)
+            {
+                educationContinueButton.onClick.RemoveAllListeners();
+                educationContinueButton.onClick.AddListener(RequestNarrativeContinue);
+            }
+
             if (answerButtons != null)
             {
                 for (int i = 0; i < answerButtons.Length; i++)
@@ -1132,6 +1785,11 @@ namespace CyberGuardian
             if (!slingshotProjectile.gameObject.activeSelf)
             {
                 slingshotProjectile.gameObject.SetActive(true);
+            }
+
+            if (slingshotCollider != null && !projectileInFlight)
+            {
+                slingshotCollider.enabled = false;
             }
 
             if (!draggingSlingshot)
@@ -1222,7 +1880,8 @@ namespace CyberGuardian
                 aimDirection = Vector2.right * (player != null ? player.FacingDirection : 1);
             }
 
-            float pull = Mathf.Clamp(aimDirection.magnitude * 0.35f, 0.75f, slingshotMaxPull);
+            float minPull = Mathf.Clamp(slingshotMinPull, 0.05f, slingshotMaxPull);
+            float pull = Mathf.Clamp(aimDirection.magnitude * slingshotPullScreenScale, minPull, slingshotMaxPull);
             return -aimDirection.normalized * pull;
         }
 
@@ -1313,7 +1972,7 @@ namespace CyberGuardian
                     SpawnBossProjectile(spawn + new Vector2(0f, yOffset * 0.18f), target, speed, damage);
                 }
 
-                SetStatus("SERANGAN BERUNTUN BOS UDARA: HINDARI LEDAKAN MALWARE");
+                SetStatus("SAMBARAN LISTRIK BOS UDARA: HINDARI JALUR PETIR");
             }
             else if (pattern == 1)
             {
@@ -1326,7 +1985,7 @@ namespace CyberGuardian
                     SpawnBossProjectile(spawn, target, speed * 0.92f, Mathf.Max(5, damage - 2));
                 }
 
-                SetStatus("HUJAN PAKET BOS UDARA: AWASI ATAS");
+                SetStatus("HUJAN LISTRIK BOS UDARA: AWASI ATAS");
             }
             else if (pattern == 2)
             {
@@ -1338,7 +1997,7 @@ namespace CyberGuardian
                     SpawnBossProjectile(spawn, target, speed * (0.85f + i * 0.05f), damage);
                 }
 
-                SetStatus("SAPUAN BOS UDARA: SERANGAN MULTI-PORT");
+                SetStatus("SAPUAN PETIR BOS UDARA: SERANGAN MULTI-PORT");
             }
             else
             {
@@ -1353,7 +2012,7 @@ namespace CyberGuardian
                     SpawnBossProjectile(rightSpawn, targetRight, speed * 0.78f, Mathf.Max(5, damage - 3));
                 }
 
-                SetStatus("BADAI SILANG BOS UDARA: CARI CELAH AMAN");
+                SetStatus("BADAI LISTRIK SILANG: CARI CELAH AMAN");
             }
 
             PlaySfx(bossShotSfx);
@@ -1401,16 +2060,19 @@ namespace CyberGuardian
         {
             activeQuizBlock = block;
             quizOpen = true;
-            QuizQuestion question = GetQuestion(block.category, score + block.category + Mathf.RoundToInt(block.transform.position.y * 10f));
+            int seed = score + block.category * 37 + Mathf.RoundToInt(block.transform.position.x * 13f) + Mathf.RoundToInt(block.transform.position.y * 17f) + Time.frameCount;
+            QuizQuestion question = GetQuestion(block.category, seed);
+            activeQuizQuestion = question;
+            displayedAnswerIndices = BuildAnswerIndexMap(question, seed);
 
             if (quizTitleText != null)
             {
-                quizTitleText.text = question.title;
+                quizTitleText.text = question != null ? question.title : "BLOK KUIS";
             }
 
             if (quizPromptText != null)
             {
-                quizPromptText.text = question.prompt;
+                quizPromptText.text = question != null ? question.prompt : "Pertanyaan keamanan tidak tersedia.";
             }
 
             if (feedbackText != null)
@@ -1420,7 +2082,8 @@ namespace CyberGuardian
 
             for (int i = 0; answerButtons != null && i < answerButtons.Length; i++)
             {
-                bool hasAnswer = question.answers != null && i < question.answers.Length;
+                int answerIndex = GetOriginalAnswerIndex(i);
+                bool hasAnswer = question != null && question.answers != null && answerIndex >= 0 && answerIndex < question.answers.Length;
                 if (answerButtons[i] != null)
                 {
                     answerButtons[i].gameObject.SetActive(hasAnswer);
@@ -1429,7 +2092,13 @@ namespace CyberGuardian
 
                 if (answerLabels != null && i < answerLabels.Length && answerLabels[i] != null)
                 {
-                    answerLabels[i].text = hasAnswer ? question.answers[i] : string.Empty;
+                    string answerText = hasAnswer ? question.answers[answerIndex] : string.Empty;
+                    if (developerMode && hasAnswer && answerIndex == question.correctIndex)
+                    {
+                        answerText = "[BENAR] " + answerText;
+                    }
+
+                    answerLabels[i].text = answerText;
                 }
             }
 
@@ -1450,7 +2119,8 @@ namespace CyberGuardian
                 return;
             }
 
-            QuizQuestion question = GetQuestion(activeQuizBlock.category, score + activeQuizBlock.category + Mathf.RoundToInt(activeQuizBlock.transform.position.y * 10f));
+            QuizQuestion question = activeQuizQuestion ?? GetQuestion(activeQuizBlock.category, score + activeQuizBlock.category + Mathf.RoundToInt(activeQuizBlock.transform.position.y * 10f));
+            int originalChoice = GetOriginalAnswerIndex(choice);
             for (int i = 0; answerButtons != null && i < answerButtons.Length; i++)
             {
                 if (answerButtons[i] != null)
@@ -1459,7 +2129,7 @@ namespace CyberGuardian
                 }
             }
 
-            if (choice == question.correctIndex)
+            if (question != null && originalChoice == question.correctIndex)
             {
                 activeQuizBlock.ClearBlock();
                 playerHealth = Mathf.Min(100, playerHealth + GetCorrectHealthReward());
@@ -1479,7 +2149,12 @@ namespace CyberGuardian
                 bossFireTimer = Mathf.Min(bossFireTimer, 0.35f);
                 if (feedbackText != null)
                 {
-                    feedbackText.text = "Jawaban salah. Perisai melemah dan bos mendapat peluang menyerang.";
+                    string correctAnswer = question != null && question.answers != null && question.correctIndex >= 0 && question.correctIndex < question.answers.Length
+                        ? question.answers[question.correctIndex]
+                        : "tidak tersedia";
+                    feedbackText.text = developerMode
+                        ? "Jawaban benar: " + correctAnswer
+                        : "Jawaban salah. Perisai melemah dan bos mendapat peluang menyerang.";
                 }
             }
 
@@ -1508,6 +2183,8 @@ namespace CyberGuardian
         {
             quizOpen = false;
             activeQuizBlock = null;
+            activeQuizQuestion = null;
+            displayedAnswerIndices = new int[0];
             if (quizModal != null)
             {
                 quizModal.SetActive(false);
@@ -1520,10 +2197,47 @@ namespace CyberGuardian
         {
             if (quizQuestionBank != null)
             {
-                return quizQuestionBank.GetQuestion(category, seed, FallbackQuestions);
+                return quizQuestionBank.GetQuestion(category, quizLessonTier, seed, FallbackQuestions);
             }
 
-            return FallbackQuestions[Mathf.Abs(category) % FallbackQuestions.Length];
+            return FallbackQuestions[(category & 0x7fffffff) % FallbackQuestions.Length];
+        }
+
+        private int[] BuildAnswerIndexMap(QuizQuestion question, int seed)
+        {
+            int buttonCount = answerButtons != null ? answerButtons.Length : 4;
+            int answerCount = question != null && question.answers != null ? question.answers.Length : 0;
+            int count = Mathf.Min(buttonCount, answerCount);
+            int[] map = new int[count];
+            for (int i = 0; i < count; i++)
+            {
+                map[i] = i;
+            }
+
+            unchecked
+            {
+                int state = seed == int.MinValue ? 1 : Mathf.Abs(seed) + 97;
+                for (int i = count - 1; i > 0; i--)
+                {
+                    state = state * 1103515245 + 12345;
+                    int j = (state & 0x7fffffff) % (i + 1);
+                    int tmp = map[i];
+                    map[i] = map[j];
+                    map[j] = tmp;
+                }
+            }
+
+            return map;
+        }
+
+        private int GetOriginalAnswerIndex(int displayIndex)
+        {
+            if (displayedAnswerIndices == null || displayIndex < 0 || displayIndex >= displayedAnswerIndices.Length)
+            {
+                return displayIndex;
+            }
+
+            return displayedAnswerIndices[displayIndex];
         }
 
         private void FireSlingshot(Vector2 velocity)
@@ -1531,14 +2245,25 @@ namespace CyberGuardian
             projectileInFlight = true;
             projectileFlightTimer = 0f;
             HideSlingshotLines();
+            Vector2 launchStart = GetSlingshotRestPosition();
             if (slingshotProjectile != null && !slingshotProjectile.gameObject.activeSelf)
             {
                 slingshotProjectile.gameObject.SetActive(true);
-                slingshotProjectile.position = GetSlingshotRestPosition();
+            }
+
+            if (slingshotProjectile != null)
+            {
+                slingshotProjectile.position = launchStart;
+            }
+
+            if (slingshotCollider != null)
+            {
+                slingshotCollider.enabled = false;
             }
 
             if (slingshotBody != null)
             {
+                slingshotBody.position = launchStart;
                 slingshotBody.simulated = true;
                 slingshotBody.linearVelocity = velocity;
                 slingshotBody.angularVelocity = -450f;
@@ -1551,11 +2276,20 @@ namespace CyberGuardian
 
             if (slingshotCollider != null)
             {
-                slingshotCollider.enabled = true;
+                StartCoroutine(EnableSlingshotColliderAfterLaunch());
             }
 
             PlaySfx(bossSlingshotLaunchSfx != null ? bossSlingshotLaunchSfx : bossShotSfx);
             SetStatus("INTI PATCH DITEMBAKKAN");
+        }
+
+        private IEnumerator EnableSlingshotColliderAfterLaunch()
+        {
+            yield return new WaitForFixedUpdate();
+            if (projectileInFlight && slingshotCollider != null)
+            {
+                slingshotCollider.enabled = true;
+            }
         }
 
         private void FirePatchAt(Vector2 target)
@@ -1575,18 +2309,33 @@ namespace CyberGuardian
             float distance = Vector2.Distance(start, target);
             float flightTime = Mathf.Clamp(distance / 12f, 0.55f, 1.15f);
             Vector2 gravity = Physics2D.gravity * (slingshotBody != null ? slingshotBody.gravityScale : 1f);
-            return (target - start - 0.5f * gravity * flightTime * flightTime) / flightTime;
+            Vector2 velocity = (target - start - 0.5f * gravity * flightTime * flightTime) / flightTime;
+            float speed = velocity.magnitude;
+            if (speed > slingshotDirectShotMaxSpeed && speed > 0.01f)
+            {
+                velocity = velocity.normalized * slingshotDirectShotMaxSpeed;
+            }
+
+            return velocity;
         }
 
         private Vector2 GetLaunchVelocity(Vector2 pullOffset)
         {
-            return -pullOffset * slingshotPower;
+            Vector2 velocity = -pullOffset * slingshotPower;
+            float speed = velocity.magnitude;
+            if (speed <= 0.01f)
+            {
+                return velocity;
+            }
+
+            float clampedSpeed = Mathf.Clamp(speed, slingshotMinLaunchSpeed, slingshotMaxLaunchSpeed);
+            return velocity.normalized * clampedSpeed;
         }
 
         private Vector2 GetSlingshotRestPosition()
         {
             Vector2 basePosition = player != null ? player.transform.position : Vector3.zero;
-            return basePosition + new Vector2(0.60f * (player != null ? player.FacingDirection : 1), 0.82f);
+            return basePosition + slingshotRestOffset;
         }
 
         private void ResetSlingshotProjectile()
@@ -1631,19 +2380,28 @@ namespace CyberGuardian
 
         private void UpdateSlingshotLines(Vector2 rest, Vector2 projectilePosition, Vector2 velocity)
         {
-            Vector2 anchorA = rest + new Vector2(-0.25f, 0.24f);
-            Vector2 anchorB = rest + new Vector2(-0.25f, -0.24f);
+            float facing = player != null ? player.FacingDirection : 1f;
+            Vector2 anchorA = rest + new Vector2(0.18f * facing, 0.25f);
+            Vector2 anchorB = rest + new Vector2(0.18f * facing, -0.22f);
             SetLine(slingshotBandA, anchorA, projectilePosition);
             SetLine(slingshotBandB, anchorB, projectilePosition);
 
             if (trajectoryLine != null)
             {
+                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 12f);
+                Color start = Color.Lerp(new Color(0.25f, 1f, 1f, 0.42f), new Color(1f, 0.22f, 0.62f, 0.78f), pulse);
+                Color end = new Color(0.25f, 1f, 1f, 0.05f);
                 trajectoryLine.enabled = true;
-                trajectoryLine.positionCount = 18;
+                trajectoryLine.positionCount = 28;
+                trajectoryLine.startColor = start;
+                trajectoryLine.endColor = end;
+                trajectoryLine.startWidth = Mathf.Lerp(0.035f, 0.075f, pulse);
+                trajectoryLine.endWidth = 0.018f;
                 for (int i = 0; i < trajectoryLine.positionCount; i++)
                 {
-                    float time = i * 0.105f;
+                    float time = i * 0.078f;
                     Vector2 point = projectilePosition + velocity * time + 0.5f * Physics2D.gravity * time * time;
+                    point += Vector2.up * (Mathf.Sin(Time.unscaledTime * 10f + i * 0.9f) * 0.018f);
                     trajectoryLine.SetPosition(i, point);
                 }
             }
@@ -1706,6 +2464,10 @@ namespace CyberGuardian
 
             Vector3 position = player.transform.position;
             position.x = Mathf.Clamp(position.x, bossArenaMinX, bossArenaMaxX);
+            if (aerialBossEncounter)
+            {
+                position.y = Mathf.Clamp(position.y, 1.35f, 7.15f);
+            }
             player.transform.position = position;
         }
 
@@ -1716,28 +2478,37 @@ namespace CyberGuardian
                 return;
             }
 
-            float targetSize = 5.4f;
-            Vector3 target;
-            if (mode == GameMode.Defeat)
+            if (cinematicCameraActive)
             {
-                targetSize = 2.65f;
+                gameplayCamera.transform.position = Vector3.Lerp(gameplayCamera.transform.position, cinematicCameraTarget, Time.unscaledDeltaTime * 5.0f);
+                gameplayCamera.orthographicSize = Mathf.Lerp(gameplayCamera.orthographicSize, Mathf.Max(1.0f, cinematicCameraSize), Time.unscaledDeltaTime * 4.2f);
+                return;
+            }
+
+            float targetSize = Mathf.Max(1.0f, bossCameraSize);
+            Vector3 target;
+            if (mode == GameMode.Defeat || electricShockSequenceActive)
+            {
+                targetSize = mode == GameMode.Defeat ? 2.65f : Mathf.Max(1.55f, electricDeathCameraSize);
                 target = new Vector3(player.transform.position.x, player.transform.position.y + 0.45f, -10f);
             }
             else
             {
                 bool bossView = mode == GameMode.BossSlingshot || mode == GameMode.Victory;
+                targetSize = bossView ? (aerialBossEncounter ? Mathf.Max(bossCameraSize, aerialBossCameraSize) : bossCameraSize) : 5.4f;
                 float facingLead = player.FacingDirection >= 0 ? 3.25f : -1.85f;
                 float verticalLead = Mathf.Clamp(player.Velocity.y * 0.16f, -0.62f, 1.18f);
-                float targetX = bossView ? bossArenaCenterX : player.transform.position.x + facingLead;
+                float targetX = bossView ? bossArenaCenterX + (aerialBossEncounter ? aerialBossCameraXOffset : 0f) : player.transform.position.x + facingLead;
                 float targetY = bossView
-                    ? Mathf.Lerp(player.transform.position.y + 1.0f + verticalLead * 0.45f, 2.25f, 0.25f)
+                    ? (aerialBossEncounter ? player.transform.position.y + aerialBossCameraYOffset : Mathf.Lerp(player.transform.position.y + 1.0f + verticalLead * 0.45f, 2.25f, 0.25f))
                     : player.transform.position.y + 1.05f + verticalLead;
                 target = new Vector3(Mathf.Clamp(targetX, cameraMin.x, cameraMax.x), Mathf.Clamp(targetY, cameraMin.y, cameraMax.y), -10f);
             }
 
             float followSpeed = player.IsBoosting ? 7.2f : 5.2f;
-            gameplayCamera.transform.position = Vector3.Lerp(gameplayCamera.transform.position, target, Time.deltaTime * followSpeed);
-            gameplayCamera.orthographicSize = Mathf.Lerp(gameplayCamera.orthographicSize, targetSize, Time.deltaTime * 4.1f);
+            float delta = electricShockSequenceActive ? Time.unscaledDeltaTime : Time.deltaTime;
+            gameplayCamera.transform.position = Vector3.Lerp(gameplayCamera.transform.position, target, delta * followSpeed);
+            gameplayCamera.orthographicSize = Mathf.Lerp(gameplayCamera.orthographicSize, targetSize, delta * 4.1f);
         }
 
         private void RefreshHud()
@@ -1749,7 +2520,24 @@ namespace CyberGuardian
 
             if (livesText != null)
             {
-                livesText.text = "NYAWA " + Mathf.Max(0, playerLives).ToString("0");
+                livesText.gameObject.SetActive(false);
+            }
+
+            if (lifeIconImages != null)
+            {
+                int displayLives = developerMode ? lifeIconImages.Length : Mathf.Clamp(playerLives, 0, lifeIconImages.Length);
+                for (int i = 0; i < lifeIconImages.Length; i++)
+                {
+                    Image icon = lifeIconImages[i];
+                    if (icon == null)
+                    {
+                        continue;
+                    }
+
+                    icon.gameObject.SetActive(true);
+                    bool filled = i < displayLives;
+                    icon.color = filled ? Color.white : new Color(0.42f, 0.50f, 0.56f, 0.36f);
+                }
             }
 
             if (bossText != null)
@@ -1764,17 +2552,17 @@ namespace CyberGuardian
 
             if (modeText != null)
             {
-                modeText.text = "ENERGI";
+                modeText.text = developerMode ? "DEV" : "ENERGI";
             }
 
             if (playerHealthFill != null)
             {
-                playerHealthFill.fillAmount = playerHealth / 100f;
+                playerHealthFill.fillAmount = developerMode ? 1f : playerHealth / 100f;
             }
 
             if (boostEnergyFill != null)
             {
-                boostEnergyFill.fillAmount = boostEnergy / 100f;
+                boostEnergyFill.fillAmount = developerMode ? 1f : boostEnergy / 100f;
             }
 
             bool showBossHud = mode == GameMode.BossSlingshot || mode == GameMode.Victory;
@@ -1827,6 +2615,25 @@ namespace CyberGuardian
             score = Mathf.Clamp(score + Mathf.Max(0, amount), 0, MaxScore);
         }
 
+        private void ApplyDeveloperModeVitals(bool refreshIfChanged)
+        {
+            if (!developerMode)
+            {
+                return;
+            }
+
+            int targetLives = Mathf.Max(maxLives, 99);
+            bool changed = playerHealth != 100 || playerLives < targetLives || boostEnergy < 99.9f;
+            playerHealth = 100;
+            playerLives = Mathf.Max(playerLives, targetLives);
+            boostEnergy = 100f;
+
+            if (refreshIfChanged && changed)
+            {
+                RefreshHud();
+            }
+        }
+
         private bool TryApplySavedContinue()
         {
             if (PlayerPrefs.GetInt(CyberGuardianMainMenu.ResumeRequestedKey, 0) != 1)
@@ -1857,6 +2664,7 @@ namespace CyberGuardian
             playerLives = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.SaveLivesKey, playerLives), 1, Mathf.Max(1, maxLives));
             boostEnergy = Mathf.Clamp(PlayerPrefs.GetFloat(CyberGuardianMainMenu.SaveBoostKey, boostEnergy), 0f, 100f);
             score = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.SaveScoreKey, score), 0, MaxScore);
+            ApplyDeveloperModeVitals(false);
 
             if (player != null)
             {
@@ -2015,8 +2823,9 @@ namespace CyberGuardian
 
         private void PlaySfx(AudioClip clip)
         {
-            if (sfxSource != null && clip != null)
+            if (sfxSource != null && clip != null && CyberGuardianMainMenu.IsSfxEnabled())
             {
+                sfxSource.mute = false;
                 sfxSource.PlayOneShot(clip);
             }
         }
@@ -2051,6 +2860,7 @@ namespace CyberGuardian
 
             musicSource.clip = clip;
             musicSource.loop = true;
+            musicSource.mute = !CyberGuardianMainMenu.IsMusicEnabled();
             musicSource.Play();
         }
     }

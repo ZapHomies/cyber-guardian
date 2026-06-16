@@ -14,122 +14,547 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CyberGuardian.QuizQuestionBank
   questions:
   - category: 0
-    title: NODE PASSWORD
-    prompt: Apa ciri password yang aman?
+    lessonTier: 1
+    title: KUNCI GADGET
+    prompt: Mengapa gadget perlu dikunci dengan PIN, pola, sidik jari, atau password?
     answers:
-    - Panjang dan unik
-    - Nama sendiri
-    - 123456
-    - Tanggal lahir
+    - Agar orang lain tidak mudah membuka akun dan data pribadi
+    - Agar baterai lebih cepat habis
+    - Agar semua aplikasi bebas mengirim data
+    - Agar Wi-Fi selalu gratis
     correctIndex: 0
-    feedback: Benar. Password aman sebaiknya panjang, unik, dan tidak dipakai ulang.
+    feedback: Benar. Kunci layar melindungi akun, chat, foto, dan data pribadi saat
+      gadget hilang atau dipinjam.
   - category: 0
-    title: BRANKAS PASSWORD
-    prompt: Mengapa password manager membantu keamanan akun?
+    lessonTier: 1
+    title: PASSWORD UNIK
+    prompt: Pilihan password yang paling aman untuk akun penting adalah...
     answers:
-    - Menyimpan password unik
-    - Membagikan password
-    - Membuat OTP publik
-    - Mematikan 2FA
+    - Panjang, unik, dan tidak dipakai ulang
+    - Nama sendiri ditambah tanggal lahir
+    - 123456 yang mudah diingat
+    - Password yang sama untuk semua akun
     correctIndex: 0
-    feedback: Benar. Password manager membantu membuat dan menyimpan password unik untuk tiap akun.
+    feedback: Benar. Password unik mencegah satu kebocoran membuka semua akun.
   - category: 0
-    title: PERISAI LOGIN
-    prompt: Apa fungsi utama autentikasi dua faktor?
+    lessonTier: 1
+    title: JANGAN BAGI OTP
+    prompt: Kode OTP dari SMS atau aplikasi autentikator sebaiknya...
     answers:
-    - Menambah lapisan verifikasi
-    - Menghapus password
-    - Membuka semua akun
-    - Melemahkan akun
+    - Tidak dibagikan kepada siapa pun
+    - Dikirim ke orang yang mengaku admin
+    - Diunggah ke status media sosial
+    - Disimpan di komentar publik
     correctIndex: 0
-    feedback: Benar. 2FA menambah bukti verifikasi selain password.
+    feedback: Benar. OTP adalah kunci sementara. Penipu sering meminta OTP untuk
+      mengambil alih akun.
+  - category: 0
+    lessonTier: 1
+    title: AKTIFKAN MFA
+    prompt: Autentikasi multi-faktor berguna karena...
+    answers:
+    - Menambah lapisan verifikasi selain password
+    - Menghapus semua kebutuhan password
+    - Membuat akun bisa dibuka siapa saja
+    - Membuat virus otomatis hilang
+    correctIndex: 0
+    feedback: Benar. MFA membuat password curian saja tidak cukup untuk masuk.
   - category: 1
-    title: GERBANG MALWARE
-    prompt: Email berisi link login palsu meminta OTP. Apa tindakan aman?
+    lessonTier: 1
+    title: UNDUHAN AMAN
+    prompt: Cara paling aman memasang aplikasi di gadget adalah...
     answers:
-    - Jangan klik dan laporkan
-    - Bagikan OTP
-    - Login cepat
-    - Forward ke teman
+    - Mengunduh dari toko resmi atau situs resmi pembuatnya
+    - Mengambil APK dari link acak
+    - Memasang file dari pesan berantai
+    - Mematikan semua perlindungan dulu
     correctIndex: 0
-    feedback: Benar. OTP tidak boleh dibagikan dan link harus diverifikasi.
+    feedback: Benar. Sumber resmi mengurangi risiko aplikasi palsu atau malware.
   - category: 1
-    title: FILTER PHISHING
-    prompt: Tanda umum phishing adalah...
+    lessonTier: 1
+    title: LAMPIRAN ASING
+    prompt: Lampiran email dari pengirim tidak dikenal sebaiknya...
     answers:
-    - Alamat pengirim mencurigakan
-    - Bahasa selalu sempurna
-    - Tidak pernah ada link
-    - Selalu dari teman
+    - Jangan dibuka sebelum diverifikasi
+    - Langsung dijalankan agar cepat selesai
+    - Dibagikan ke teman dulu
+    - Diubah nama filenya agar aman
     correctIndex: 0
-    feedback: Benar. Pengirim, domain, dan permintaan mendesak perlu diperiksa.
+    feedback: Benar. Lampiran asing bisa membawa malware atau macro berbahaya.
   - category: 1
-    title: PEMINDAI FILE
-    prompt: File lampiran dari sumber tidak dikenal sebaiknya...
+    lessonTier: 1
+    title: TANDA VIRUS
+    prompt: Salah satu tanda gadget mungkin terinfeksi malware adalah...
     answers:
-    - Tidak dibuka sembarangan
-    - Langsung dijalankan
-    - Dibagikan ke grup
-    - Diubah namanya saja
+    - Aplikasi asing muncul, iklan berlebihan, atau performa tiba-tiba turun
+    - Wallpaper tidak berubah
+    - Jam selalu tepat
+    - Bluetooth bisa menyala
     correctIndex: 0
-    feedback: Benar. Lampiran asing dapat membawa malware.
+    feedback: Benar. Perubahan aneh, iklan agresif, dan aplikasi tak dikenal perlu
+      diperiksa.
+  - category: 1
+    lessonTier: 1
+    title: SCAN FILE
+    prompt: Sebelum membuka file dari sumber meragukan, langkah yang tepat adalah...
+    answers:
+    - Pindai dengan fitur keamanan atau antivirus tepercaya
+    - Matikan antivirus
+    - Buka berkali-kali agar yakin
+    - Kirim ke semua grup
+    correctIndex: 0
+    feedback: Benar. Pemindaian membantu mendeteksi file berbahaya sebelum dijalankan.
   - category: 2
-    title: RUTE JARINGAN
-    prompt: Saat memakai Wi-Fi publik, langkah paling aman adalah...
+    lessonTier: 1
+    title: WI-FI PUBLIK
+    prompt: Saat memakai Wi-Fi publik, tindakan paling aman adalah...
     answers:
-    - Pakai koneksi resmi dan proteksi tambahan
-    - Login bank bebas
-    - Matikan firewall
-    - Pakai password sama
+    - Hindari login akun penting dan gunakan koneksi tepercaya jika memungkinkan
+    - Masukkan semua password agar cepat
+    - Matikan layar kunci
+    - Bagikan hotspot ke orang asing
     correctIndex: 0
-    feedback: Benar. Wi-Fi publik berisiko penyadapan, jadi akses sensitif harus hati-hati.
+    feedback: Benar. Wi-Fi publik bisa dipantau atau dipalsukan, jadi gunakan dengan
+      hati-hati.
   - category: 2
-    title: NODE FIREWALL
-    prompt: Firewall digunakan untuk...
+    lessonTier: 1
+    title: UPDATE SISTEM
+    prompt: Mengapa update sistem operasi dan aplikasi penting?
     answers:
-    - Membantu menyaring koneksi
-    - Membuat virus
-    - Menghapus backup
-    - Membuka semua port
+    - Karena sering menutup celah keamanan
+    - Karena membuat password terlihat
+    - Karena membuka semua izin aplikasi
+    - Karena menonaktifkan enkripsi
     correctIndex: 0
-    feedback: Benar. Firewall membantu mengontrol koneksi masuk dan keluar.
+    feedback: Benar. Patch keamanan menutup celah yang sudah diketahui.
   - category: 2
-    title: PATCH PEMBARUAN
-    prompt: Mengapa update sistem penting?
+    lessonTier: 1
+    title: LINK AMAN
+    prompt: Sebelum membuka link login dari pesan, yang harus diperiksa adalah...
     answers:
-    - Menutup celah keamanan
-    - Melepas proteksi
-    - Membagikan data
-    - Mematikan enkripsi
+    - Domain atau alamat situsnya benar
+    - Warna tombolnya menarik
+    - Link dikirim malam hari
+    - Jumlah emoji di pesan
     correctIndex: 0
-    feedback: Benar. Update sering membawa patch untuk celah keamanan.
+    feedback: Benar. Phishing sering memakai domain mirip untuk mencuri login.
+  - category: 2
+    lessonTier: 1
+    title: BLUETOOTH
+    prompt: Fitur koneksi seperti Bluetooth sebaiknya...
+    answers:
+    - Dimatikan saat tidak digunakan
+    - Selalu terbuka untuk semua perangkat
+    - Dipakai tanpa konfirmasi
+    - Dibiarkan dengan nama password
+    correctIndex: 0
+    feedback: Benar. Mematikan koneksi yang tidak dipakai mengurangi peluang akses
+      tidak perlu.
   - category: 3
-    title: INTI PRIVASI
-    prompt: Data apa yang tidak boleh dibagikan sembarangan?
+    lessonTier: 1
+    title: DATA SENSITIF
+    prompt: Data yang tidak boleh dibagikan sembarangan adalah...
     answers:
-    - NIK, OTP, password, alamat
+    - Password, OTP, NIK, nomor kartu, dan kode pemulihan
     - Warna favorit
-    - Genre game
-    - Nama panggilan
+    - Genre game favorit
+    - Nama makanan favorit
     correctIndex: 0
-    feedback: Benar. Data pribadi dapat dipakai untuk penipuan atau pengambilalihan akun.
+    feedback: Benar. Data sensitif bisa dipakai untuk penipuan atau pengambilalihan
+      akun.
   - category: 3
+    lessonTier: 1
+    title: IZIN APLIKASI
+    prompt: Jika aplikasi kalkulator meminta akses kontak dan lokasi, sikap terbaik
+      adalah...
+    answers:
+    - Tolak izin yang tidak relevan
+    - Berikan semua izin
+    - Hapus kunci layar
+    - Bagikan akun utama
+    correctIndex: 0
+    feedback: Benar. Izin aplikasi harus sesuai fungsi agar data tidak bocor.
+  - category: 3
+    lessonTier: 1
+    title: BACKUP DASAR
+    prompt: Backup data penting berguna untuk...
+    answers:
+    - Memulihkan data saat gadget rusak, hilang, atau terkena malware
+    - Membuat malware lebih kuat
+    - Membagikan password
+    - Menghapus semua update
+    correctIndex: 0
+    feedback: Benar. Backup menjaga data tetap bisa dipulihkan.
+  - category: 3
+    lessonTier: 1
+    title: JEJAK DIGITAL
+    prompt: Contoh kebiasaan baik menjaga privasi adalah...
+    answers:
+    - Berpikir sebelum membagikan lokasi, foto dokumen, atau informasi pribadi
+    - Mengunggah semua kartu identitas
+    - Membagikan OTP ke teman
+    - Memasang aplikasi tak dikenal
+    correctIndex: 0
+    feedback: Benar. Data yang sudah tersebar sulit ditarik kembali.
+  - category: 0
+    lessonTier: 2
+    title: PASSWORD MANAGER
+    prompt: Mengapa password manager membantu keamanan?
+    answers:
+    - Menyimpan password unik dan kuat tanpa harus menghafal semuanya
+    - Membuat satu password dipakai semua akun
+    - Mengirim OTP ke publik
+    - Menghapus MFA
+    correctIndex: 0
+    feedback: Benar. Password manager memudahkan penggunaan password unik di banyak
+      akun.
+  - category: 0
+    lessonTier: 2
+    title: RECOVERY CODE
+    prompt: Kode pemulihan MFA sebaiknya disimpan...
+    answers:
+    - Di tempat aman dan terpisah dari gadget utama
+    - Di bio media sosial
+    - Di chat grup umum
+    - Di nama Wi-Fi rumah
+    correctIndex: 0
+    feedback: Benar. Recovery code membantu saat perangkat hilang, tetapi harus dijaga
+      seperti kunci.
+  - category: 0
+    lessonTier: 2
+    title: CEK KEBOCORAN
+    prompt: Jika password akun diketahui bocor, langkah pertama adalah...
+    answers:
+    - Ganti password unik dan cek sesi login aktif
+    - Pakai password yang sama lagi
+    - Bagikan password baru
+    - Matikan semua update
+    correctIndex: 0
+    feedback: Benar. Ganti password dan keluarkan sesi asing untuk menutup akses.
+  - category: 0
+    lessonTier: 2
+    title: PASSKEY
+    prompt: Passkey atau login biometrik modern lebih aman karena...
+    answers:
+    - Mengurangi risiko password dicuri lewat phishing
+    - Menampilkan password di layar
+    - Membuat OTP bisa ditebak
+    - Membuka akun tanpa verifikasi
+    correctIndex: 0
+    feedback: Benar. Passkey memakai kriptografi dan lebih tahan terhadap phishing.
+  - category: 1
+    lessonTier: 2
+    title: QUARANTINE
+    prompt: Saat antivirus mengarantina file, artinya...
+    answers:
+    - File dipisahkan agar tidak berjalan dan merusak sistem
+    - File otomatis dibagikan
+    - File dijadikan password
+    - File pasti aman untuk dibuka
+    correctIndex: 0
+    feedback: Benar. Karantina mencegah file mencurigakan aktif sampai diperiksa.
+  - category: 1
+    lessonTier: 2
+    title: MACRO DOKUMEN
+    prompt: Dokumen yang meminta mengaktifkan macro dari sumber asing sebaiknya...
+    answers:
+    - Ditolak dan diverifikasi dulu
+    - Langsung diaktifkan
+    - Dikirim ke semua kontak
+    - Dibuka sebagai administrator
+    correctIndex: 0
+    feedback: Benar. Macro bisa menjalankan kode berbahaya.
+  - category: 1
+    lessonTier: 2
+    title: RANSOMWARE
+    prompt: Ransomware berbahaya karena...
+    answers:
+    - Mengenkripsi data dan meminta tebusan
+    - Membuat layar lebih terang
+    - Mengatur volume suara
+    - Mengubah wallpaper saja
+    correctIndex: 0
+    feedback: Benar. Backup bersih dan patch rutin membantu mengurangi dampaknya.
+  - category: 1
+    lessonTier: 2
+    title: APLIKASI PALSU
+    prompt: Ciri aplikasi palsu yang perlu dicurigai adalah...
+    answers:
+    - Nama mirip aplikasi terkenal, izin berlebihan, dan sumber tidak jelas
+    - Ada ikon
+    - Bisa dibuka
+    - Memiliki warna cerah
+    correctIndex: 0
+    feedback: Benar. Aplikasi palsu sering meniru merek dan meminta izin yang tidak
+      perlu.
+  - category: 2
+    lessonTier: 2
+    title: FIREWALL
+    prompt: Firewall membantu dengan cara...
+    answers:
+    - Mengontrol koneksi masuk dan keluar berdasarkan aturan
+    - Membuka semua port
+    - Membuat password terlihat
+    - Menghapus log
+    correctIndex: 0
+    feedback: Benar. Firewall membatasi koneksi yang tidak perlu atau berbahaya.
+  - category: 2
+    lessonTier: 2
+    title: WPA3
+    prompt: Untuk Wi-Fi rumah, pilihan keamanan yang lebih baik adalah...
+    answers:
+    - WPA2/WPA3 dengan password kuat
+    - Jaringan terbuka tanpa password
+    - Password Wi-Fi 12345678
+    - Nama Wi-Fi berisi nomor kartu
+    correctIndex: 0
+    feedback: Benar. Enkripsi Wi-Fi dan password kuat melindungi jaringan rumah.
+  - category: 2
+    lessonTier: 2
+    title: VPN
+    prompt: VPN berguna terutama untuk...
+    answers:
+    - Membuat jalur koneksi terenkripsi ke jaringan tepercaya
+    - Menjamin semua link pasti aman
+    - Menghapus kebutuhan password
+    - Mencegah semua phishing otomatis
+    correctIndex: 0
+    feedback: Benar. VPN membantu koneksi, tetapi pengguna tetap harus waspada terhadap
+      phishing.
+  - category: 2
+    lessonTier: 2
+    title: LOG AKSES
+    prompt: Log akses penting karena...
+    answers:
+    - Membantu melihat aktivitas mencurigakan dan waktu kejadian
+    - Membuat game lebih cepat
+    - Menghapus backup
+    - Membagikan data pribadi
+    correctIndex: 0
+    feedback: Benar. Log adalah bukti saat investigasi keamanan.
+  - category: 3
+    lessonTier: 2
     title: MINIMISASI DATA
     prompt: Prinsip minimisasi data berarti...
     answers:
-    - Hanya minta data yang perlu
-    - Kumpulkan semua data
-    - Sebar data cadangan
-    - Simpan tanpa batas
+    - Hanya mengumpulkan dan memakai data yang benar-benar diperlukan
+    - Mengumpulkan semua data selamanya
+    - Membagikan data ke semua pihak
+    - Menyimpan password di komentar
     correctIndex: 0
-    feedback: Benar. Data yang dikumpulkan sebaiknya sesuai kebutuhan.
+    feedback: Benar. Semakin sedikit data sensitif yang disimpan, semakin kecil dampak
+      kebocoran.
   - category: 3
-    title: JEJAK SOSIAL
-    prompt: Sebelum membagikan foto kartu identitas, sebaiknya...
+    lessonTier: 2
+    title: PRIVASI LOKASI
+    prompt: Aplikasi cuaca meminta lokasi terus-menerus. Pengaturan yang lebih aman
+      adalah...
     answers:
-    - Jangan bagikan sembarangan
-    - Unggah ke publik
-    - Kirim ke komentar
-    - Jadikan foto profil
+    - Izinkan hanya saat aplikasi digunakan jika memang perlu
+    - Izinkan sepanjang waktu untuk semua aplikasi
+    - Matikan kunci layar
+    - Bagikan lokasi real-time ke publik
     correctIndex: 0
-    feedback: Benar. Dokumen identitas berisi data sensitif.
+    feedback: Benar. Izin lokasi perlu dibatasi sesuai kebutuhan.
+  - category: 3
+    lessonTier: 2
+    title: SOSIAL ENGINEERING
+    prompt: Social engineering menyerang dengan cara...
+    answers:
+    - Memanipulasi manusia agar memberi akses atau informasi
+    - Memperbaiki baterai
+    - Menambah ruang penyimpanan
+    - Membuat sinyal Wi-Fi lebih kuat
+    correctIndex: 0
+    feedback: Benar. Penyerang sering memanfaatkan panik, percaya, atau rasa ingin
+      cepat selesai.
+  - category: 3
+    lessonTier: 2
+    title: ENKRIPSI BACKUP
+    prompt: Backup berisi data pribadi sebaiknya...
+    answers:
+    - Dienkripsi dan diuji pemulihannya
+    - Dibuka untuk semua orang
+    - Diletakkan di forum umum
+    - Dinamai password akun
+    correctIndex: 0
+    feedback: Benar. Enkripsi dan uji restore membuat backup lebih aman dan berguna.
+  - category: 0
+    lessonTier: 3
+    title: PHISHING RESISTANT MFA
+    prompt: MFA yang lebih tahan phishing adalah...
+    answers:
+    - Passkey atau security key berbasis kriptografi
+    - OTP yang dikirim ke penipu
+    - Password yang sama di semua sistem
+    - Kode pemulihan di dokumen publik
+    correctIndex: 0
+    feedback: Benar. Security key dan passkey mengurangi risiko kode dicuri lewat
+      situs palsu.
+  - category: 0
+    lessonTier: 3
+    title: SECRET ROTATION
+    prompt: Jika token API bocor, tindakan yang tepat adalah...
+    answers:
+    - Cabut token, buat token baru, dan audit pemakaian lama
+    - Ubah nama file token saja
+    - Biarkan token aktif
+    - Kirim token ke tim publik
+    correctIndex: 0
+    feedback: Benar. Secret yang bocor harus dicabut dan dampaknya diaudit.
+  - category: 0
+    lessonTier: 3
+    title: LEAST PRIVILEGE
+    prompt: Akun layanan sebaiknya diberi akses...
+    answers:
+    - Hanya sesuai tugas yang diperlukan
+    - Administrator penuh untuk semua sistem
+    - Tanpa batas waktu dan tanpa log
+    - Sama dengan akun pribadi
+    correctIndex: 0
+    feedback: Benar. Least privilege membatasi dampak jika akun layanan disusupi.
+  - category: 0
+    lessonTier: 3
+    title: SESSION TOKEN
+    prompt: Token session harus dilindungi karena...
+    answers:
+    - Bisa dipakai masuk tanpa mengetik password lagi
+    - Hanya mengubah warna layar
+    - Tidak pernah bernilai rahasia
+    - Selalu aman di log publik
+    correctIndex: 0
+    feedback: Benar. Token session adalah kunci sementara yang perlu masa berlaku
+      dan penyimpanan aman.
+  - category: 1
+    lessonTier: 3
+    title: LATERAL MOVEMENT
+    prompt: Lateral movement berarti penyerang...
+    answers:
+    - Berpindah dari satu sistem yang disusupi ke sistem lain
+    - Memperbarui antivirus
+    - Menghapus akun palsu
+    - Mempercepat koneksi resmi
+    correctIndex: 0
+    feedback: Benar. Segmentasi jaringan dan least privilege membantu menahan pergerakan
+      ini.
+  - category: 1
+    lessonTier: 3
+    title: SUPPLY CHAIN
+    prompt: Risiko supply chain terjadi ketika...
+    answers:
+    - Dependensi, plugin, atau update pihak ketiga disusupi
+    - Monitor terlalu terang
+    - Keyboard kotor
+    - Wallpaper berubah
+    correctIndex: 0
+    feedback: Benar. Periksa sumber paket, versi, dan reputasi dependensi.
+  - category: 1
+    lessonTier: 3
+    title: IOC
+    prompt: Dalam respons insiden, IOC adalah...
+    answers:
+    - Indikator kompromi seperti hash file, IP, domain, atau pola log
+    - Nama skin karakter
+    - Kode cheat game
+    - Jenis kabel monitor
+    correctIndex: 0
+    feedback: Benar. IOC membantu mencari jejak serangan di sistem lain.
+  - category: 1
+    lessonTier: 3
+    title: EDR
+    prompt: EDR membantu defender dengan cara...
+    answers:
+    - Memantau endpoint, mendeteksi perilaku aneh, dan membantu investigasi
+    - Menonaktifkan semua log
+    - Membuat akun tanpa password
+    - Membuka firewall
+    correctIndex: 0
+    feedback: Benar. EDR memberi visibilitas aktivitas endpoint.
+  - category: 2
+    lessonTier: 3
+    title: SEGMENTASI
+    prompt: Segmentasi jaringan berguna untuk...
+    answers:
+    - Membatasi penyebaran serangan antar area
+    - Membuka semua server ke internet
+    - Menghapus backup
+    - Menyamakan semua hak akses
+    correctIndex: 0
+    feedback: Benar. Segmentasi membuat penyerang sulit bergerak bebas.
+  - category: 2
+    lessonTier: 3
+    title: ZERO TRUST
+    prompt: Prinsip zero trust adalah...
+    answers:
+    - Selalu verifikasi akses, perangkat, dan konteks
+    - Percaya semua koneksi internal
+    - Matikan semua autentikasi
+    - Bagikan semua token
+    correctIndex: 0
+    feedback: Benar. Zero trust tidak menganggap jaringan internal otomatis aman.
+  - category: 2
+    lessonTier: 3
+    title: RATE LIMIT
+    prompt: Rate limit pada API membantu untuk...
+    answers:
+    - Membatasi percobaan berlebihan seperti brute force atau abuse
+    - Menyimpan password di URL
+    - Membuka semua endpoint
+    - Menghapus autentikasi
+    correctIndex: 0
+    feedback: Benar. Rate limit mengurangi penyalahgunaan dan beban serangan.
+  - category: 2
+    lessonTier: 3
+    title: SIEM
+    prompt: SIEM paling berguna saat...
+    answers:
+    - Mengorelasikan log dari banyak sumber untuk menemukan pola serangan
+    - Hanya menyimpan warna tema
+    - Menghapus semua alert
+    - Membagikan secret ke publik
+    correctIndex: 0
+    feedback: Benar. Korelasi log membantu melihat serangan yang tersebar.
+  - category: 3
+    lessonTier: 3
+    title: DATA CLASSIFICATION
+    prompt: Klasifikasi data membantu karena...
+    answers:
+    - Menentukan perlindungan sesuai tingkat sensitif data
+    - Membuat data rahasia jadi publik
+    - Menghapus semua audit
+    - Mengganti password otomatis
+    correctIndex: 0
+    feedback: Benar. Data rahasia perlu kontrol lebih kuat daripada data publik.
+  - category: 3
+    lessonTier: 3
+    title: KEY MANAGEMENT
+    prompt: Kunci enkripsi sebaiknya...
+    answers:
+    - Disimpan aman, dibatasi aksesnya, dan dirotasi saat perlu
+    - Ditaruh di repository publik
+    - Dikirim lewat chat umum
+    - Ditulis di nama file
+    correctIndex: 0
+    feedback: Benar. Enkripsi kuat tetap lemah jika kuncinya bocor.
+  - category: 3
+    lessonTier: 3
+    title: RETENTION
+    prompt: Kebijakan retensi data berarti...
+    answers:
+    - Menentukan berapa lama data disimpan dan kapan dihapus aman
+    - Menyimpan semua data selamanya
+    - Membagikan data ke semua aplikasi
+    - Menghapus backup tanpa rencana
+    correctIndex: 0
+    feedback: Benar. Retensi mengurangi risiko dari data lama yang tidak diperlukan.
+  - category: 3
+    lessonTier: 3
+    title: INCIDENT COMMUNICATION
+    prompt: Saat insiden data terjadi, komunikasi yang baik harus...
+    answers:
+    - Jelas, faktual, tepat waktu, dan tidak menebak tanpa bukti
+    - Menyembunyikan semua informasi selamanya
+    - Menyalahkan pengguna tanpa investigasi
+    - Membagikan password baru di publik
+    correctIndex: 0
+    feedback: Benar. Komunikasi insiden perlu transparan dan berdasarkan fakta.
