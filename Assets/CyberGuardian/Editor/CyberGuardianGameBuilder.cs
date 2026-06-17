@@ -19,6 +19,7 @@ namespace CyberGuardian.Editor
         private const string Level02ScenePath = "Assets/CyberGuardian/Scenes/CyberGuardian_Level02.unity";
         private const string Level03ScenePath = "Assets/CyberGuardian/Scenes/CyberGuardian_Level03.unity";
         private const string GeneratedArtFolder = "Assets/CyberGuardian/Art/Generated";
+        private const string GeneratedRetroEffectFrameFolder = GeneratedArtFolder + "/RetroPixelEffectFrames";
         private const string StarterQuestionBankPath = "Assets/CyberGuardian/Data/Quiz/CyberSecurity_Starter_QuestionBank.asset";
         private const string EasyDifficultyPath = "Assets/CyberGuardian/Data/Difficulty/Easy.asset";
         private const string NormalDifficultyPath = "Assets/CyberGuardian/Data/Difficulty/Normal.asset";
@@ -74,6 +75,14 @@ namespace CyberGuardian.Editor
         private const string BonesBackgroundFolder = NewAssetsFolder + "/bones/bones/library/beijing";
         private const string ProjectileTextureFolder = NewAssetsFolder + "/projectile/projectiles/projectiles/textures";
         private const string ProjectileFlameFolder = NewAssetsFolder + "/projectile/flames/flames";
+        private const string RetroPixelEffectFolder = NewAssetsFolder + "/Super Package Retro Pixel Effects 32x32 pack 2 Free";
+        private const string MiniEffectSpritesheetFolder = NewAssetsFolder + "/Super Pixel Effects Mini Pack 1/Super Pixel Effects Mini Pack 1/spritesheet";
+        private const string PlayerSmashImpactSheetFolder = MiniEffectSpritesheetFolder + "/fx2_impact_shock_large_brown";
+        private const string PlayerElectricBurstSheetFolder = MiniEffectSpritesheetFolder + "/fx2_electric_burst_large_violet";
+        private const string EnemySplatterSheetFolder = MiniEffectSpritesheetFolder + "/fx1_splatter_small_red";
+        private const string PixelUiPack3Folder = NewAssetsFolder + "/Pixel UI pack 3";
+        private const string PixelUiCheckpointButtonPath = PixelUiPack3Folder + "/00.png";
+        private const string PixelUiBarPath = PixelUiPack3Folder + "/05.png";
         private const string HpBarFolder = NewAssetsFolder + "/HP_Bar/HP_Bar";
         private const string HpBarBackPath = HpBarFolder + "/bg.png";
         private const string HpBarRedPath = HpBarFolder + "/red.png";
@@ -81,6 +90,8 @@ namespace CyberGuardian.Editor
         private const string HpBarGreenPath = HpBarFolder + "/green.png";
         private const string HeartSpriteSheetPath = NewAssetsFolder + "/coins-chests-etc-2-0-noborders.png";
         private const string HeartIconSpritePath = GeneratedArtFolder + "/cg_ui_life_heart.png";
+        private const string EnergyIconSpritePath = GeneratedArtFolder + "/cg_ui_energy_bolt.png";
+        private const string MenuIconSpritePath = GeneratedArtFolder + "/cg_ui_menu_lines.png";
         private const string ActionCityShotGifPath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Legacy Action Pack - CHARACTER/Gifs/Shot.gif";
         private const string ActionCityShotSheetPath = NewAssetsFolder + "/Action Pack - CITY/Action Pack - CITY/Legacy Action Pack - CHARACTER/Sheets/Shot-Sheet.png";
         private const string FlyingMonsterEastSpritePath = "Assets/CyberGuardian/assets/katak/Monster/Monster terbang east.png";
@@ -125,6 +136,19 @@ namespace CyberGuardian.Editor
         private static Sprite[] projectileTrailFrames;
         private static Sprite[] projectileLightningFrames;
         private static Sprite[] projectileFlameFrames;
+        private static Sprite[] retroPixelEffectFrames;
+        private static Sprite[] projectileHitEffectFrames;
+        private static Sprite[] playerSmashImpactFrames;
+        private static Sprite[] playerElectricBurstFrames;
+        private static Sprite[] enemySplatterFrames;
+        private static Sprite pixelUiCheckpointButtonSprite;
+        private static Sprite pixelUiBarSprite;
+        private static Sprite[] pixelUiHpBarFrames;
+        private static Sprite[] pixelUiEnergyBarFrames;
+        private static Sprite[] powerUpHealthFrames;
+        private static Sprite[] powerUpBoostFrames;
+        private static Sprite[] powerUpFirewallFrames;
+        private static Sprite[] powerUpOverclockFrames;
         private static Sprite slingshotShotSprite;
         private static Sprite referenceTowerLayoutSprite;
         private static Sprite flyingMonsterEastSprite;
@@ -214,6 +238,8 @@ namespace CyberGuardian.Editor
             public Sprite HpBarBlue;
             public Sprite HpBarGreen;
             public Sprite LifeHeartIcon;
+            public Sprite EnergyBoltIcon;
+            public Sprite MenuLinesIcon;
             public Sprite ShotGif;
             public Sprite ShotSheet;
         }
@@ -240,7 +266,20 @@ namespace CyberGuardian.Editor
             projectileTrailFrames = horrorSprites != null ? horrorSprites.ProjectileTrails : null;
             projectileLightningFrames = horrorSprites != null ? horrorSprites.ProjectileLightning : null;
             projectileFlameFrames = horrorSprites != null ? horrorSprites.ProjectileFlames : null;
+            retroPixelEffectFrames = EnsureImportedEightFrameSheetFromFolder(RetroPixelEffectFolder, "04.png", 0, 4, 2, 48);
+            projectileHitEffectFrames = EnsureImportedEightFrameSheetFromFolder(RetroPixelEffectFolder, "01.png", 0, 4, 2, 48);
+            playerSmashImpactFrames = EnsureImportedMetadataSpriteSheetFrames(PlayerSmashImpactSheetFolder, 48);
+            playerElectricBurstFrames = EnsureImportedMetadataSpriteSheetFrames(PlayerElectricBurstSheetFolder, 72);
+            enemySplatterFrames = EnsureImportedMetadataSpriteSheetFrames(EnemySplatterSheetFolder, 48);
             slingshotShotSprite = horrorSprites != null ? (horrorSprites.ShotGif != null ? horrorSprites.ShotGif : horrorSprites.ShotSheet) : null;
+            pixelUiCheckpointButtonSprite = EnsureImportedCheckpointButtonSprite();
+            pixelUiBarSprite = EnsureImportedSprite(PixelUiBarPath, new Vector4(14f, 14f, 14f, 14f));
+            pixelUiHpBarFrames = EnsureImportedUiBarRowFrames(PixelUiBarPath, "hp", 0, 8, 100);
+            pixelUiEnergyBarFrames = EnsureImportedUiBarRowFrames(PixelUiBarPath, "energy", 1, 6, 100);
+            powerUpHealthFrames = EnsurePowerUpItemFrames(CyberGuardianPowerUpType.Health);
+            powerUpBoostFrames = EnsurePowerUpItemFrames(CyberGuardianPowerUpType.Boost);
+            powerUpFirewallFrames = EnsurePowerUpItemFrames(CyberGuardianPowerUpType.Firewall);
+            powerUpOverclockFrames = EnsurePowerUpItemFrames(CyberGuardianPowerUpType.Overclock);
             Sprite virusSprite = EnsureImportedSprite(VirusSpritePath);
             Sprite virusAltSprite = EnsureImportedSprite(VirusAltSpritePath);
             Sprite projectileSprite = EnsureImportedSprite(ProjectileSpritePath);
@@ -443,14 +482,14 @@ namespace CyberGuardian.Editor
             AddStretchImage("Settings Dim", settingsPanel.transform, new Color(0f, 0f, 0f, 0.58f), panelSprite);
             GameObject settingsWindow = AddPanel("Settings Window", settingsPanel.transform, new Vector2(0f, 0f), new Vector2(900f, 600f), Color.black, panelSprite, 0.92f).gameObject;
             AddText("Settings Title", settingsWindow.transform, new Vector2(0f, 218f), new Vector2(620f, 54f), "PENGATURAN", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            AddText("Settings Subtitle", settingsWindow.transform, new Vector2(0f, 174f), new Vector2(680f, 30f), "Atur audio dan cara kontrol sebelum memasuki sistem.", 16, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
-            menu.settingsMusicToggleButton = AddButton("Settings Music Toggle Button", settingsWindow.transform, new Vector2(-220f, 92f), new Vector2(270f, 54f), "MUSIK: AKTIF", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
-            menu.settingsSfxToggleButton = AddButton("Settings SFX Toggle Button", settingsWindow.transform, new Vector2(220f, 92f), new Vector2(270f, 54f), "SFX: AKTIF", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
-            menu.settingsMusicText = AddText("Settings Music Detail", settingsWindow.transform, new Vector2(-220f, 42f), new Vector2(330f, 46f), "Musik dan video menu aktif.", 14, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
-            menu.settingsSfxText = AddText("Settings SFX Detail", settingsWindow.transform, new Vector2(220f, 42f), new Vector2(330f, 46f), "Efek suara gameplay aktif.", 14, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
-            menu.settingsControlSchemeButton = AddButton("Settings Control Scheme Button", settingsWindow.transform, new Vector2(0f, -54f), new Vector2(430f, 58f), "KONTROL: HYBRID", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
-            menu.settingsControlText = AddText("Settings Control Detail", settingsWindow.transform, new Vector2(0f, -122f), new Vector2(720f, 58f), CyberGuardianMainMenu.GetControlSchemeHint(), 14, Hex("DDFBFF"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
-            AddText("Settings Note", settingsWindow.transform, new Vector2(0f, -190f), new Vector2(720f, 40f), "Pause tetap memakai P atau ESC. Pilihan kontrol tersimpan otomatis.", 14, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            AddText("Settings Subtitle", settingsWindow.transform, new Vector2(0f, 174f), new Vector2(720f, 30f), "Atur volume dan profil tombol sebelum memasuki sistem.", 16, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.settingsMusicToggleButton = AddButton("Settings Music Toggle Button", settingsWindow.transform, new Vector2(-220f, 92f), new Vector2(270f, 54f), "MUSIK: 100%", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            menu.settingsSfxToggleButton = AddButton("Settings SFX Toggle Button", settingsWindow.transform, new Vector2(220f, 92f), new Vector2(270f, 54f), "SFX: 100%", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            menu.settingsMusicText = AddText("Settings Music Detail", settingsWindow.transform, new Vector2(-220f, 42f), new Vector2(350f, 46f), "Tekan untuk mengganti 100/75/50/25/0%.", 14, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.settingsSfxText = AddText("Settings SFX Detail", settingsWindow.transform, new Vector2(220f, 42f), new Vector2(350f, 46f), "Tekan untuk mengganti 100/75/50/25/0%.", 14, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            menu.settingsControlSchemeButton = AddButton("Settings Control Scheme Button", settingsWindow.transform, new Vector2(0f, -54f), new Vector2(470f, 58f), "KONTROL: HYBRID", 16, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            menu.settingsControlText = AddText("Settings Control Detail", settingsWindow.transform, new Vector2(0f, -122f), new Vector2(760f, 58f), CyberGuardianMainMenu.GetControlSchemeHint(), 14, Hex("DDFBFF"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            AddText("Settings Note", settingsWindow.transform, new Vector2(0f, -190f), new Vector2(760f, 40f), "Pause tetap P atau ESC. Tekan bawah dua kali untuk dash/ground smash.", 14, Hex("FF6AA7"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
             menu.settingsBackButton = AddButton("Settings Back Button", settingsWindow.transform, new Vector2(0f, -246f), new Vector2(240f, 54f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
             menu.settingsPanel = settingsPanel;
             settingsPanel.SetActive(false);
@@ -617,6 +656,7 @@ namespace CyberGuardian.Editor
             game.cameraMin = new Vector2(-8.8f, -3.8f);
             game.cameraMax = new Vector2(233.0f, 7.4f);
             game.bossProjectilePrefab = bossProjectilePrefab;
+            game.projectileHitEffectFrames = projectileHitEffectFrames;
             game.sfxSource = game.gameObject.AddComponent<AudioSource>();
             game.sfxSource.playOnAwake = false;
             game.sfxSource.volume = 0.78f;
@@ -714,6 +754,7 @@ namespace CyberGuardian.Editor
             game.cameraMin = new Vector2(-8.8f, -3.9f);
             game.cameraMax = new Vector2(288.0f, 7.8f);
             game.bossProjectilePrefab = bossProjectilePrefab;
+            game.projectileHitEffectFrames = projectileHitEffectFrames;
             game.sfxSource = game.gameObject.AddComponent<AudioSource>();
             game.sfxSource.playOnAwake = false;
             game.sfxSource.volume = 0.78f;
@@ -819,6 +860,7 @@ namespace CyberGuardian.Editor
             game.bossVolleyCount = 4;
             game.bossProjectileSpeedBonus = 1.25f;
             game.bossProjectilePrefab = bossProjectilePrefab;
+            game.projectileHitEffectFrames = projectileHitEffectFrames;
             game.sfxSource = game.gameObject.AddComponent<AudioSource>();
             game.sfxSource.playOnAwake = false;
             game.sfxSource.volume = 0.82f;
@@ -1150,10 +1192,12 @@ namespace CyberGuardian.Editor
             CreateOrbitingShieldRing("L03 Inner Orbit Quiz Block ", parent, game, bossGlow.transform, 12, 2.95f, 34f, 0.68f, quizBlockSprite, squareSprite, font, 0);
             CreateOrbitingShieldRing("L03 Outer Orbit Quiz Block ", parent, game, bossGlow.transform, 16, 4.25f, -22f, 0.74f, quizBlockSprite, squareSprite, font, 2);
 
-            Sprite[] l03ProjectileFrames = projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames;
+            Sprite[] l03ProjectileFrames = playerElectricBurstFrames != null && playerElectricBurstFrames.Length > 0
+                ? playerElectricBurstFrames
+                : (projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames);
             Sprite projectileActive = PickSprite(l03ProjectileFrames, 2, projectileGeneratedSprite != null ? projectileGeneratedSprite : (projectileSprite != null ? projectileSprite : circleSprite));
-            GameObject projectile = CreateWorldSprite("L03 Patch Core Slingshot Projectile", parent, new Vector2(game.bossArenaMinX + 1.0f, 1.25f), new Vector2(0.42f, 0.42f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
-            AddFlipbook(projectile.GetComponent<SpriteRenderer>(), l03ProjectileFrames, 12.0f, true);
+            GameObject projectile = CreateWorldSprite("L03 Patch Core Slingshot Projectile", parent, new Vector2(game.bossArenaMinX + 1.0f, 1.25f), new Vector2(0.26f, 0.26f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
+            AddFlipbook(projectile.GetComponent<SpriteRenderer>(), l03ProjectileFrames, 18.0f, false);
             Rigidbody2D projectileBody = projectile.AddComponent<Rigidbody2D>();
             projectileBody.gravityScale = 0.92f;
             projectileBody.simulated = false;
@@ -1161,13 +1205,16 @@ namespace CyberGuardian.Editor
             projectileBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             CircleCollider2D projectileCollider = projectile.AddComponent<CircleCollider2D>();
             projectileCollider.isTrigger = true;
-            projectileCollider.radius = 0.14f;
+            projectileCollider.radius = 0.10f;
             projectileCollider.enabled = false;
-            projectile.AddComponent<CyberGuardianSlingshotProjectile2D>().game = game;
+            CyberGuardianSlingshotProjectile2D projectileLogic = projectile.AddComponent<CyberGuardianSlingshotProjectile2D>();
+            projectileLogic.game = game;
+            projectileLogic.animationFrames = l03ProjectileFrames;
+            projectileLogic.framesPerSecond = 18f;
+            projectileLogic.visualSize = new Vector2(0.26f, 0.26f);
             game.slingshotProjectile = projectile.transform;
             game.slingshotBody = projectileBody;
             game.slingshotCollider = projectileCollider;
-            AttachProjectileVfx(projectile.transform, circleSprite, 31, true);
             projectile.SetActive(false);
 
             game.slingshotBandA = CreateLine("L03 Slingshot Band A", parent, new Color(0.55f, 1f, 1f, 0.88f), 0.08f);
@@ -1745,7 +1792,8 @@ namespace CyberGuardian.Editor
                 return;
             }
 
-            Sprite[] trailFrames = projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames;
+            Sprite[] electricFrames = playerElectricBurstFrames != null && playerElectricBurstFrames.Length > 0 ? playerElectricBurstFrames : null;
+            Sprite[] trailFrames = electricFrames != null ? electricFrames : (projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames);
             Sprite trailSprite = PickSprite(trailFrames, 1, fallbackSprite);
             if (trailSprite != null)
             {
@@ -1754,12 +1802,13 @@ namespace CyberGuardian.Editor
                 AddFlipbook(trail, trailFrames, 13.5f, true);
             }
 
-            Sprite coreSprite = includeShotBurst && slingshotShotSprite != null ? slingshotShotSprite : PickSprite(projectileFlameFrames, 0, fallbackSprite);
+            Sprite[] coreFrames = electricFrames != null ? electricFrames : projectileFlameFrames;
+            Sprite coreSprite = electricFrames != null ? PickSprite(electricFrames, 2, fallbackSprite) : (includeShotBurst && slingshotShotSprite != null ? slingshotShotSprite : PickSprite(projectileFlameFrames, 0, fallbackSprite));
             if (coreSprite != null)
             {
                 SpriteRenderer core = CreateLocalSprite("Clean Projectile Core", target, Vector3.zero, new Vector2(includeShotBurst ? 0.28f : 0.38f, includeShotBurst ? 0.28f : 0.38f), new Color(0.88f, 1f, 1f, includeShotBurst ? 0.92f : 0.82f), coreSprite, sortingOrder + 1);
                 AddPulse(core, 0.045f, 0.10f, 8.4f, 0.05f);
-                AddFlipbook(core, includeShotBurst ? null : projectileFlameFrames, 12.5f, true);
+                AddFlipbook(core, electricFrames != null ? coreFrames : (includeShotBurst ? null : projectileFlameFrames), 12.5f, true);
             }
 
             if (!includeShotBurst)
@@ -1866,18 +1915,55 @@ namespace CyberGuardian.Editor
 
         private static void CreatePowerUp(string name, Transform parent, CyberGuardianSideScrollerGame game, Vector2 position, CyberGuardianPowerUpType type, int amount, Sprite circleSprite, Color color)
         {
-            GameObject power = CreateWorldSprite(name, parent, position, new Vector2(0.56f, 0.56f), color, circleSprite, 29).gameObject;
+            Sprite[] frames = GetPowerUpItemFrames(type);
+            Vector2 visualSize = GetPowerUpVisualSize(type);
+            Sprite powerSprite = PickSprite(frames, 0, circleSprite);
+            GameObject power = CreateWorldSprite(name, parent, position, visualSize, Color.white, powerSprite, 29).gameObject;
             CircleCollider2D collider = power.AddComponent<CircleCollider2D>();
             collider.isTrigger = true;
-            collider.radius = 0.32f;
+            collider.radius = 0.44f;
             CyberGuardianPowerUp powerUp = power.AddComponent<CyberGuardianPowerUp>();
             powerUp.game = game;
             powerUp.type = type;
             powerUp.amount = amount;
+            powerUp.animationFrames = frames;
+            powerUp.visualSize = visualSize;
             SpriteRenderer renderer = power.GetComponent<SpriteRenderer>();
-            AddPulse(renderer, 0.10f, 0.16f, 4.8f, amount * 0.03f);
-            CreateLocalSprite("Power Up Core", power.transform, Vector3.zero, new Vector2(0.24f, 0.24f), Color.white, circleSprite, 30);
-            CreateLocalSprite("Power Up Halo", power.transform, Vector3.zero, new Vector2(0.84f, 0.84f), new Color(color.r, color.g, color.b, 0.22f), circleSprite, 28);
+            if (frames != null && frames.Length > 1)
+            {
+                AddFlipbook(renderer, frames, 8.0f, false);
+            }
+
+            AddPulse(renderer, 0.12f, 0.18f, 4.8f, amount * 0.03f);
+            CreateLocalSprite("Power Up Halo", power.transform, Vector3.zero, new Vector2(1.14f, 1.14f), new Color(color.r, color.g, color.b, 0.24f), circleSprite, 28);
+        }
+
+        private static Sprite[] GetPowerUpItemFrames(CyberGuardianPowerUpType type)
+        {
+            switch (type)
+            {
+                case CyberGuardianPowerUpType.Health:
+                    return powerUpHealthFrames;
+                case CyberGuardianPowerUpType.Firewall:
+                    return powerUpFirewallFrames;
+                case CyberGuardianPowerUpType.Overclock:
+                    return powerUpOverclockFrames;
+                default:
+                    return powerUpBoostFrames;
+            }
+        }
+
+        private static Vector2 GetPowerUpVisualSize(CyberGuardianPowerUpType type)
+        {
+            switch (type)
+            {
+                case CyberGuardianPowerUpType.Boost:
+                    return new Vector2(0.72f, 0.90f);
+                case CyberGuardianPowerUpType.Health:
+                    return new Vector2(0.76f, 0.76f);
+                default:
+                    return new Vector2(0.78f, 0.78f);
+            }
         }
 
         private static void BuildUnfairChallengeLayer(Transform parent, CyberGuardianSideScrollerGame game, Sprite squareSprite, Sprite circleSprite, Sprite metalCrateSprite, Sprite dataMossSprite, CyberHorrorAssetSprites horrorSprites, bool level2)
@@ -1933,6 +2019,8 @@ namespace CyberGuardian.Editor
             CyberGuardianBreakawayPlatform breakaway = platform.AddComponent<CyberGuardianBreakawayPlatform>();
             breakaway.breakDelay = 0.32f;
             breakaway.respawnDelay = 2.4f;
+            breakaway.breakEffectFrames = retroPixelEffectFrames;
+            breakaway.fallbackEffectSprite = PickSprite(retroPixelEffectFrames, 0, fallbackSprite);
             CreateLocalSprite("Breakaway Tile", platform.transform, Vector3.zero, size, Color.white, tileSprite != null ? tileSprite : fallbackSprite, 17);
             CreateLocalSprite("Breakaway Warning Core", platform.transform, new Vector3(0f, 0f, -0.03f), size * 0.62f, new Color(1f, 0.18f, 0.42f, 0.28f), fallbackSprite, 18);
         }
@@ -1962,6 +2050,9 @@ namespace CyberGuardian.Editor
             player.jumpBufferTime = 0.18f;
             player.visualRoot = playerVisualRoot;
             player.flipVisualRootWithFacing = false;
+            player.dashEffectFrames = retroPixelEffectFrames;
+            player.impactEffectFrames = playerSmashImpactFrames != null && playerSmashImpactFrames.Length > 0 ? playerSmashImpactFrames : retroPixelEffectFrames;
+            player.fallbackEffectSprite = PickSprite(player.impactEffectFrames, 0, PickSprite(retroPixelEffectFrames, 0, circleSprite));
             game.player = player;
 
             Sprite[] runEast = LoadPlayerSpriteSequence("running_east");
@@ -1985,6 +2076,10 @@ namespace CyberGuardian.Editor
             spriteAnimator.jumpWest = jumpWest;
             spriteAnimator.fireEast = fireEast;
             spriteAnimator.fireWest = fireWest;
+            spriteAnimator.crouchEast = idleEast != null ? new[] { idleEast } : runEast;
+            spriteAnimator.crouchWest = idleWest != null ? new[] { idleWest } : runWest;
+            spriteAnimator.dashEast = runEast;
+            spriteAnimator.dashWest = runWest;
 
             Transform projectileSpawn = new GameObject("Adventure Fireball Spawn").transform;
             projectileSpawn.SetParent(playerObject.transform, false);
@@ -2018,15 +2113,14 @@ namespace CyberGuardian.Editor
             projectile.transform.localScale = Vector3.one;
 
             SpriteRenderer renderer = projectile.GetComponent<SpriteRenderer>();
-            Sprite[] fireballFrames = projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames;
-            renderer.sprite = slingshotShotSprite != null ? slingshotShotSprite : PickSprite(fireballFrames, 1, circleSprite);
-            renderer.color = new Color(0.88f, 1f, 1f, 0.94f);
+            Sprite[] fireballFrames = playerElectricBurstFrames != null && playerElectricBurstFrames.Length > 0
+                ? playerElectricBurstFrames
+                : (projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames);
+            renderer.sprite = PickSprite(fireballFrames, 1, slingshotShotSprite != null ? slingshotShotSprite : circleSprite);
+            renderer.color = new Color(0.92f, 0.58f, 1f, 0.96f);
             renderer.sortingOrder = 31;
-            ScaleSprite(renderer, new Vector2(0.32f, 0.32f));
-            if (slingshotShotSprite == null)
-            {
-                AddFlipbook(renderer, fireballFrames, 13.5f, true);
-            }
+            ScaleSprite(renderer, new Vector2(0.34f, 0.34f));
+            AddFlipbook(renderer, fireballFrames, 18.0f, false);
 
             Rigidbody2D body = projectile.GetComponent<Rigidbody2D>();
             body.bodyType = RigidbodyType2D.Kinematic;
@@ -2040,10 +2134,14 @@ namespace CyberGuardian.Editor
             CyberGuardianPlayerProjectile2D projectileLogic = projectile.GetComponent<CyberGuardianPlayerProjectile2D>();
             projectileLogic.game = game;
             projectileLogic.damage = 1;
-            projectileLogic.lifetime = 1.55f;
-            AddPulse(renderer, 0.10f, 0.12f, 9.2f, 0f);
+            projectileLogic.lifetime = 0.92f;
+            projectileLogic.animationFrames = fireballFrames;
+            projectileLogic.framesPerSecond = 18f;
+            projectileLogic.visualSize = new Vector2(0.34f, 0.34f);
+            projectileLogic.maxTravelDistance = 8.2f;
+            projectileLogic.destroyAfterOneAnimation = true;
+            AddPulse(renderer, 0.035f, 0.08f, 9.2f, 0f);
 
-            AttachProjectileVfx(projectile.transform, circleSprite, 32, true);
             projectile.SetActive(false);
             return projectile;
         }
@@ -2261,10 +2359,12 @@ namespace CyberGuardian.Editor
                 }
             }
 
-            Sprite[] bossSlingshotProjectileFrames = projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames;
+            Sprite[] bossSlingshotProjectileFrames = playerElectricBurstFrames != null && playerElectricBurstFrames.Length > 0
+                ? playerElectricBurstFrames
+                : (projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames);
             Sprite projectileActive = PickSprite(bossSlingshotProjectileFrames, 1, projectileGeneratedSprite != null ? projectileGeneratedSprite : (projectileSprite != null ? projectileSprite : circleSprite));
-            GameObject projectile = CreateWorldSprite("Patch Core Slingshot Projectile", parent, new Vector2(projectileX, 1.1f), new Vector2(0.40f, 0.40f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
-            AddFlipbook(projectile.GetComponent<SpriteRenderer>(), bossSlingshotProjectileFrames, 12.0f, true);
+            GameObject projectile = CreateWorldSprite("Patch Core Slingshot Projectile", parent, new Vector2(projectileX, 1.1f), new Vector2(0.26f, 0.26f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
+            AddFlipbook(projectile.GetComponent<SpriteRenderer>(), bossSlingshotProjectileFrames, 18.0f, false);
             Rigidbody2D projectileBody = projectile.AddComponent<Rigidbody2D>();
             projectileBody.gravityScale = 1f;
             projectileBody.simulated = false;
@@ -2272,13 +2372,16 @@ namespace CyberGuardian.Editor
             projectileBody.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
             CircleCollider2D projectileCollider = projectile.AddComponent<CircleCollider2D>();
             projectileCollider.isTrigger = true;
-            projectileCollider.radius = 0.14f;
+            projectileCollider.radius = 0.10f;
             projectileCollider.enabled = false;
-            projectile.AddComponent<CyberGuardianSlingshotProjectile2D>().game = game;
+            CyberGuardianSlingshotProjectile2D slingshotProjectileLogic = projectile.AddComponent<CyberGuardianSlingshotProjectile2D>();
+            slingshotProjectileLogic.game = game;
+            slingshotProjectileLogic.animationFrames = bossSlingshotProjectileFrames;
+            slingshotProjectileLogic.framesPerSecond = 18f;
+            slingshotProjectileLogic.visualSize = new Vector2(0.26f, 0.26f);
             game.slingshotProjectile = projectile.transform;
             game.slingshotBody = projectileBody;
             game.slingshotCollider = projectileCollider;
-            AttachProjectileVfx(projectile.transform, circleSprite, 31, true);
             projectile.SetActive(false);
 
             game.slingshotBandA = CreateLine("Slingshot Band A", parent, new Color(0.55f, 1f, 1f, 0.88f), 0.08f);
@@ -2289,40 +2392,63 @@ namespace CyberGuardian.Editor
         private static void BuildHud(CyberGuardianSideScrollerGame game, Sprite panelSprite, Sprite buttonSprite, Sprite frameSprite, CyberHorrorAssetSprites horrorSprites, Font font)
         {
             GameObject canvasObject = CreateCanvas("Cyber Guardian HUD");
-            Sprite barBack = horrorSprites.HpBarBack != null ? horrorSprites.HpBarBack : (horrorSprites.UiBarBack != null ? horrorSprites.UiBarBack : panelSprite);
-            Sprite hpFill = horrorSprites.HpBarRed != null ? horrorSprites.HpBarRed : (horrorSprites.UiHpBarFill != null ? horrorSprites.UiHpBarFill : panelSprite);
-            Sprite boostFill = horrorSprites.HpBarBlue != null ? horrorSprites.HpBarBlue : (horrorSprites.UiBoostBarFill != null ? horrorSprites.UiBoostBarFill : panelSprite);
+            Sprite pixelBar = pixelUiBarSprite != null ? pixelUiBarSprite : EnsureImportedSprite(PixelUiBarPath, new Vector4(14f, 14f, 14f, 14f));
+            Sprite barBack = pixelBar != null ? pixelBar : (horrorSprites.HpBarBack != null ? horrorSprites.HpBarBack : (horrorSprites.UiBarBack != null ? horrorSprites.UiBarBack : panelSprite));
+            Sprite hpFill = pixelBar != null ? pixelBar : (horrorSprites.HpBarRed != null ? horrorSprites.HpBarRed : (horrorSprites.UiHpBarFill != null ? horrorSprites.UiHpBarFill : panelSprite));
+            Sprite boostFill = pixelBar != null ? pixelBar : (horrorSprites.HpBarBlue != null ? horrorSprites.HpBarBlue : (horrorSprites.UiBoostBarFill != null ? horrorSprites.UiBoostBarFill : panelSprite));
             Sprite bossFill = horrorSprites.HpBarGreen != null ? horrorSprites.HpBarGreen : (horrorSprites.UiBossBarFill != null ? horrorSprites.UiBossBarFill : panelSprite);
             Sprite panelFrame = horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite;
-
-            AddPanel("Player Combat Bars Back", canvasObject.transform, new Vector2(-620f, 498f), new Vector2(630f, 112f), Color.black, panelFrame, 0.58f);
-            AddImage("HP Icon Frame", canvasObject.transform, new Vector2(-880f, 522f), new Vector2(68f, 58f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
-            game.healthText = AddText("HP Icon", canvasObject.transform, new Vector2(-880f, 522f), new Vector2(62f, 36f), "HP", 22, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.playerHealthFill = AddCyberBar(canvasObject.transform, new Vector2(-610f, 522f), new Vector2(440f, 40f), Hex("FF2F83"), barBack, hpFill);
             Sprite heartIcon = horrorSprites.LifeHeartIcon != null ? horrorSprites.LifeHeartIcon : (horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
+            Sprite energyIcon = horrorSprites.EnergyBoltIcon != null ? horrorSprites.EnergyBoltIcon : heartIcon;
+            Sprite menuIcon = horrorSprites.MenuLinesIcon != null ? horrorSprites.MenuLinesIcon : energyIcon;
+            Sprite guardianIcon = EnsurePlayerSprite(PlayerSpriteFolder + "/idle_00.png");
+
+            AddPanel("Player Combat Bars Back", canvasObject.transform, new Vector2(-616f, 450f), new Vector2(660f, 138f), Color.black, panelFrame, 0.96f).raycastTarget = false;
+            AddImage("Guardian HUD Frame", canvasObject.transform, new Vector2(-918f, 449f), new Vector2(104f, 104f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite).raycastTarget = false;
+            Image guardianPortrait = AddImage("Guardian HUD Portrait", canvasObject.transform, new Vector2(-918f, 449f), new Vector2(84f, 84f), Color.white, guardianIcon != null ? guardianIcon : heartIcon);
+            guardianPortrait.raycastTarget = false;
+            guardianPortrait.preserveAspect = true;
+            AddImage("HP Icon Frame", canvasObject.transform, new Vector2(-850f, 476f), new Vector2(54f, 46f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite).raycastTarget = false;
+            Image hpIcon = AddImage("HP Symbol", canvasObject.transform, new Vector2(-850f, 476f), new Vector2(34f, 34f), Color.white, heartIcon);
+            hpIcon.raycastTarget = false;
+            hpIcon.preserveAspect = true;
+            game.playerHealthBarFrames = pixelUiHpBarFrames;
+            game.boostEnergyBarFrames = pixelUiEnergyBarFrames;
+            game.playerHealthFill = pixelUiHpBarFrames != null && pixelUiHpBarFrames.Length > 0
+                ? AddPixelFrameBar(canvasObject.transform, new Vector2(-592f, 476f), new Vector2(440f, 54f), pixelUiHpBarFrames, hpFill)
+                : AddCyberBar(canvasObject.transform, new Vector2(-592f, 476f), new Vector2(440f, 54f), Hex("FF2F83"), barBack, hpFill, pixelBar == null);
             game.lifeIconImages = new Image[3];
             for (int i = 0; i < game.lifeIconImages.Length; i++)
             {
-                game.lifeIconImages[i] = AddImage("Life Heart " + (i + 1).ToString("0"), canvasObject.transform, new Vector2(-382f + i * 38f, 522f), new Vector2(32f, 32f), Color.white, heartIcon);
+                game.lifeIconImages[i] = AddImage("Life Heart " + (i + 1).ToString("0"), canvasObject.transform, new Vector2(-354f + i * 38f, 476f), new Vector2(32f, 32f), Color.white, heartIcon);
+                game.lifeIconImages[i].raycastTarget = false;
                 game.lifeIconImages[i].preserveAspect = true;
             }
 
-            AddText("Boost Label", canvasObject.transform, new Vector2(-880f, 470f), new Vector2(86f, 26f), "ENERGI", 13, Hex("61F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.boostEnergyFill = AddCyberBar(canvasObject.transform, new Vector2(-610f, 470f), new Vector2(440f, 34f), Hex("16E8FF"), barBack, boostFill);
-            game.modeText = AddText("Mode Text", canvasObject.transform, new Vector2(-386f, 470f), new Vector2(74f, 24f), "ENERGI", 11, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.statusText = AddText("Status Text", canvasObject.transform, new Vector2(-620f, 426f), new Vector2(560f, 28f), "MODE PETUALANGAN", 13, Hex("B7F7FF"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
+            AddImage("Boost Icon Frame", canvasObject.transform, new Vector2(-850f, 422f), new Vector2(54f, 42f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite).raycastTarget = false;
+            Image boostIcon = AddImage("Boost Symbol", canvasObject.transform, new Vector2(-850f, 422f), new Vector2(30f, 38f), Hex("61F7FF"), energyIcon);
+            boostIcon.raycastTarget = false;
+            boostIcon.preserveAspect = true;
+            game.boostEnergyFill = pixelUiEnergyBarFrames != null && pixelUiEnergyBarFrames.Length > 0
+                ? AddPixelFrameBar(canvasObject.transform, new Vector2(-592f, 422f), new Vector2(440f, 46f), pixelUiEnergyBarFrames, boostFill)
+                : AddCyberBar(canvasObject.transform, new Vector2(-592f, 422f), new Vector2(440f, 46f), Hex("16E8FF"), barBack, boostFill, pixelBar == null);
+            game.statusText = AddText("Status Text", canvasObject.transform, new Vector2(-616f, 378f), new Vector2(560f, 28f), "MODE PETUALANGAN", 13, Hex("B7F7FF"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
 
-            AddImage("Score Cyber Card", canvasObject.transform, new Vector2(720f, 518f), new Vector2(320f, 64f), Color.white, horrorSprites.UiScorePanel != null ? horrorSprites.UiScorePanel : panelSprite);
-            AddText("Score Label", canvasObject.transform, new Vector2(612f, 532f), new Vector2(92f, 22f), "SKOR", 14, Hex("FF5B9B"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.scoreText = AddText("Score Text", canvasObject.transform, new Vector2(756f, 504f), new Vector2(206f, 42f), "0", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
-            game.pauseButton = AddButton("Menu Button", canvasObject.transform, new Vector2(915f, 518f), new Vector2(112f, 50f), "MENU", 14, font, Hex("08181D"), Color.white, horrorSprites.UiButtonCyan != null ? horrorSprites.UiButtonCyan : buttonSprite, out _);
+            AddImage("Score Cyber Card", canvasObject.transform, new Vector2(720f, 470f), new Vector2(320f, 64f), Color.white, horrorSprites.UiScorePanel != null ? horrorSprites.UiScorePanel : panelSprite);
+            AddText("Score Label", canvasObject.transform, new Vector2(612f, 484f), new Vector2(92f, 22f), "SKOR", 14, Hex("FF5B9B"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.scoreText = AddText("Score Text", canvasObject.transform, new Vector2(756f, 456f), new Vector2(206f, 42f), "0", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            game.pauseButton = AddButton("Menu Button", canvasObject.transform, new Vector2(910f, 470f), new Vector2(58f, 50f), string.Empty, 14, font, Hex("08181D"), Color.white, horrorSprites.UiButtonCyan != null ? horrorSprites.UiButtonCyan : buttonSprite, out Text menuLabel, false);
+            menuLabel.gameObject.SetActive(false);
+            Image menuSymbol = AddImage("Menu Symbol", game.pauseButton.transform, Vector2.zero, new Vector2(30f, 24f), Hex("61F7FF"), menuIcon);
+            menuSymbol.raycastTarget = false;
+            menuSymbol.preserveAspect = true;
 
             GameObject bossHud = new GameObject("Boss HUD Group", typeof(RectTransform));
             bossHud.transform.SetParent(canvasObject.transform, false);
             game.bossHudGroup = bossHud;
-            AddImage("Boss Core Icon", bossHud.transform, new Vector2(-376f, 424f), new Vector2(76f, 76f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
-            game.bossHealthFill = AddCyberBar(bossHud.transform, new Vector2(-8f, 424f), new Vector2(630f, 38f), Hex("FF2F83"), barBack, bossFill);
-            game.bossText = AddText("Boss Text", bossHud.transform, new Vector2(-8f, 464f), new Vector2(500f, 28f), "HP BOS", 21, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddImage("Boss Core Icon", bossHud.transform, new Vector2(-376f, 398f), new Vector2(76f, 76f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite);
+            game.bossHealthFill = AddCyberBar(bossHud.transform, new Vector2(-8f, 398f), new Vector2(630f, 38f), Hex("FF2F83"), barBack, bossFill);
+            game.bossText = AddText("Boss Text", bossHud.transform, new Vector2(-8f, 438f), new Vector2(500f, 28f), "HP BOS", 21, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             bossHud.SetActive(false);
             Sprite cardPanel = horrorSprites.UiPanelFrame != null ? horrorSprites.UiPanelFrame : panelSprite;
             BuildStoryPanel(canvasObject.transform, game, cardPanel, font);
@@ -2882,10 +3008,10 @@ namespace CyberGuardian.Editor
             block.category = category;
 
             Color categoryColor = GetCategoryColor(category);
-            CreateLocalSprite("Quiz Block Category Aura", blockObject.transform, new Vector3(0f, 0f, 0.04f), new Vector2(0.76f, 0.66f), new Color(categoryColor.r, categoryColor.g, categoryColor.b, 0.28f), squareSprite, 15);
-            CreateLocalSprite("Category Charge Fill", blockObject.transform, new Vector3(0f, -0.01f, -0.02f), new Vector2(0.34f, 0.28f), new Color(categoryColor.r, categoryColor.g, categoryColor.b, 0.78f), squareSprite, 17);
-            CreateLocalSprite("Quiz Block Scanline Top", blockObject.transform, new Vector3(0f, 0.22f, -0.03f), new Vector2(0.52f, 0.035f), new Color(categoryColor.r, categoryColor.g, categoryColor.b, 0.92f), squareSprite, 18);
-            CreateLocalSprite("Quiz Block Scanline Bottom", blockObject.transform, new Vector3(0f, -0.23f, -0.03f), new Vector2(0.52f, 0.035f), new Color(0.05f, 0.95f, 1f, 0.78f), squareSprite, 18);
+            CreateLocalSprite("Quiz Block Category Aura", blockObject.transform, new Vector3(0f, 0f, 0.04f), new Vector2(0.86f, 0.74f), new Color(categoryColor.r, categoryColor.g, categoryColor.b, 0.36f), squareSprite, 15);
+            CreateLocalSprite("Category Charge Fill", blockObject.transform, new Vector3(0f, -0.01f, -0.02f), new Vector2(0.54f, 0.42f), new Color(categoryColor.r, categoryColor.g, categoryColor.b, 0.88f), squareSprite, 17);
+            CreateLocalSprite("Quiz Block Scanline Top", blockObject.transform, new Vector3(0f, 0.23f, -0.03f), new Vector2(0.64f, 0.055f), new Color(categoryColor.r, categoryColor.g, categoryColor.b, 0.96f), squareSprite, 18);
+            CreateLocalSprite("Quiz Block Scanline Bottom", blockObject.transform, new Vector3(0f, -0.24f, -0.03f), new Vector2(0.64f, 0.055f), new Color(0.05f, 0.95f, 1f, 0.84f), squareSprite, 18);
 
             GameObject labelObject = new GameObject("Label", typeof(TextMesh));
             labelObject.transform.SetParent(blockObject.transform, false);
@@ -3077,10 +3203,17 @@ namespace CyberGuardian.Editor
 
         private static void CreateCheckpoint(string name, Transform parent, CyberGuardianSideScrollerGame game, Vector2 position, Sprite fallbackSprite, Sprite nodeSprite)
         {
-            GameObject checkpoint = CreateWorldSprite(name, parent, position, new Vector2(0.7f, 0.9f), Color.white, nodeSprite != null ? nodeSprite : fallbackSprite, 21).gameObject;
+            Sprite checkpointSprite = pixelUiCheckpointButtonSprite != null ? pixelUiCheckpointButtonSprite : EnsureImportedCheckpointButtonSprite();
+            bool usePixelButton = checkpointSprite != null;
+            GameObject checkpoint = CreateWorldSprite(name, parent, position, usePixelButton ? new Vector2(1.36f, 0.62f) : new Vector2(0.7f, 0.9f), Color.white, usePixelButton ? checkpointSprite : (nodeSprite != null ? nodeSprite : fallbackSprite), 21).gameObject;
+            if (usePixelButton)
+            {
+                AddPulse(checkpoint.GetComponent<SpriteRenderer>(), 0.018f, 0.12f, 2.9f, position.x * 0.07f);
+            }
+
             CircleCollider2D collider = checkpoint.AddComponent<CircleCollider2D>();
             collider.isTrigger = true;
-            collider.radius = 0.48f;
+            collider.radius = usePixelButton ? 0.56f : 0.48f;
             Transform recovery = new GameObject("Recovery Point").transform;
             recovery.SetParent(checkpoint.transform, false);
             recovery.localPosition = new Vector3(0f, 0.42f, 0f);
@@ -3483,50 +3616,67 @@ namespace CyberGuardian.Editor
 
         private static Image AddBar(Transform parent, Vector2 position, Vector2 size, Color fillColor, Sprite panelSprite)
         {
-            AddPanel("Bar Back", parent, position, size, Color.black, panelSprite, 0.66f);
+            AddPanel("Bar Back", parent, position, size, Color.black, panelSprite, 0.66f).raycastTarget = false;
             Image fill = AddImage("Bar Fill", parent, position - new Vector2(0f, 0f), size - new Vector2(14f, 12f), fillColor, panelSprite);
             fill.type = Image.Type.Filled;
             fill.fillMethod = Image.FillMethod.Horizontal;
             fill.fillAmount = 1f;
+            fill.raycastTarget = false;
             return fill;
         }
 
-        private static Image AddCyberBar(Transform parent, Vector2 position, Vector2 size, Color fillColor, Sprite backSprite, Sprite fillSprite)
+        private static Image AddCyberBar(Transform parent, Vector2 position, Vector2 size, Color fillColor, Sprite backSprite, Sprite fillSprite, bool drawSegments = true)
         {
-            AddPanel("Cyber Bar Back", parent, position, size, Color.white, backSprite, 1f);
+            AddPanel("Cyber Bar Back", parent, position, size, Color.white, backSprite, 1f).raycastTarget = false;
             Image fill = AddImage("Cyber Bar Fill", parent, position, size - new Vector2(24f, 18f), fillColor, fillSprite);
             fill.type = Image.Type.Filled;
             fill.fillMethod = Image.FillMethod.Horizontal;
             fill.fillAmount = 1f;
+            fill.raycastTarget = false;
+
+            if (!drawSegments)
+            {
+                return fill;
+            }
 
             int segments = 10;
             float usableWidth = size.x - 42f;
             for (int i = 1; i < segments; i++)
             {
                 float x = position.x - usableWidth * 0.5f + usableWidth * i / segments;
-                AddPanel("Cyber Bar Segment " + i, parent, new Vector2(x, position.y), new Vector2(4f, size.y - 22f), Color.black, backSprite, 0.58f);
+                AddPanel("Cyber Bar Segment " + i, parent, new Vector2(x, position.y), new Vector2(4f, size.y - 22f), Color.black, backSprite, 0.58f).raycastTarget = false;
             }
 
             return fill;
         }
 
+        private static Image AddPixelFrameBar(Transform parent, Vector2 position, Vector2 size, Sprite[] frames, Sprite fallbackSprite)
+        {
+            Sprite fullFrame = PickSprite(frames, 0, fallbackSprite);
+            Image image = AddImage("Cyber Frame Bar", parent, position, size, Color.white, fullFrame);
+            image.type = Image.Type.Simple;
+            image.fillAmount = 1f;
+            image.preserveAspect = false;
+            image.raycastTarget = false;
+            return image;
+        }
+
         private static GameObject EnsureBossProjectilePrefab(Sprite circleSprite, Sprite sparkSprite)
         {
-            GameObject existing = AssetDatabase.LoadAssetAtPath<GameObject>(BossProjectilePrefabPath);
-            if (existing != null)
-            {
-                return existing;
-            }
-
             GameObject prefabObject = new GameObject("BossPacketProjectile", typeof(SpriteRenderer), typeof(CircleCollider2D), typeof(CyberGuardianBossProjectile));
             SpriteRenderer renderer = prefabObject.GetComponent<SpriteRenderer>();
-            renderer.sprite = sparkSprite != null ? sparkSprite : circleSprite;
-            renderer.color = new Color(1f, 0.22f, 0.30f, 1f);
+            Sprite[] splatterFrames = enemySplatterFrames != null && enemySplatterFrames.Length > 0 ? enemySplatterFrames : null;
+            renderer.sprite = PickSprite(splatterFrames, 0, sparkSprite != null ? sparkSprite : circleSprite);
+            renderer.color = new Color(1f, 0.18f, 0.34f, 0.96f);
             renderer.sortingOrder = 26;
-            ScaleSprite(renderer, new Vector2(0.42f, 0.42f));
+            ScaleSprite(renderer, new Vector2(0.34f, 0.34f));
             CircleCollider2D collider = prefabObject.GetComponent<CircleCollider2D>();
             collider.isTrigger = true;
-            collider.radius = 0.22f;
+            collider.radius = 0.16f;
+            CyberGuardianBossProjectile projectile = prefabObject.GetComponent<CyberGuardianBossProjectile>();
+            projectile.animationFrames = splatterFrames;
+            projectile.framesPerSecond = 14f;
+            projectile.visualSize = new Vector2(0.34f, 0.34f);
             PrefabUtility.SaveAsPrefabAsset(prefabObject, BossProjectilePrefabPath);
             Object.DestroyImmediate(prefabObject);
             return AssetDatabase.LoadAssetAtPath<GameObject>(BossProjectilePrefabPath);
@@ -3618,7 +3768,15 @@ namespace CyberGuardian.Editor
         private static void EnsureEventSystem()
         {
             GameObject eventSystem = new GameObject("EventSystem", typeof(EventSystem));
-            eventSystem.AddComponent<StandaloneInputModule>();
+            System.Type inputSystemUiModuleType = System.Type.GetType("UnityEngine.InputSystem.UI.InputSystemUIInputModule, Unity.InputSystem");
+            if (inputSystemUiModuleType != null)
+            {
+                eventSystem.AddComponent(inputSystemUiModuleType);
+            }
+            else
+            {
+                eventSystem.AddComponent<StandaloneInputModule>();
+            }
         }
 
         private static Button AddButton(string name, Transform parent, Vector2 position, Vector2 size, string text, int fontSize, Font font, Color background, Color textColor, Sprite sprite, out Text label, bool showIcon = true)
@@ -4055,6 +4213,342 @@ namespace CyberGuardian.Editor
             return sprites.ToArray();
         }
 
+        private static Sprite[] EnsureImportedEightFrameSheetFromFolder(string folderAssetPath, string searchPattern, int sheetIndex, int columns, int rows, float pixelsPerUnit)
+        {
+            string absoluteFolder = ToAbsolutePath(folderAssetPath);
+            if (!Directory.Exists(absoluteFolder))
+            {
+                return new Sprite[0];
+            }
+
+            List<string> files = new List<string>(Directory.GetFiles(absoluteFolder, searchPattern, SearchOption.TopDirectoryOnly));
+            files.Sort((a, b) =>
+            {
+                int numberA = ExtractTrailingNumber(a);
+                int numberB = ExtractTrailingNumber(b);
+                int numberCompare = numberA.CompareTo(numberB);
+                return numberCompare != 0 ? numberCompare : string.Compare(a, b, System.StringComparison.OrdinalIgnoreCase);
+            });
+
+            if (files.Count == 0)
+            {
+                return new Sprite[0];
+            }
+
+            int clampedIndex = Mathf.Clamp(sheetIndex, 0, files.Count - 1);
+            return EnsureImportedSpriteSheetFrames(ToProjectAssetPath(files[clampedIndex]), columns, rows, pixelsPerUnit);
+        }
+
+        private static Sprite[] EnsureImportedSpriteSheetFrames(string sourceAssetPath, int columns, int rows, float pixelsPerUnit)
+        {
+            if (!File.Exists(ToAbsolutePath(sourceAssetPath)) || columns <= 0 || rows <= 0)
+            {
+                return new Sprite[0];
+            }
+
+            Texture2D sourceTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!sourceTexture.LoadImage(File.ReadAllBytes(ToAbsolutePath(sourceAssetPath))))
+            {
+                Object.DestroyImmediate(sourceTexture);
+                return new Sprite[0];
+            }
+
+            int frameWidth = sourceTexture.width / columns;
+            int frameHeight = sourceTexture.height / rows;
+            int frameCount = columns * rows;
+            if (frameWidth <= 0 || frameHeight <= 0)
+            {
+                Object.DestroyImmediate(sourceTexture);
+                return new Sprite[0];
+            }
+
+            string sourceName = Path.GetFileNameWithoutExtension(sourceAssetPath);
+            string frameFolderAssetPath = GeneratedRetroEffectFrameFolder + "/" + sourceName;
+            Directory.CreateDirectory(ToAbsolutePath(frameFolderAssetPath));
+
+            List<Sprite> frames = new List<Sprite>();
+            for (int frame = 0; frame < frameCount; frame++)
+            {
+                int column = frame % columns;
+                int row = frame / columns;
+                int x = column * frameWidth;
+                int y = sourceTexture.height - ((row + 1) * frameHeight);
+
+                Texture2D frameTexture = new Texture2D(frameWidth, frameHeight, TextureFormat.RGBA32, false);
+                frameTexture.SetPixels(sourceTexture.GetPixels(x, y, frameWidth, frameHeight));
+                frameTexture.filterMode = FilterMode.Point;
+                frameTexture.Apply();
+
+                string frameAssetPath = frameFolderAssetPath + "/" + sourceName + "_frame_" + frame.ToString("00") + ".png";
+                File.WriteAllBytes(ToAbsolutePath(frameAssetPath), frameTexture.EncodeToPNG());
+                Object.DestroyImmediate(frameTexture);
+
+                Sprite sprite = EnsureEffectFrameSprite(frameAssetPath, pixelsPerUnit);
+                if (sprite != null)
+                {
+                    frames.Add(sprite);
+                }
+            }
+
+            Object.DestroyImmediate(sourceTexture);
+            return frames.ToArray();
+        }
+
+        private static Sprite[] EnsureImportedMetadataSpriteSheetFrames(string folderAssetPath, float pixelsPerUnit)
+        {
+            string imageAssetPath = folderAssetPath + "/spritesheet.png";
+            string metadataAssetPath = folderAssetPath + "/spritesheet.txt";
+            if (!File.Exists(ToAbsolutePath(imageAssetPath)) || !File.Exists(ToAbsolutePath(metadataAssetPath)))
+            {
+                return new Sprite[0];
+            }
+
+            Texture2D sourceTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!sourceTexture.LoadImage(File.ReadAllBytes(ToAbsolutePath(imageAssetPath))))
+            {
+                Object.DestroyImmediate(sourceTexture);
+                return new Sprite[0];
+            }
+
+            string sourceName = Path.GetFileName(folderAssetPath.TrimEnd('/', '\\'));
+            string frameFolderAssetPath = GeneratedRetroEffectFrameFolder + "/" + sourceName;
+            Directory.CreateDirectory(ToAbsolutePath(frameFolderAssetPath));
+
+            List<Sprite> frames = new List<Sprite>();
+            string[] lines = File.ReadAllLines(ToAbsolutePath(metadataAssetPath));
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (!TryParseSpriteSheetMetadataLine(lines[i], out int x, out int y, out int width, out int height))
+                {
+                    continue;
+                }
+
+                int unityY = sourceTexture.height - y - height;
+                if (!IsValidSpriteRect(sourceTexture, x, unityY, width, height))
+                {
+                    continue;
+                }
+
+                Texture2D frameTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+                frameTexture.SetPixels(sourceTexture.GetPixels(x, unityY, width, height));
+                frameTexture.filterMode = FilterMode.Point;
+                frameTexture.Apply();
+
+                string frameAssetPath = frameFolderAssetPath + "/" + sourceName + "_frame_" + frames.Count.ToString("00") + ".png";
+                File.WriteAllBytes(ToAbsolutePath(frameAssetPath), frameTexture.EncodeToPNG());
+                Object.DestroyImmediate(frameTexture);
+
+                Sprite sprite = EnsureEffectFrameSprite(frameAssetPath, pixelsPerUnit);
+                if (sprite != null)
+                {
+                    frames.Add(sprite);
+                }
+            }
+
+            if (frames.Count == 0)
+            {
+                AddInferredHorizontalFrameAssets(sourceTexture, sourceName, frameFolderAssetPath, lines.Length, pixelsPerUnit, frames);
+            }
+
+            Object.DestroyImmediate(sourceTexture);
+            return frames.ToArray();
+        }
+
+        private static bool IsValidSpriteRect(Texture2D texture, int x, int y, int width, int height)
+        {
+            return texture != null
+                && x >= 0
+                && y >= 0
+                && width > 0
+                && height > 0
+                && x + width <= texture.width
+                && y + height <= texture.height;
+        }
+
+        private static void AddInferredHorizontalFrameAssets(Texture2D sourceTexture, string sourceName, string frameFolderAssetPath, int requestedCount, float pixelsPerUnit, List<Sprite> frames)
+        {
+            int frameCount = Mathf.Max(1, requestedCount);
+            if (sourceTexture == null || frameCount <= 0)
+            {
+                return;
+            }
+
+            int frameWidth = Mathf.Max(1, sourceTexture.width / frameCount);
+            int frameHeight = sourceTexture.height;
+            for (int frame = 0; frame < frameCount; frame++)
+            {
+                int x = frame * frameWidth;
+                if (!IsValidSpriteRect(sourceTexture, x, 0, frameWidth, frameHeight))
+                {
+                    continue;
+                }
+
+                Texture2D frameTexture = new Texture2D(frameWidth, frameHeight, TextureFormat.RGBA32, false);
+                frameTexture.SetPixels(sourceTexture.GetPixels(x, 0, frameWidth, frameHeight));
+                frameTexture.filterMode = FilterMode.Point;
+                frameTexture.Apply();
+
+                string frameAssetPath = frameFolderAssetPath + "/" + sourceName + "_inferred_frame_" + frames.Count.ToString("00") + ".png";
+                File.WriteAllBytes(ToAbsolutePath(frameAssetPath), frameTexture.EncodeToPNG());
+                Object.DestroyImmediate(frameTexture);
+
+                Sprite sprite = EnsureEffectFrameSprite(frameAssetPath, pixelsPerUnit);
+                if (sprite != null)
+                {
+                    frames.Add(sprite);
+                }
+            }
+        }
+
+        private static Sprite[] EnsureImportedUiBarRowFrames(string sheetAssetPath, string rowName, int rowFromTop, int frameCount, float pixelsPerUnit)
+        {
+            if (!File.Exists(ToAbsolutePath(sheetAssetPath)) || frameCount <= 0)
+            {
+                return new Sprite[0];
+            }
+
+            Texture2D sourceTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!sourceTexture.LoadImage(File.ReadAllBytes(ToAbsolutePath(sheetAssetPath))))
+            {
+                Object.DestroyImmediate(sourceTexture);
+                return new Sprite[0];
+            }
+
+            sourceTexture.filterMode = FilterMode.Point;
+            int rowCount = 2;
+            int frameHeight = Mathf.Max(1, sourceTexture.height / rowCount);
+            int frameWidth = Mathf.Max(1, sourceTexture.width / frameCount);
+            int y = sourceTexture.height - ((Mathf.Clamp(rowFromTop, 0, rowCount - 1) + 1) * frameHeight);
+            string frameFolderAssetPath = GeneratedArtFolder + "/PixelUiPack3BarFrames/" + rowName;
+            Directory.CreateDirectory(ToAbsolutePath(frameFolderAssetPath));
+
+            List<Sprite> frames = new List<Sprite>(frameCount);
+            for (int frame = 0; frame < frameCount; frame++)
+            {
+                int x = frame * frameWidth;
+                if (!IsValidSpriteRect(sourceTexture, x, y, frameWidth, frameHeight))
+                {
+                    continue;
+                }
+
+                Texture2D frameTexture = new Texture2D(frameWidth, frameHeight, TextureFormat.RGBA32, false);
+                frameTexture.SetPixels(sourceTexture.GetPixels(x, y, frameWidth, frameHeight));
+                frameTexture.filterMode = FilterMode.Point;
+                frameTexture.Apply();
+
+                string frameAssetPath = frameFolderAssetPath + "/pixel_ui_" + rowName + "_bar_frame_" + frame.ToString("00") + ".png";
+                File.WriteAllBytes(ToAbsolutePath(frameAssetPath), frameTexture.EncodeToPNG());
+                Object.DestroyImmediate(frameTexture);
+
+                Sprite sprite = EnsureEffectFrameSprite(frameAssetPath, pixelsPerUnit);
+                if (sprite != null)
+                {
+                    frames.Add(sprite);
+                }
+            }
+
+            Object.DestroyImmediate(sourceTexture);
+            return frames.ToArray();
+        }
+
+        private static Sprite EnsureImportedCheckpointButtonSprite()
+        {
+            if (!File.Exists(ToAbsolutePath(PixelUiCheckpointButtonPath)))
+            {
+                return null;
+            }
+
+            Texture2D sourceTexture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!sourceTexture.LoadImage(File.ReadAllBytes(ToAbsolutePath(PixelUiCheckpointButtonPath))))
+            {
+                Object.DestroyImmediate(sourceTexture);
+                return null;
+            }
+
+            const int sliceX = 0;
+            const int sliceYFromTop = 85;
+            const int sliceWidth = 48;
+            const int sliceHeight = 22;
+            int unityY = sourceTexture.height - sliceYFromTop - sliceHeight;
+            if (!IsValidSpriteRect(sourceTexture, sliceX, unityY, sliceWidth, sliceHeight))
+            {
+                Object.DestroyImmediate(sourceTexture);
+                return null;
+            }
+
+            Texture2D frameTexture = new Texture2D(sliceWidth, sliceHeight, TextureFormat.RGBA32, false);
+            frameTexture.SetPixels(sourceTexture.GetPixels(sliceX, unityY, sliceWidth, sliceHeight));
+            frameTexture.filterMode = FilterMode.Point;
+            frameTexture.Apply();
+
+            string frameFolderAssetPath = GeneratedArtFolder + "/PixelUiPack3Checkpoint";
+            Directory.CreateDirectory(ToAbsolutePath(frameFolderAssetPath));
+            string frameAssetPath = frameFolderAssetPath + "/pixel_ui_checkpoint_blue_button.png";
+            File.WriteAllBytes(ToAbsolutePath(frameAssetPath), frameTexture.EncodeToPNG());
+            Object.DestroyImmediate(frameTexture);
+            Object.DestroyImmediate(sourceTexture);
+
+            return EnsureEffectFrameSprite(frameAssetPath, 100f);
+        }
+
+        private static bool TryParseSpriteSheetMetadataLine(string line, out int x, out int y, out int width, out int height)
+        {
+            x = 0;
+            y = 0;
+            width = 0;
+            height = 0;
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                return false;
+            }
+
+            int equalsIndex = line.IndexOf('=');
+            if (equalsIndex < 0 || equalsIndex >= line.Length - 1)
+            {
+                return false;
+            }
+
+            string[] parts = line.Substring(equalsIndex + 1).Trim().Split(' ');
+            List<int> values = new List<int>();
+            for (int i = 0; i < parts.Length; i++)
+            {
+                if (int.TryParse(parts[i], out int value))
+                {
+                    values.Add(value);
+                }
+            }
+
+            if (values.Count < 4)
+            {
+                return false;
+            }
+
+            x = values[0];
+            y = values[1];
+            width = values[2];
+            height = values[3];
+            return width > 0 && height > 0;
+        }
+
+        private static Sprite EnsureEffectFrameSprite(string assetPath, float pixelsPerUnit)
+        {
+            AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceUpdate);
+            TextureImporter importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            if (importer != null)
+            {
+                importer.textureType = TextureImporterType.Sprite;
+                importer.spriteImportMode = SpriteImportMode.Single;
+                importer.spritePixelsPerUnit = pixelsPerUnit;
+                importer.alphaIsTransparency = true;
+                importer.mipmapEnabled = false;
+                importer.filterMode = FilterMode.Point;
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
+                importer.SaveAndReimport();
+            }
+
+            return AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+        }
+
         private static int ExtractTrailingNumber(string path)
         {
             string name = Path.GetFileNameWithoutExtension(path);
@@ -4151,8 +4645,9 @@ namespace CyberGuardian.Editor
                 importer.spritePixelsPerUnit = 100;
                 importer.alphaIsTransparency = true;
                 importer.mipmapEnabled = false;
+                importer.filterMode = FilterMode.Point;
                 importer.spriteBorder = border;
-                importer.textureCompression = TextureImporterCompression.CompressedHQ;
+                importer.textureCompression = TextureImporterCompression.Uncompressed;
                 importer.SaveAndReimport();
             }
 
@@ -4209,7 +4704,9 @@ namespace CyberGuardian.Editor
             UiAlertPanel,
             UiMenuHeader,
             UiSkullMark,
-            QuizBlock
+            QuizBlock,
+            UiEnergyBoltIcon,
+            UiMenuLinesIcon
         }
 
         private static CyberHorrorAssetSprites EnsureCyberHorrorSprites()
@@ -4290,6 +4787,8 @@ namespace CyberGuardian.Editor
                 HpBarBlue = EnsureImportedSprite(HpBarBluePath, new Vector4(18f, 18f, 18f, 18f)),
                 HpBarGreen = EnsureImportedSprite(HpBarGreenPath, new Vector4(18f, 18f, 18f, 18f)),
                 LifeHeartIcon = EnsureHeartIconSpriteFromSheet(),
+                EnergyBoltIcon = EnsureGeneratedSprite(EnergyIconSpritePath, TextureShape.UiEnergyBoltIcon),
+                MenuLinesIcon = EnsureGeneratedSprite(MenuIconSpritePath, TextureShape.UiMenuLinesIcon),
                 ShotGif = EnsureImportedSprite(ActionCityShotGifPath),
                 ShotSheet = EnsureImportedSprite(ActionCityShotSheetPath)
             };
@@ -4350,6 +4849,94 @@ namespace CyberGuardian.Editor
             }
 
             return AssetDatabase.LoadAssetAtPath<Sprite>(HeartIconSpritePath);
+        }
+
+        private static Sprite[] EnsurePowerUpItemFrames(CyberGuardianPowerUpType type)
+        {
+            if (!File.Exists(ToAbsolutePath(HeartSpriteSheetPath)))
+            {
+                return new Sprite[0];
+            }
+
+            Texture2D source = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!source.LoadImage(File.ReadAllBytes(ToAbsolutePath(HeartSpriteSheetPath))))
+            {
+                Object.DestroyImmediate(source);
+                return new Sprite[0];
+            }
+
+            RectInt[] frames = GetPowerUpSheetRects(type);
+            string typeName = type.ToString().ToLowerInvariant();
+            string frameFolderAssetPath = GeneratedArtFolder + "/PowerUpItemFrames/" + typeName;
+            Directory.CreateDirectory(ToAbsolutePath(frameFolderAssetPath));
+
+            List<Sprite> sprites = new List<Sprite>(frames.Length);
+            for (int i = 0; i < frames.Length; i++)
+            {
+                RectInt topLeftRect = frames[i];
+                int y = source.height - topLeftRect.y - topLeftRect.height;
+                if (!IsValidSpriteRect(source, topLeftRect.x, y, topLeftRect.width, topLeftRect.height))
+                {
+                    continue;
+                }
+
+                Texture2D frameTexture = new Texture2D(topLeftRect.width, topLeftRect.height, TextureFormat.RGBA32, false);
+                frameTexture.SetPixels(source.GetPixels(topLeftRect.x, y, topLeftRect.width, topLeftRect.height));
+                frameTexture.filterMode = FilterMode.Point;
+                frameTexture.Apply();
+
+                string frameAssetPath = frameFolderAssetPath + "/powerup_" + typeName + "_frame_" + i.ToString("00") + ".png";
+                File.WriteAllBytes(ToAbsolutePath(frameAssetPath), frameTexture.EncodeToPNG());
+                Object.DestroyImmediate(frameTexture);
+
+                Sprite sprite = EnsureEffectFrameSprite(frameAssetPath, 48f);
+                if (sprite != null)
+                {
+                    sprites.Add(sprite);
+                }
+            }
+
+            Object.DestroyImmediate(source);
+            return sprites.ToArray();
+        }
+
+        private static RectInt[] GetPowerUpSheetRects(CyberGuardianPowerUpType type)
+        {
+            switch (type)
+            {
+                case CyberGuardianPowerUpType.Health:
+                    return new[]
+                    {
+                        new RectInt(322, 197, 14, 14),
+                        new RectInt(338, 197, 14, 14),
+                        new RectInt(354, 197, 14, 14),
+                        new RectInt(322, 197, 14, 14)
+                    };
+                case CyberGuardianPowerUpType.Firewall:
+                    return new[]
+                    {
+                        new RectInt(18, 820, 16, 16),
+                        new RectInt(34, 820, 16, 16),
+                        new RectInt(18, 820, 16, 16),
+                        new RectInt(34, 820, 16, 16)
+                    };
+                case CyberGuardianPowerUpType.Overclock:
+                    return new[]
+                    {
+                        new RectInt(18, 196, 18, 18),
+                        new RectInt(82, 196, 18, 18),
+                        new RectInt(100, 196, 18, 18),
+                        new RectInt(118, 196, 18, 18)
+                    };
+                default:
+                    return new[]
+                    {
+                        new RectInt(674, 208, 20, 32),
+                        new RectInt(674, 246, 20, 32),
+                        new RectInt(674, 208, 20, 32),
+                        new RectInt(674, 246, 20, 32)
+                    };
+            }
         }
 
         private static Sprite EnsureGeneratedSprite(string assetPath, TextureShape shape)
@@ -4457,6 +5044,10 @@ namespace CyberGuardian.Editor
                     return GenerateCyberSkullMarkTexture(size);
                 case TextureShape.QuizBlock:
                     return GenerateQuizBlockTexture(size);
+                case TextureShape.UiEnergyBoltIcon:
+                    return GenerateEnergyBoltIconTexture(size);
+                case TextureShape.UiMenuLinesIcon:
+                    return GenerateMenuLinesIconTexture(size);
                 default:
                     return GenerateSquareTexture(size);
             }
@@ -4482,6 +5073,111 @@ namespace CyberGuardian.Editor
                 default:
                     return false;
             }
+        }
+
+        private static Texture2D GenerateEnergyBoltIconTexture(int size)
+        {
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            Vector2[] bolt =
+            {
+                new Vector2(0.58f, 0.04f),
+                new Vector2(0.24f, 0.54f),
+                new Vector2(0.47f, 0.54f),
+                new Vector2(0.35f, 0.96f),
+                new Vector2(0.77f, 0.38f),
+                new Vector2(0.53f, 0.38f)
+            };
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    Vector2 point = new Vector2((x + 0.5f) / size, (y + 0.5f) / size);
+                    bool core = PointInPolygon(point, bolt);
+                    bool glow = false;
+                    if (!core)
+                    {
+                        for (int i = 0; i < bolt.Length; i++)
+                        {
+                            Vector2 a = bolt[i];
+                            Vector2 b = bolt[(i + 1) % bolt.Length];
+                            if (DistanceToLineSegment(point, a, b) < 0.035f)
+                            {
+                                glow = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    texture.SetPixel(x, y, core ? Hex("74FBFF") : (glow ? new Color(0.38f, 1f, 1f, 0.34f) : Color.clear));
+                }
+            }
+
+            texture.Apply();
+            return texture;
+        }
+
+        private static Texture2D GenerateMenuLinesIconTexture(int size)
+        {
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float nx = (x + 0.5f) / size;
+                    float ny = (y + 0.5f) / size;
+                    bool line = IsRoundedBar(nx, ny, 0.18f, 0.82f, 0.25f, 0.36f)
+                        || IsRoundedBar(nx, ny, 0.18f, 0.82f, 0.445f, 0.555f)
+                        || IsRoundedBar(nx, ny, 0.18f, 0.82f, 0.64f, 0.75f);
+                    texture.SetPixel(x, y, line ? Hex("74FBFF") : Color.clear);
+                }
+            }
+
+            texture.Apply();
+            return texture;
+        }
+
+        private static bool IsRoundedBar(float x, float y, float minX, float maxX, float minY, float maxY)
+        {
+            float radius = (maxY - minY) * 0.5f;
+            float centerY = (minY + maxY) * 0.5f;
+            if (x >= minX + radius && x <= maxX - radius && y >= minY && y <= maxY)
+            {
+                return true;
+            }
+
+            Vector2 left = new Vector2(minX + radius, centerY);
+            Vector2 right = new Vector2(maxX - radius, centerY);
+            Vector2 point = new Vector2(x, y);
+            return Vector2.Distance(point, left) <= radius || Vector2.Distance(point, right) <= radius;
+        }
+
+        private static bool PointInPolygon(Vector2 point, Vector2[] polygon)
+        {
+            bool inside = false;
+            for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+            {
+                if (((polygon[i].y > point.y) != (polygon[j].y > point.y))
+                    && point.x < (polygon[j].x - polygon[i].x) * (point.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i].x)
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
+        }
+
+        private static float DistanceToLineSegment(Vector2 point, Vector2 a, Vector2 b)
+        {
+            Vector2 ab = b - a;
+            float lengthSquared = Vector2.SqrMagnitude(ab);
+            if (lengthSquared <= 0.0001f)
+            {
+                return Vector2.Distance(point, a);
+            }
+
+            float t = Mathf.Clamp01(Vector2.Dot(point - a, ab) / lengthSquared);
+            return Vector2.Distance(point, a + ab * t);
         }
 
         private static Texture2D GenerateSquareTexture(int size)

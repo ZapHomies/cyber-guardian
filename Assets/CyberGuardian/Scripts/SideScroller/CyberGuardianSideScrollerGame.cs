@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -64,8 +65,11 @@ namespace CyberGuardian
         public Sprite bossDialogueIdlePortraitSprite;
         public Sprite bossDialogueIntroPortraitSprite;
         public Image playerHealthFill;
+        public Sprite[] playerHealthBarFrames;
         public Image bossHealthFill;
         public Image boostEnergyFill;
+        public Sprite[] boostEnergyBarFrames;
+        public Sprite[] projectileHitEffectFrames;
         public GameObject bossHudGroup;
         public Button pauseButton;
         public Button menuButton;
@@ -219,6 +223,12 @@ namespace CyberGuardian
         private bool narrativeOpen;
         private bool narrativeContinueRequested;
         private bool aerialBossTransitionStarted;
+        private Sprite runtimeHeartIconSprite;
+        private Sprite runtimeEnergyIconSprite;
+        private Sprite runtimeMenuIconSprite;
+        private Sprite runtimeGuardianIconSprite;
+        private Sprite slingshotDotSprite;
+        private readonly List<SpriteRenderer> slingshotTrajectoryDots = new List<SpriteRenderer>();
 
         public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen && !paused && !introCountdownActive && !electricShockSequenceActive && !narrativeOpen;
 
@@ -226,6 +236,7 @@ namespace CyberGuardian
         {
             currentDifficultyIndex = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.DifficultyKey, 1), 0, 2);
             developerMode = CyberGuardianMainMenu.IsDeveloperModeEnabled();
+            EnsureAudioSources();
             CyberGuardianMainMenu.ApplyAudioPreferencesToScene();
             if (developerMode)
             {
@@ -266,6 +277,7 @@ namespace CyberGuardian
             }
 
             WireUi();
+            NormalizeHudSymbols();
             ResetSlingshotProjectile();
             if (quizModal != null)
             {
@@ -303,9 +315,26 @@ namespace CyberGuardian
             }
 
             StartLoopingMusic(adventureMusic);
-            SetStatus("MODE PETUALANGAN: A/D GERAK, SPACE LOMPAT, J SERANG, SHIFT ENERGI");
+            SetStatus("MODE PETUALANGAN: " + CyberGuardianMainMenu.GetControlSchemeHint());
             RefreshHud();
             StartCoroutine(SceneOpeningSequence());
+        }
+
+        private void EnsureAudioSources()
+        {
+            if (sfxSource == null)
+            {
+                sfxSource = gameObject.AddComponent<AudioSource>();
+                sfxSource.playOnAwake = false;
+                sfxSource.loop = false;
+            }
+
+            if (musicSource == null)
+            {
+                musicSource = gameObject.AddComponent<AudioSource>();
+                musicSource.playOnAwake = false;
+                musicSource.loop = true;
+            }
         }
 
         private void Update()
@@ -437,7 +466,7 @@ namespace CyberGuardian
                 readyPanel.SetActive(false);
             }
 
-            SetStatus("MODE PETUALANGAN: A/D GERAK, SPACE LOMPAT, J SERANG, SHIFT ENERGI");
+            SetStatus("MODE PETUALANGAN: " + CyberGuardianMainMenu.GetControlSchemeHint());
         }
 
         private IEnumerator AnimateReadyStep(string title, string countdown, float duration)
@@ -712,9 +741,34 @@ namespace CyberGuardian
 
                 if (Vector2.Distance(center, enemy.transform.position) <= radius)
                 {
+                    SpawnCyberGuardianHitEffect(enemy.transform.position + new Vector3(0f, 0.22f, 0f));
                     enemy.TakeDamage(damage);
                 }
             }
+        }
+
+        public void PlayerAreaImpact(Vector2 center, float radius, int damage, string status)
+        {
+            PlaySfx(playerBoostSfx != null ? playerBoostSfx : meleeSfx);
+            bool hitEnemy = false;
+            for (int i = enemies.Count - 1; i >= 0; i--)
+            {
+                CyberGuardianEnemy enemy = enemies[i];
+                if (enemy == null)
+                {
+                    enemies.RemoveAt(i);
+                    continue;
+                }
+
+                if (Vector2.Distance(center, enemy.transform.position) <= radius)
+                {
+                    SpawnCyberGuardianHitEffect(enemy.transform.position + new Vector3(0f, 0.22f, 0f));
+                    enemy.TakeDamage(damage);
+                    hitEnemy = true;
+                }
+            }
+
+            SetStatus(hitEnemy ? status : "GROUND SMASH: LEDAKAN DATA MEMECAH PIJAKAN");
         }
 
         public void EnemyDefeated(CyberGuardianEnemy enemy)
@@ -724,6 +778,11 @@ namespace CyberGuardian
             PlaySfx(enemyDeathSfx != null ? enemyDeathSfx : hitSfx);
             SetStatus("Ancaman dihapus. Terus bergerak.");
             RefreshHud();
+        }
+
+        public void SpawnCyberGuardianHitEffect(Vector3 position)
+        {
+            SpawnProjectileHitEffect(position, new Vector2(0.72f, 0.72f), 22f);
         }
 
         private static string TranslateDamageSource(string source)
@@ -799,6 +858,8 @@ namespace CyberGuardian
                 return;
             }
 
+            SpawnProjectileHitEffect(ResolvePlayerHitPoint(), new Vector2(0.78f, 0.78f), 22f);
+
             if (developerMode)
             {
                 invulnerabilityTimer = 0.15f;
@@ -834,6 +895,11 @@ namespace CyberGuardian
             }
 
             playerLives--;
+            return RespawnAfterLifeLoss(source);
+        }
+
+        private bool RespawnAfterLifeLoss(string source)
+        {
             playerHealth = GetRespawnHealth();
             boostEnergy = 100f;
             invulnerabilityTimer = 2.0f;
@@ -1045,6 +1111,7 @@ namespace CyberGuardian
 
             projectileInFlight = false;
             projectileFlightTimer = 0f;
+            SpawnProjectileHitEffect(block.transform.position, new Vector2(0.72f, 0.72f), 20f);
             FreezeSlingshotProjectile();
             OpenBlockQuiz(block);
         }
@@ -1074,6 +1141,7 @@ namespace CyberGuardian
 
             projectileInFlight = false;
             projectileFlightTimer = 0f;
+            SpawnProjectileHitEffect(ResolveSlingshotProjectilePosition(ResolveBossCinematicPosition()), new Vector2(0.90f, 0.90f), 22f);
             bossHealth = Mathf.Max(0, bossHealth - GetBossHitDamage());
             AddScore(GetBossHitScoreReward());
             PlaySfx(bossHealth <= 0 ? (bossDefeatSfx != null ? bossDefeatSfx : bossDamageSfx) : (bossDamageSfx != null ? bossDamageSfx : hitSfx));
@@ -1188,9 +1256,125 @@ namespace CyberGuardian
 
             projectileInFlight = false;
             projectileFlightTimer = 0f;
+            SpawnProjectileHitEffect(ResolveSlingshotProjectilePosition(Vector3.zero), new Vector2(0.62f, 0.62f), 20f);
             SetStatus("PATCH HILANG. BIDIK BLOK KUIS ATAU CELAH BOS.");
             ResetSlingshotProjectile();
         }
+
+        private Vector3 ResolvePlayerHitPoint()
+        {
+            return player != null ? player.transform.position + new Vector3(0f, 0.36f, 0f) : Vector3.zero;
+        }
+
+        private Vector3 ResolveSlingshotProjectilePosition(Vector3 fallback)
+        {
+            return slingshotProjectile != null ? slingshotProjectile.position : fallback;
+        }
+
+        private void SpawnProjectileHitEffect(Vector3 position, Vector2 worldSize, float framesPerSecond)
+        {
+            Sprite[] frames = EnsureProjectileHitEffectFrames();
+            if (!HasUsableSpriteFrames(frames))
+            {
+                return;
+            }
+
+            GameObject effect = new GameObject("Projectile Impact Pixel Burst", typeof(SpriteRenderer));
+            effect.transform.position = position;
+
+            SpriteRenderer renderer = effect.GetComponent<SpriteRenderer>();
+            renderer.sprite = frames[0];
+            renderer.color = Color.white;
+            renderer.sortingOrder = 48;
+            ScaleSpriteRendererToWorldSize(renderer, worldSize);
+
+            CyberGuardianSpriteFlipbookAnimator flipbook = effect.AddComponent<CyberGuardianSpriteFlipbookAnimator>();
+            flipbook.spriteRenderer = renderer;
+            flipbook.frames = frames;
+            flipbook.framesPerSecond = framesPerSecond;
+            flipbook.randomStart = false;
+
+            float lifetime = frames.Length / Mathf.Max(1f, framesPerSecond) + 0.08f;
+            Destroy(effect, lifetime);
+        }
+
+        private Sprite[] EnsureProjectileHitEffectFrames()
+        {
+            if (HasUsableSpriteFrames(projectileHitEffectFrames))
+            {
+                return projectileHitEffectFrames;
+            }
+
+#if UNITY_EDITOR
+            projectileHitEffectFrames = LoadEditorGridSpriteSheetFrames(
+                "Assets/CyberGuardian/assets/new/Super Package Retro Pixel Effects 32x32 pack 2 Free/01.png",
+                "runtime_projectile_hit",
+                4,
+                2,
+                48f);
+#endif
+            return projectileHitEffectFrames;
+        }
+
+        private static bool HasUsableSpriteFrames(Sprite[] frames)
+        {
+            return frames != null && frames.Length > 0 && frames[0] != null;
+        }
+
+        private static void ScaleSpriteRendererToWorldSize(SpriteRenderer renderer, Vector2 worldSize)
+        {
+            if (renderer == null || renderer.sprite == null)
+            {
+                return;
+            }
+
+            Vector2 spriteSize = renderer.sprite.bounds.size;
+            if (spriteSize.x <= 0f || spriteSize.y <= 0f)
+            {
+                return;
+            }
+
+            renderer.transform.localScale = new Vector3(worldSize.x / spriteSize.x, worldSize.y / spriteSize.y, 1f);
+        }
+
+#if UNITY_EDITOR
+        private static Sprite[] LoadEditorGridSpriteSheetFrames(string assetPath, string frameName, int columns, int rows, float pixelsPerUnit)
+        {
+            string absolutePath = Path.GetFullPath(Path.Combine(Application.dataPath, "..", assetPath));
+            if (!File.Exists(absolutePath) || columns <= 0 || rows <= 0)
+            {
+                return new Sprite[0];
+            }
+
+            Texture2D texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!texture.LoadImage(File.ReadAllBytes(absolutePath)))
+            {
+                return new Sprite[0];
+            }
+
+            texture.filterMode = FilterMode.Point;
+            int frameWidth = Mathf.Max(1, texture.width / columns);
+            int frameHeight = Mathf.Max(1, texture.height / rows);
+            List<Sprite> frames = new List<Sprite>(columns * rows);
+            for (int frame = 0; frame < columns * rows; frame++)
+            {
+                int column = frame % columns;
+                int row = frame / columns;
+                int x = column * frameWidth;
+                int y = texture.height - ((row + 1) * frameHeight);
+                if (x < 0 || y < 0 || x + frameWidth > texture.width || y + frameHeight > texture.height)
+                {
+                    continue;
+                }
+
+                Sprite sprite = Sprite.Create(texture, new Rect(x, y, frameWidth, frameHeight), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+                sprite.name = frameName + "_frame_" + frames.Count.ToString("00");
+                frames.Add(sprite);
+            }
+
+            return frames.ToArray();
+        }
+#endif
 
         public Color GetCategoryColor(int category)
         {
@@ -1246,6 +1430,18 @@ namespace CyberGuardian
             invulnerabilityTimer = 999f;
             PlaySfx(GetDamageSfx("sungai listrik"));
             SetStatus("TERSENGAT SUNGAI LISTRIK - SISTEM TERBAKAR");
+            bool canRespawn = playerLives > 1;
+            if (canRespawn)
+            {
+                playerLives--;
+            }
+            else
+            {
+                playerLives = 0;
+            }
+
+            playerHealth = 0;
+            RefreshHud();
 
             Rigidbody2D playerBody = player != null ? player.GetComponent<Rigidbody2D>() : null;
             Collider2D playerCollider = player != null ? player.GetComponent<Collider2D>() : null;
@@ -1283,13 +1479,14 @@ namespace CyberGuardian
             electricShockSequenceActive = false;
             invulnerabilityTimer = 0f;
 
-            if (!TrySpendLifeAndRespawn("sungai listrik"))
+            if (!canRespawn)
             {
                 SetStatus("SISTEM JEBOL - TERSENGAT SUNGAI LISTRIK");
                 BeginDefeatSequence("sungai listrik");
                 yield break;
             }
 
+            RespawnAfterLifeLoss("sungai listrik");
             SetStatus("TERSENGAT SUNGAI LISTRIK - NYAWA BERKURANG");
             RefreshHud();
         }
@@ -2380,31 +2577,22 @@ namespace CyberGuardian
 
         private void UpdateSlingshotLines(Vector2 rest, Vector2 projectilePosition, Vector2 velocity)
         {
-            float facing = player != null ? player.FacingDirection : 1f;
-            Vector2 anchorA = rest + new Vector2(0.18f * facing, 0.25f);
-            Vector2 anchorB = rest + new Vector2(0.18f * facing, -0.22f);
-            SetLine(slingshotBandA, anchorA, projectilePosition);
-            SetLine(slingshotBandB, anchorB, projectilePosition);
+            if (slingshotBandA != null)
+            {
+                slingshotBandA.enabled = false;
+            }
+
+            if (slingshotBandB != null)
+            {
+                slingshotBandB.enabled = false;
+            }
 
             if (trajectoryLine != null)
             {
-                float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 12f);
-                Color start = Color.Lerp(new Color(0.25f, 1f, 1f, 0.42f), new Color(1f, 0.22f, 0.62f, 0.78f), pulse);
-                Color end = new Color(0.25f, 1f, 1f, 0.05f);
-                trajectoryLine.enabled = true;
-                trajectoryLine.positionCount = 28;
-                trajectoryLine.startColor = start;
-                trajectoryLine.endColor = end;
-                trajectoryLine.startWidth = Mathf.Lerp(0.035f, 0.075f, pulse);
-                trajectoryLine.endWidth = 0.018f;
-                for (int i = 0; i < trajectoryLine.positionCount; i++)
-                {
-                    float time = i * 0.078f;
-                    Vector2 point = projectilePosition + velocity * time + 0.5f * Physics2D.gravity * time * time;
-                    point += Vector2.up * (Mathf.Sin(Time.unscaledTime * 10f + i * 0.9f) * 0.018f);
-                    trajectoryLine.SetPosition(i, point);
-                }
+                trajectoryLine.enabled = false;
             }
+
+            UpdateSlingshotTrajectoryDots(projectilePosition, velocity);
         }
 
         private void SetLine(LineRenderer line, Vector2 a, Vector2 b)
@@ -2436,6 +2624,87 @@ namespace CyberGuardian
             {
                 trajectoryLine.enabled = false;
             }
+
+            for (int i = 0; i < slingshotTrajectoryDots.Count; i++)
+            {
+                if (slingshotTrajectoryDots[i] != null)
+                {
+                    slingshotTrajectoryDots[i].gameObject.SetActive(false);
+                }
+            }
+        }
+
+        private void UpdateSlingshotTrajectoryDots(Vector2 projectilePosition, Vector2 velocity)
+        {
+            const int dotCount = 22;
+            EnsureSlingshotTrajectoryDots(dotCount);
+            float pulse = 0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * 12f);
+            for (int i = 0; i < slingshotTrajectoryDots.Count; i++)
+            {
+                SpriteRenderer dot = slingshotTrajectoryDots[i];
+                if (dot == null)
+                {
+                    continue;
+                }
+
+                bool active = i < dotCount;
+                dot.gameObject.SetActive(active);
+                if (!active)
+                {
+                    continue;
+                }
+
+                float time = i * 0.086f;
+                Vector2 point = projectilePosition + velocity * time + 0.5f * Physics2D.gravity * time * time;
+                point += Vector2.up * (Mathf.Sin(Time.unscaledTime * 10f + i * 0.9f) * 0.018f);
+                dot.transform.position = point;
+                float scale = Mathf.Lerp(0.155f, 0.055f, i / (float)(dotCount - 1));
+                dot.transform.localScale = Vector3.one * (scale * Mathf.Lerp(0.92f, 1.16f, pulse));
+                dot.color = Color.Lerp(new Color(0.32f, 1f, 1f, 0.82f), new Color(1f, 0.22f, 0.72f, 0.92f), (i % 3) / 2f);
+            }
+        }
+
+        private void EnsureSlingshotTrajectoryDots(int count)
+        {
+            Sprite sprite = GetSlingshotDotSprite();
+            while (slingshotTrajectoryDots.Count < count)
+            {
+                GameObject dotObject = new GameObject("Patch Trajectory Dot " + slingshotTrajectoryDots.Count.ToString("00"), typeof(SpriteRenderer));
+                dotObject.transform.SetParent(transform, false);
+                SpriteRenderer renderer = dotObject.GetComponent<SpriteRenderer>();
+                renderer.sprite = sprite;
+                renderer.sortingOrder = 34;
+                renderer.color = new Color(0.32f, 1f, 1f, 0.82f);
+                dotObject.SetActive(false);
+                slingshotTrajectoryDots.Add(renderer);
+            }
+        }
+
+        private Sprite GetSlingshotDotSprite()
+        {
+            if (slingshotDotSprite != null)
+            {
+                return slingshotDotSprite;
+            }
+
+            const int size = 24;
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = (x + 0.5f - size * 0.5f) / (size * 0.5f);
+                    float dy = (y + 0.5f - size * 0.5f) / (size * 0.5f);
+                    float distance = Mathf.Sqrt(dx * dx + dy * dy);
+                    float alpha = Mathf.Clamp01(1f - Mathf.InverseLerp(0.58f, 1f, distance));
+                    texture.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+                }
+            }
+
+            texture.filterMode = FilterMode.Point;
+            texture.Apply();
+            slingshotDotSprite = Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), 48f);
+            return slingshotDotSprite;
         }
 
         private void MonitorSlingshotProjectile()
@@ -2511,11 +2780,583 @@ namespace CyberGuardian
             gameplayCamera.orthographicSize = Mathf.Lerp(gameplayCamera.orthographicSize, targetSize, delta * 4.1f);
         }
 
+        private void NormalizeHudSymbols()
+        {
+            NormalizeCombatHudBackplate();
+            HideHudText(healthText);
+            HideHudText(modeText);
+
+            Text boostLabel = FindHudText("Boost Label");
+            HideHudText(boostLabel);
+
+            RectTransform hpBar = playerHealthFill != null ? playerHealthFill.rectTransform : null;
+            RectTransform boostBar = boostEnergyFill != null ? boostEnergyFill.rectTransform : null;
+            MoveHudBarRow(hpBar, new Vector2(-592f, 476f));
+            MoveHudBarRow(boostBar, new Vector2(-592f, 422f));
+            ApplyRuntimePixelBars();
+            SetNamedRectPosition("Player Combat Bars Back", new Vector2(-616f, 450f));
+            SetNamedRectSize("Player Combat Bars Back", new Vector2(660f, 138f));
+            SetNamedRectPosition("Guardian HUD Frame", new Vector2(-918f, 449f));
+            SetNamedRectSize("Guardian HUD Frame", new Vector2(104f, 104f));
+            SetNamedRectPosition("HP Icon Frame", new Vector2(-850f, 476f));
+            SetNamedRectPosition("Boost Icon Frame", new Vector2(-850f, 422f));
+            SetNamedRectPosition("Score Cyber Card", new Vector2(720f, 470f));
+            SetNamedRectPosition("Score Label", new Vector2(612f, 484f));
+            SetNamedRectPosition("Score Text", new Vector2(756f, 456f));
+            SetNamedRectPosition("Boss Core Icon", new Vector2(-376f, 398f));
+            SetNamedRectPosition("Boss Text", new Vector2(-8f, 438f));
+            ShiftRectTo(statusText != null ? statusText.rectTransform : null, new Vector2(-616f, 378f));
+            ShiftRectTo(bossHealthFill != null ? bossHealthFill.rectTransform : null, new Vector2(-8f, 398f));
+            NormalizeLifeIconPositions();
+
+            Transform hudParent = hpBar != null ? hpBar.parent : (boostBar != null ? boostBar.parent : transform);
+            Vector2 hpPosition = hpBar != null ? hpBar.anchoredPosition : new Vector2(-592f, 476f);
+            Vector2 boostPosition = boostBar != null ? boostBar.anchoredPosition : new Vector2(-592f, 422f);
+
+            EnsureHudIcon("Guardian HUD Portrait", hudParent, new Vector2(hpPosition.x - 326f, (hpPosition.y + boostPosition.y) * 0.5f), new Vector2(84f, 84f), Color.white, GetGuardianHudSprite());
+            EnsureHudIcon("HP Symbol", hudParent, hpPosition + new Vector2(-258f, 0f), new Vector2(34f, 34f), Color.white, GetHeartHudSprite());
+            EnsureHudIcon("Boost Symbol", hudParent, boostPosition + new Vector2(-258f, 0f), new Vector2(30f, 38f), new Color(0.38f, 1f, 1f, 1f), GetEnergyHudSprite());
+            NormalizeHudRaycastTargets();
+
+            NormalizeMenuIconButton();
+        }
+
+        private void ApplyRuntimePixelBars()
+        {
+#if UNITY_EDITOR
+            const string barSheetPath = "Assets/CyberGuardian/assets/new/Pixel UI pack 3/05.png";
+            if (!HasFrameSprites(playerHealthBarFrames))
+            {
+                playerHealthBarFrames = LoadEditorUiBarRowFrames(barSheetPath, "runtime_hp", 0, 8, 100f);
+            }
+
+            if (!HasFrameSprites(boostEnergyBarFrames))
+            {
+                boostEnergyBarFrames = LoadEditorUiBarRowFrames(barSheetPath, "runtime_energy", 1, 6, 100f);
+            }
+
+            PrepareRuntimePixelBar(playerHealthFill, playerHealthBarFrames, new Vector2(440f, 54f));
+            PrepareRuntimePixelBar(boostEnergyFill, boostEnergyBarFrames, new Vector2(440f, 46f));
+#endif
+        }
+
+#if UNITY_EDITOR
+        private static Sprite[] LoadEditorUiBarRowFrames(string assetPath, string rowName, int rowFromTop, int frameCount, float pixelsPerUnit)
+        {
+            string absolutePath = Path.GetFullPath(Path.Combine(Application.dataPath, "..", assetPath));
+            if (!File.Exists(absolutePath) || frameCount <= 0)
+            {
+                return new Sprite[0];
+            }
+
+            Texture2D texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!texture.LoadImage(File.ReadAllBytes(absolutePath)))
+            {
+                return new Sprite[0];
+            }
+
+            texture.filterMode = FilterMode.Point;
+            int rowCount = 2;
+            int frameHeight = Mathf.Max(1, texture.height / rowCount);
+            int frameWidth = Mathf.Max(1, texture.width / frameCount);
+            int y = texture.height - ((Mathf.Clamp(rowFromTop, 0, rowCount - 1) + 1) * frameHeight);
+            List<Sprite> frames = new List<Sprite>(frameCount);
+            for (int frame = 0; frame < frameCount; frame++)
+            {
+                int x = frame * frameWidth;
+                if (x < 0 || y < 0 || x + frameWidth > texture.width || y + frameHeight > texture.height)
+                {
+                    continue;
+                }
+
+                Rect rect = new Rect(x, y, frameWidth, frameHeight);
+                Sprite sprite = Sprite.Create(texture, rect, new Vector2(0.5f, 0.5f), pixelsPerUnit);
+                sprite.name = rowName + "_frame_" + frame.ToString("00");
+                frames.Add(sprite);
+            }
+
+            return frames.ToArray();
+        }
+
+        private static bool HasFrameSprites(Sprite[] frames)
+        {
+            return frames != null && frames.Length > 0 && frames[0] != null;
+        }
+
+        private void PrepareRuntimePixelBar(Image fillImage, Sprite[] frames, Vector2 targetSize)
+        {
+            if (fillImage == null || !HasFrameSprites(frames))
+            {
+                return;
+            }
+
+            fillImage.sprite = frames[0];
+            fillImage.color = Color.white;
+            fillImage.type = Image.Type.Simple;
+            fillImage.fillAmount = 1f;
+            fillImage.preserveAspect = false;
+
+            Transform parent = fillImage.transform.parent;
+            RectTransform fillRect = fillImage.rectTransform;
+            if (parent == null || fillRect == null)
+            {
+                return;
+            }
+
+            fillRect.sizeDelta = targetSize;
+
+            Image[] siblings = parent.GetComponentsInChildren<Image>(true);
+            for (int i = 0; i < siblings.Length; i++)
+            {
+                Image image = siblings[i];
+                if (image == null || image == fillImage || image.name != "Cyber Bar Back")
+                {
+                    continue;
+                }
+
+                RectTransform rect = image.rectTransform;
+                if (rect != null && Mathf.Abs(rect.anchoredPosition.y - fillRect.anchoredPosition.y) <= 24f)
+                {
+                    image.enabled = false;
+                    image.raycastTarget = false;
+                }
+            }
+        }
+#endif
+
+        private void NormalizeCombatHudBackplate()
+        {
+            RectTransform backRect = FindHudRect("Player Combat Bars Back");
+            if (backRect != null)
+            {
+                Image backImage = backRect.GetComponent<Image>();
+                if (backImage != null)
+                {
+                    backImage.color = new Color(0f, 0f, 0f, 0.96f);
+                    backImage.raycastTarget = false;
+                    backRect.SetAsFirstSibling();
+                }
+            }
+
+            SetHudImageAlpha("Cyber Bar Back", 0.96f);
+        }
+
+        private void MoveHudBarRow(RectTransform fillRect, Vector2 targetPosition)
+        {
+            if (fillRect == null)
+            {
+                return;
+            }
+
+            Vector2 previousPosition = fillRect.anchoredPosition;
+            Vector2 offset = targetPosition - previousPosition;
+            fillRect.anchoredPosition = targetPosition;
+            MoveHudRectsNear("Cyber Bar Back", previousPosition, offset, 24f, 250f);
+            MoveHudRectsNear("Cyber Bar Segment", previousPosition, offset, 24f, 250f);
+        }
+
+        private void MoveHudRectsNear(string namePrefix, Vector2 previousPosition, Vector2 offset, float yTolerance, float xTolerance)
+        {
+            if (offset.sqrMagnitude < 0.01f)
+            {
+                return;
+            }
+
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+            for (int i = 0; i < allObjects.Length; i++)
+            {
+                GameObject target = allObjects[i];
+                if (target == null || target.scene != gameObject.scene || !target.name.StartsWith(namePrefix, System.StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                RectTransform rect = target.GetComponent<RectTransform>();
+                if (rect == null)
+                {
+                    continue;
+                }
+
+                float yDistance = Mathf.Abs(rect.anchoredPosition.y - previousPosition.y);
+                float xDistance = Mathf.Abs(rect.anchoredPosition.x - previousPosition.x);
+                if (yDistance <= yTolerance && xDistance <= xTolerance)
+                {
+                    rect.anchoredPosition += offset;
+                }
+            }
+        }
+
+        private void NormalizeLifeIconPositions()
+        {
+            if (lifeIconImages == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < lifeIconImages.Length; i++)
+            {
+                if (lifeIconImages[i] == null)
+                {
+                    continue;
+                }
+
+                ShiftRectTo(lifeIconImages[i].rectTransform, new Vector2(-354f + i * 38f, 476f));
+                lifeIconImages[i].raycastTarget = false;
+            }
+        }
+
+        private void NormalizeHudRaycastTargets()
+        {
+            SetNamedHudImageRaycast("Player Combat Bars Back", false);
+            SetNamedHudImageRaycast("Guardian HUD Frame", false);
+            SetNamedHudImageRaycast("Guardian HUD Portrait", false);
+            SetNamedHudImageRaycast("HP Icon Frame", false);
+            SetNamedHudImageRaycast("HP Symbol", false);
+            SetNamedHudImageRaycast("Boost Icon Frame", false);
+            SetNamedHudImageRaycast("Boost Symbol", false);
+            SetNamedHudImageRaycast("Score Cyber Card", false);
+            SetNamedHudImageRaycast("Score Label", false);
+            SetNamedHudImageRaycast("Score Text", false);
+            SetHudImageRaycastByPrefix("Cyber Bar", false);
+        }
+
+        private void SetNamedHudImageRaycast(string objectName, bool raycastTarget)
+        {
+            GameObject target = GameObject.Find(objectName);
+            if (target == null)
+            {
+                return;
+            }
+
+            Graphic graphic = target.GetComponent<Graphic>();
+            if (graphic != null)
+            {
+                graphic.raycastTarget = raycastTarget;
+            }
+        }
+
+        private void SetHudImageRaycastByPrefix(string namePrefix, bool raycastTarget)
+        {
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+            for (int i = 0; i < allObjects.Length; i++)
+            {
+                GameObject target = allObjects[i];
+                if (target == null || target.scene != gameObject.scene || !target.name.StartsWith(namePrefix, System.StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                Graphic graphic = target.GetComponent<Graphic>();
+                if (graphic != null)
+                {
+                    graphic.raycastTarget = raycastTarget;
+                }
+            }
+        }
+
+        private void SetNamedRectPosition(string objectName, Vector2 position)
+        {
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+            for (int i = 0; i < allObjects.Length; i++)
+            {
+                GameObject target = allObjects[i];
+                if (target == null || target.scene != gameObject.scene || target.name != objectName)
+                {
+                    continue;
+                }
+
+                ShiftRectTo(target.GetComponent<RectTransform>(), position);
+            }
+        }
+
+        private void SetNamedRectSize(string objectName, Vector2 size)
+        {
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+            for (int i = 0; i < allObjects.Length; i++)
+            {
+                GameObject target = allObjects[i];
+                if (target == null || target.scene != gameObject.scene || target.name != objectName)
+                {
+                    continue;
+                }
+
+                RectTransform rect = target.GetComponent<RectTransform>();
+                if (rect != null)
+                {
+                    rect.sizeDelta = size;
+                }
+            }
+        }
+
+        private void ShiftRectTo(RectTransform rect, Vector2 position)
+        {
+            if (rect != null)
+            {
+                rect.anchoredPosition = position;
+            }
+        }
+
+        private void SetHudImageAlpha(string objectName, float alpha)
+        {
+            GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+            for (int i = 0; i < allObjects.Length; i++)
+            {
+                GameObject target = allObjects[i];
+                if (target == null || target.name != objectName || target.scene != gameObject.scene)
+                {
+                    continue;
+                }
+
+                Image image = target.GetComponent<Image>();
+                if (image != null)
+                {
+                    Color color = image.color;
+                    color.a = Mathf.Clamp01(alpha);
+                    image.color = color;
+                    image.raycastTarget = false;
+                }
+            }
+        }
+
+        private void NormalizeMenuIconButton()
+        {
+            if (pauseButton == null)
+            {
+                return;
+            }
+
+            RectTransform rect = pauseButton.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                rect.sizeDelta = new Vector2(58f, 50f);
+                rect.anchoredPosition = new Vector2(Mathf.Min(rect.anchoredPosition.x, 910f), 470f);
+            }
+
+            Text[] labels = pauseButton.GetComponentsInChildren<Text>(true);
+            for (int i = 0; i < labels.Length; i++)
+            {
+                HideHudText(labels[i]);
+            }
+
+            EnsureHudIcon("Menu Symbol", pauseButton.transform, Vector2.zero, new Vector2(30f, 24f), new Color(0.38f, 1f, 1f, 1f), GetMenuHudSprite());
+        }
+
+        private void HideHudText(Text text)
+        {
+            if (text != null)
+            {
+                text.gameObject.SetActive(false);
+            }
+        }
+
+        private Text FindHudText(string objectName)
+        {
+            GameObject target = GameObject.Find(objectName);
+            return target != null ? target.GetComponent<Text>() : null;
+        }
+
+        private RectTransform FindHudRect(string objectName)
+        {
+            GameObject target = GameObject.Find(objectName);
+            return target != null ? target.GetComponent<RectTransform>() : null;
+        }
+
+        private Image EnsureHudIcon(string objectName, Transform parent, Vector2 position, Vector2 size, Color color, Sprite sprite)
+        {
+            if (parent == null || sprite == null)
+            {
+                return null;
+            }
+
+            Transform existing = parent.Find(objectName);
+            GameObject iconObject = existing != null ? existing.gameObject : new GameObject(objectName, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            if (existing == null)
+            {
+                iconObject.transform.SetParent(parent, false);
+            }
+
+            RectTransform rect = iconObject.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.anchoredPosition = position;
+            rect.sizeDelta = size;
+
+            Image image = iconObject.GetComponent<Image>();
+            image.sprite = sprite;
+            image.color = color;
+            image.preserveAspect = true;
+            image.raycastTarget = false;
+            iconObject.SetActive(true);
+            return image;
+        }
+
+        private Sprite GetHeartHudSprite()
+        {
+            if (lifeIconImages != null)
+            {
+                for (int i = 0; i < lifeIconImages.Length; i++)
+                {
+                    if (lifeIconImages[i] != null && lifeIconImages[i].sprite != null)
+                    {
+                        return lifeIconImages[i].sprite;
+                    }
+                }
+            }
+
+            if (runtimeHeartIconSprite == null)
+            {
+                runtimeHeartIconSprite = CreateHeartIconSprite();
+            }
+
+            return runtimeHeartIconSprite;
+        }
+
+        private Sprite GetEnergyHudSprite()
+        {
+            if (runtimeEnergyIconSprite == null)
+            {
+                runtimeEnergyIconSprite = CreateEnergyIconSprite();
+            }
+
+            return runtimeEnergyIconSprite;
+        }
+
+        private Sprite GetMenuHudSprite()
+        {
+            if (runtimeMenuIconSprite == null)
+            {
+                runtimeMenuIconSprite = CreateMenuIconSprite();
+            }
+
+            return runtimeMenuIconSprite;
+        }
+
+        private Sprite GetGuardianHudSprite()
+        {
+            if (runtimeGuardianIconSprite != null)
+            {
+                return runtimeGuardianIconSprite;
+            }
+
+            if (player != null)
+            {
+                SpriteRenderer renderer = player.GetComponentInChildren<SpriteRenderer>();
+                if (renderer != null && renderer.sprite != null)
+                {
+                    runtimeGuardianIconSprite = renderer.sprite;
+                    return runtimeGuardianIconSprite;
+                }
+            }
+
+            runtimeGuardianIconSprite = GetHeartHudSprite();
+            return runtimeGuardianIconSprite;
+        }
+
+        private Sprite CreateHeartIconSprite()
+        {
+            const int size = 32;
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float nx = (x + 0.5f - size * 0.5f) / (size * 0.5f);
+                    float ny = (y + 0.5f - size * 0.48f) / (size * 0.5f);
+                    float formula = Mathf.Pow(nx * nx + ny * ny - 0.45f, 3f) - nx * nx * ny * ny * ny;
+                    texture.SetPixel(x, y, formula <= 0f ? new Color(1f, 0.18f, 0.48f, 1f) : Color.clear);
+                }
+            }
+
+            texture.filterMode = FilterMode.Point;
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), 48f);
+        }
+
+        private Sprite CreateEnergyIconSprite()
+        {
+            const int size = 32;
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            Vector2[] bolt =
+            {
+                new Vector2(0.58f, 0.04f),
+                new Vector2(0.24f, 0.54f),
+                new Vector2(0.47f, 0.54f),
+                new Vector2(0.35f, 0.96f),
+                new Vector2(0.77f, 0.38f),
+                new Vector2(0.53f, 0.38f)
+            };
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    Vector2 point = new Vector2((x + 0.5f) / size, (y + 0.5f) / size);
+                    texture.SetPixel(x, y, PointInPolygon(point, bolt) ? Color.white : Color.clear);
+                }
+            }
+
+            texture.filterMode = FilterMode.Point;
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), 48f);
+        }
+
+        private Sprite CreateMenuIconSprite()
+        {
+            const int size = 32;
+            Texture2D texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float nx = (x + 0.5f) / size;
+                    float ny = (y + 0.5f) / size;
+                    bool line = IsRoundedBar(nx, ny, 0.14f, 0.86f, 0.23f, 0.34f)
+                        || IsRoundedBar(nx, ny, 0.14f, 0.86f, 0.445f, 0.555f)
+                        || IsRoundedBar(nx, ny, 0.14f, 0.86f, 0.66f, 0.77f);
+                    texture.SetPixel(x, y, line ? Color.white : Color.clear);
+                }
+            }
+
+            texture.filterMode = FilterMode.Point;
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f), 48f);
+        }
+
+        private bool IsRoundedBar(float x, float y, float minX, float maxX, float minY, float maxY)
+        {
+            float radius = (maxY - minY) * 0.5f;
+            float centerY = (minY + maxY) * 0.5f;
+            if (x >= minX + radius && x <= maxX - radius && y >= minY && y <= maxY)
+            {
+                return true;
+            }
+
+            Vector2 point = new Vector2(x, y);
+            return Vector2.Distance(point, new Vector2(minX + radius, centerY)) <= radius
+                || Vector2.Distance(point, new Vector2(maxX - radius, centerY)) <= radius;
+        }
+
+        private bool PointInPolygon(Vector2 point, Vector2[] polygon)
+        {
+            bool inside = false;
+            for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+            {
+                if (((polygon[i].y > point.y) != (polygon[j].y > point.y))
+                    && point.x < (polygon[j].x - polygon[i].x) * (point.y - polygon[i].y) / (polygon[j].y - polygon[i].y) + polygon[i].x)
+                {
+                    inside = !inside;
+                }
+            }
+
+            return inside;
+        }
+
         private void RefreshHud()
         {
             if (healthText != null)
             {
-                healthText.text = "HP";
+                healthText.gameObject.SetActive(false);
             }
 
             if (livesText != null)
@@ -2552,17 +3393,25 @@ namespace CyberGuardian
 
             if (modeText != null)
             {
-                modeText.text = developerMode ? "DEV" : "ENERGI";
+                modeText.gameObject.SetActive(false);
             }
 
             if (playerHealthFill != null)
             {
-                playerHealthFill.fillAmount = developerMode ? 1f : playerHealth / 100f;
+                float healthPercent = developerMode ? 1f : playerHealth / 100f;
+                if (!ApplyFrameBarValue(playerHealthFill, playerHealthBarFrames, healthPercent))
+                {
+                    playerHealthFill.fillAmount = healthPercent;
+                }
             }
 
             if (boostEnergyFill != null)
             {
-                boostEnergyFill.fillAmount = developerMode ? 1f : boostEnergy / 100f;
+                float boostPercent = developerMode ? 1f : boostEnergy / 100f;
+                if (!ApplyFrameBarValue(boostEnergyFill, boostEnergyBarFrames, boostPercent))
+                {
+                    boostEnergyFill.fillAmount = boostPercent;
+                }
             }
 
             bool showBossHud = mode == GameMode.BossSlingshot || mode == GameMode.Victory;
@@ -2584,6 +3433,29 @@ namespace CyberGuardian
             {
                 bossText.gameObject.SetActive(showBossHud);
             }
+        }
+
+        private static bool ApplyFrameBarValue(Image image, Sprite[] frames, float percent)
+        {
+            if (image == null || frames == null || frames.Length == 0)
+            {
+                return false;
+            }
+
+            float clamped = Mathf.Clamp01(percent);
+            int frameIndex = Mathf.Clamp(Mathf.RoundToInt((1f - clamped) * (frames.Length - 1)), 0, frames.Length - 1);
+            Sprite sprite = frames[frameIndex];
+            if (sprite == null)
+            {
+                return false;
+            }
+
+            image.sprite = sprite;
+            image.type = Image.Type.Simple;
+            image.fillAmount = 1f;
+            image.color = Color.white;
+            image.preserveAspect = false;
+            return true;
         }
 
         private void SetStatus(string message)
@@ -2825,8 +3697,10 @@ namespace CyberGuardian
         {
             if (sfxSource != null && clip != null && CyberGuardianMainMenu.IsSfxEnabled())
             {
+                float volume = CyberGuardianMainMenu.GetSfxVolume();
                 sfxSource.mute = false;
-                sfxSource.PlayOneShot(clip);
+                sfxSource.volume = volume;
+                sfxSource.PlayOneShot(clip, volume);
             }
         }
 
@@ -2853,14 +3727,27 @@ namespace CyberGuardian
 
         private void StartLoopingMusic(AudioClip clip)
         {
-            if (musicSource == null || clip == null || musicSource.clip == clip)
+            if (musicSource == null || clip == null)
             {
+                return;
+            }
+
+            if (musicSource.clip == clip)
+            {
+                musicSource.mute = !CyberGuardianMainMenu.IsMusicEnabled();
+                musicSource.volume = CyberGuardianMainMenu.GetMusicVolume();
+                if (!musicSource.isPlaying && CyberGuardianMainMenu.IsMusicEnabled())
+                {
+                    musicSource.Play();
+                }
+
                 return;
             }
 
             musicSource.clip = clip;
             musicSource.loop = true;
             musicSource.mute = !CyberGuardianMainMenu.IsMusicEnabled();
+            musicSource.volume = CyberGuardianMainMenu.GetMusicVolume();
             musicSource.Play();
         }
     }

@@ -25,6 +25,8 @@ namespace CyberGuardian
         public const string DeveloperModeKey = "CyberGuardianDeveloperMode";
         public const string MusicEnabledKey = "CyberGuardianMusicEnabled";
         public const string SfxEnabledKey = "CyberGuardianSfxEnabled";
+        public const string MusicVolumeKey = "CyberGuardianMusicVolume";
+        public const string SfxVolumeKey = "CyberGuardianSfxVolume";
         public const string ControlSchemeKey = "CyberGuardianControlScheme";
         public const string DeveloperUsername = "developer";
         public const string DeveloperPassword = "cyberguardian2026";
@@ -249,7 +251,7 @@ namespace CyberGuardian
 
         private void ToggleMusic()
         {
-            PlayerPrefs.SetInt(MusicEnabledKey, IsMusicEnabled() ? 0 : 1);
+            CycleVolume(MusicVolumeKey, MusicEnabledKey);
             PlayerPrefs.Save();
             ApplyAudioPreferencesToScene();
             Refresh();
@@ -257,7 +259,7 @@ namespace CyberGuardian
 
         private void ToggleSfx()
         {
-            PlayerPrefs.SetInt(SfxEnabledKey, IsSfxEnabled() ? 0 : 1);
+            CycleVolume(SfxVolumeKey, SfxEnabledKey);
             PlayerPrefs.Save();
             ApplyAudioPreferencesToScene();
             Refresh();
@@ -265,9 +267,38 @@ namespace CyberGuardian
 
         private void CycleControlScheme()
         {
-            PlayerPrefs.SetInt(ControlSchemeKey, (GetControlScheme() + 1) % 3);
+            PlayerPrefs.SetInt(ControlSchemeKey, (GetControlScheme() + 1) % 4);
             PlayerPrefs.Save();
             Refresh();
+        }
+
+        private static void CycleVolume(string volumeKey, string enabledKey)
+        {
+            int volume = Mathf.Clamp(PlayerPrefs.GetInt(volumeKey, 100), 0, 100);
+            int nextVolume;
+            if (volume > 75)
+            {
+                nextVolume = 75;
+            }
+            else if (volume > 50)
+            {
+                nextVolume = 50;
+            }
+            else if (volume > 25)
+            {
+                nextVolume = 25;
+            }
+            else if (volume > 0)
+            {
+                nextVolume = 0;
+            }
+            else
+            {
+                nextVolume = 100;
+            }
+
+            PlayerPrefs.SetInt(volumeKey, nextVolume);
+            PlayerPrefs.SetInt(enabledKey, nextVolume > 0 ? 1 : 0);
         }
 
         private void SelectDifficulty(int index)
@@ -465,22 +496,22 @@ namespace CyberGuardian
             }
 
             SetButtonLabel(developerButton, IsDeveloperModeEnabled() ? "DEV: AKTIF" : "MODE DEV");
-            SetButtonLabel(settingsMusicToggleButton, IsMusicEnabled() ? "MUSIK: AKTIF" : "MUSIK: MATI");
-            SetButtonLabel(settingsSfxToggleButton, IsSfxEnabled() ? "SFX: AKTIF" : "SFX: MATI");
+            SetButtonLabel(settingsMusicToggleButton, "MUSIK: " + GetMusicVolumePercent().ToString("0") + "%");
+            SetButtonLabel(settingsSfxToggleButton, "SFX: " + GetSfxVolumePercent().ToString("0") + "%");
             SetButtonLabel(settingsControlSchemeButton, "KONTROL: " + GetControlSchemeName().ToUpperInvariant());
 
             if (settingsMusicText != null)
             {
-                settingsMusicText.text = IsMusicEnabled()
-                    ? "Musik dan video menu aktif."
-                    : "Musik dimatikan, efek suara tetap mengikuti pengaturan SFX.";
+                settingsMusicText.text = GetMusicVolumePercent() > 0
+                    ? "Volume musik saat ini " + GetMusicVolumePercent().ToString("0") + "%. Tekan untuk mengubah."
+                    : "Musik dimatikan. Tekan untuk mengaktifkan kembali.";
             }
 
             if (settingsSfxText != null)
             {
-                settingsSfxText.text = IsSfxEnabled()
-                    ? "Efek suara serangan, lompat, kuis, dan tombol aktif."
-                    : "Efek suara gameplay dimatikan.";
+                settingsSfxText.text = GetSfxVolumePercent() > 0
+                    ? "Volume efek suara saat ini " + GetSfxVolumePercent().ToString("0") + "%. Tekan untuk mengubah."
+                    : "Efek suara dimatikan. Tekan untuk mengaktifkan kembali.";
             }
 
             if (settingsControlText != null)
@@ -523,17 +554,37 @@ namespace CyberGuardian
 
         public static bool IsMusicEnabled()
         {
-            return PlayerPrefs.GetInt(MusicEnabledKey, 1) == 1;
+            return PlayerPrefs.GetInt(MusicEnabledKey, 1) == 1 && GetMusicVolumePercent() > 0;
         }
 
         public static bool IsSfxEnabled()
         {
-            return PlayerPrefs.GetInt(SfxEnabledKey, 1) == 1;
+            return PlayerPrefs.GetInt(SfxEnabledKey, 1) == 1 && GetSfxVolumePercent() > 0;
+        }
+
+        public static int GetMusicVolumePercent()
+        {
+            return Mathf.Clamp(PlayerPrefs.GetInt(MusicVolumeKey, 100), 0, 100);
+        }
+
+        public static int GetSfxVolumePercent()
+        {
+            return Mathf.Clamp(PlayerPrefs.GetInt(SfxVolumeKey, 100), 0, 100);
+        }
+
+        public static float GetMusicVolume()
+        {
+            return IsMusicEnabled() ? GetMusicVolumePercent() / 100f : 0f;
+        }
+
+        public static float GetSfxVolume()
+        {
+            return IsSfxEnabled() ? GetSfxVolumePercent() / 100f : 0f;
         }
 
         public static int GetControlScheme()
         {
-            return Mathf.Clamp(PlayerPrefs.GetInt(ControlSchemeKey, 0), 0, 2);
+            return Mathf.Clamp(PlayerPrefs.GetInt(ControlSchemeKey, 0), 0, 3);
         }
 
         public static string GetControlSchemeName()
@@ -544,6 +595,8 @@ namespace CyberGuardian
                     return "WASD";
                 case 2:
                     return "Arrow";
+                case 3:
+                    return "IJKL";
                 default:
                     return "Hybrid";
             }
@@ -554,12 +607,89 @@ namespace CyberGuardian
             switch (GetControlScheme())
             {
                 case 1:
-                    return "GERAK: A/D  LOMPAT: W/SPACE  BOOST: LEFT SHIFT  SERANG: J  TEMBAK: L/KLIK";
+                    return "GERAK: A/D  TUNDUK: S  LOMPAT: W/SPACE  BOOST: LEFT SHIFT  SERANG: J  TEMBAK: L/KLIK";
                 case 2:
-                    return "GERAK: PANAH KIRI/KANAN  LOMPAT: PANAH ATAS/SPACE  BOOST: RIGHT SHIFT  SERANG: J  TEMBAK: L/KLIK";
+                    return "GERAK: PANAH KIRI/KANAN  TUNDUK: PANAH BAWAH  LOMPAT: PANAH ATAS/SPACE  BOOST: RIGHT SHIFT  SERANG: J  TEMBAK: L/KLIK";
+                case 3:
+                    return "GERAK: J/L  TUNDUK: K  LOMPAT: I/SPACE  BOOST: U  SERANG: H  TEMBAK: O/KLIK";
                 default:
-                    return "GERAK: A/D ATAU PANAH  LOMPAT: SPACE/W/PANAH ATAS  BOOST: SHIFT/K  SERANG: J  TEMBAK: L/KLIK";
+                    return "GERAK: A/D ATAU PANAH  TUNDUK: S/PANAH BAWAH  LOMPAT: SPACE/W/PANAH ATAS  BOOST: SHIFT/K  SERANG: J  TEMBAK: L/KLIK";
             }
+        }
+
+        public static KeyCode GetLeftKey()
+        {
+            switch (GetControlScheme())
+            {
+                case 2:
+                    return KeyCode.LeftArrow;
+                case 3:
+                    return KeyCode.J;
+                default:
+                    return KeyCode.A;
+            }
+        }
+
+        public static KeyCode GetRightKey()
+        {
+            switch (GetControlScheme())
+            {
+                case 2:
+                    return KeyCode.RightArrow;
+                case 3:
+                    return KeyCode.L;
+                default:
+                    return KeyCode.D;
+            }
+        }
+
+        public static KeyCode GetUpKey()
+        {
+            switch (GetControlScheme())
+            {
+                case 2:
+                    return KeyCode.UpArrow;
+                case 3:
+                    return KeyCode.I;
+                default:
+                    return KeyCode.W;
+            }
+        }
+
+        public static KeyCode GetDownKey()
+        {
+            switch (GetControlScheme())
+            {
+                case 2:
+                    return KeyCode.DownArrow;
+                case 3:
+                    return KeyCode.K;
+                default:
+                    return KeyCode.S;
+            }
+        }
+
+        public static KeyCode GetBoostKey()
+        {
+            switch (GetControlScheme())
+            {
+                case 2:
+                    return KeyCode.RightShift;
+                case 3:
+                    return KeyCode.U;
+                default:
+                    return KeyCode.LeftShift;
+            }
+        }
+
+        public static KeyCode GetMeleeKey()
+        {
+            return GetControlScheme() == 3 ? KeyCode.H : KeyCode.J;
+        }
+
+        public static KeyCode GetShootKey()
+        {
+            return GetControlScheme() == 3 ? KeyCode.O : KeyCode.L;
         }
 
         public static void ApplyAudioPreferencesToScene()
@@ -567,6 +697,8 @@ namespace CyberGuardian
             AudioSource[] sources = Object.FindObjectsByType<AudioSource>(FindObjectsInactive.Include);
             bool musicEnabled = IsMusicEnabled();
             bool sfxEnabled = IsSfxEnabled();
+            float musicVolume = GetMusicVolume();
+            float sfxVolume = GetSfxVolume();
             for (int i = 0; i < sources.Length; i++)
             {
                 AudioSource source = sources[i];
@@ -576,6 +708,7 @@ namespace CyberGuardian
                 }
 
                 source.mute = source.loop ? !musicEnabled : !sfxEnabled;
+                source.volume = source.loop ? musicVolume : sfxVolume;
             }
         }
 
@@ -608,6 +741,16 @@ namespace CyberGuardian
             if (!PlayerPrefs.HasKey(ControlSchemeKey))
             {
                 PlayerPrefs.SetInt(ControlSchemeKey, 0);
+            }
+
+            if (!PlayerPrefs.HasKey(MusicVolumeKey))
+            {
+                PlayerPrefs.SetInt(MusicVolumeKey, PlayerPrefs.GetInt(MusicEnabledKey, 1) == 1 ? 100 : 0);
+            }
+
+            if (!PlayerPrefs.HasKey(SfxVolumeKey))
+            {
+                PlayerPrefs.SetInt(SfxVolumeKey, PlayerPrefs.GetInt(SfxEnabledKey, 1) == 1 ? 100 : 0);
             }
         }
 

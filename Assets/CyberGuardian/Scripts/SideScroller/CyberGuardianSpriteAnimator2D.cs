@@ -14,14 +14,22 @@ namespace CyberGuardian
         public Sprite[] jumpWest;
         public Sprite[] fireEast;
         public Sprite[] fireWest;
+        public Sprite[] crouchEast;
+        public Sprite[] crouchWest;
+        public Sprite[] dashEast;
+        public Sprite[] dashWest;
         public float idleFps = 5f;
         public float runFps = 10f;
         public float jumpFps = 9f;
         public float fireFps = 12f;
+        public float crouchFps = 7f;
+        public float dashFps = 16f;
 
         private string currentState;
         private int frameIndex;
         private float frameTimer;
+        private Vector3 baseLocalPosition;
+        private Vector3 baseLocalScale;
 
         private void Awake()
         {
@@ -33,6 +41,12 @@ namespace CyberGuardian
             if (spriteRenderer == null)
             {
                 spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+            }
+
+            if (spriteRenderer != null)
+            {
+                baseLocalPosition = spriteRenderer.transform.localPosition;
+                baseLocalScale = spriteRenderer.transform.localScale;
             }
         }
 
@@ -48,11 +62,33 @@ namespace CyberGuardian
             float fps;
             string state;
 
-            if (player != null && player.IsAttackingForAnimation)
+            bool crouching = player != null && player.IsCrouchingForAnimation;
+            bool dashSmashing = player != null && player.IsDashSmashing;
+            spriteRenderer.transform.localPosition = baseLocalPosition;
+            spriteRenderer.transform.localScale = baseLocalScale;
+
+            if (dashSmashing)
+            {
+                state = facingEast ? "dash_east" : "dash_west";
+                frames = facingEast ? dashEast : dashWest;
+                fps = dashFps;
+                spriteRenderer.transform.localScale = new Vector3(baseLocalScale.x * 1.10f, baseLocalScale.y * 0.82f, baseLocalScale.z);
+                spriteRenderer.transform.localPosition = baseLocalPosition + Vector3.down * 0.08f;
+            }
+            else if (player != null && player.IsAttackingForAnimation)
             {
                 state = facingEast ? "fire_east" : "fire_west";
                 frames = facingEast ? fireEast : fireWest;
                 fps = fireFps;
+            }
+            else if (crouching)
+            {
+                state = facingEast ? "crouch_east" : "crouch_west";
+                frames = facingEast ? crouchEast : crouchWest;
+                fps = crouchFps;
+                float breathe = Mathf.Sin(Time.time * 8f) * 0.025f;
+                spriteRenderer.transform.localScale = new Vector3(baseLocalScale.x * 1.08f, baseLocalScale.y * (0.70f + breathe), baseLocalScale.z);
+                spriteRenderer.transform.localPosition = baseLocalPosition + Vector3.down * 0.22f;
             }
             else if (player != null && (!player.IsGroundedForAnimation || Mathf.Abs(player.Velocity.y) > 0.18f))
             {
@@ -107,6 +143,16 @@ namespace CyberGuardian
 
             if (facingEast)
             {
+                if (player != null && player.IsDashSmashing && runEast != null && runEast.Length > 0)
+                {
+                    return runEast;
+                }
+
+                if (player != null && player.IsCrouchingForAnimation && idleEast != null && idleEast.Length > 0)
+                {
+                    return idleEast;
+                }
+
                 if (runEast != null && runEast.Length > 0)
                 {
                     return runEast;
@@ -119,6 +165,16 @@ namespace CyberGuardian
             }
             else
             {
+                if (player != null && player.IsDashSmashing && runWest != null && runWest.Length > 0)
+                {
+                    return runWest;
+                }
+
+                if (player != null && player.IsCrouchingForAnimation && idleWest != null && idleWest.Length > 0)
+                {
+                    return idleWest;
+                }
+
                 if (runWest != null && runWest.Length > 0)
                 {
                     return runWest;
