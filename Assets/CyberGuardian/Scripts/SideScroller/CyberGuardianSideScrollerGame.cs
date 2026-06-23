@@ -141,6 +141,10 @@ namespace CyberGuardian
         public float slingshotDirectShotMaxSpeed = 25.0f;
         public float projectileMaxFlightTime = 4.8f;
         public bool aerialBossEncounter;
+        public bool relayBossEncounter;
+        [Range(1, 4)] public int relayBlocksRequired = 2;
+        public float relayVulnerabilityDuration = 6.5f;
+        public int relayBossDamagePerOverload = 25;
         public float bossAttackIntervalScale = 1f;
         public int bossVolleyCount = 1;
         public float bossProjectileSpeedBonus;
@@ -164,6 +168,10 @@ namespace CyberGuardian
         [TextArea(2, 4)] public string bossDefeatBody = "Inti malware pecah. Sistem kembali stabil karena kamu memahami lapisan pertahanan yang tepat.";
         public string bossLessonTitle = "PELAJARAN SEKTOR";
         [TextArea(2, 5)] public string bossLessonBody = "Gunakan kebiasaan aman: cek sumber, perbarui sistem, aktifkan perlindungan akun, dan jangan menjalankan file mencurigakan.";
+        public string finalRewardTitle = "REWARD: ARSIP MASTER CYBER GUARDIAN";
+        [TextArea(2, 5)] public string finalRewardBody = "Kamu memperoleh chest pengetahuan final, emblem Guardian, dan akses lengkap ke arsip pembelajaran di Galeri.";
+        public string finalEndingTitle = "SISTEM BERHASIL DIPULIHKAN";
+        [TextArea(3, 7)] public string finalEndingBody = "Digital Overlord telah dihancurkan. Jaringan sekolah kembali aman, data berhasil dipulihkan, dan seluruh node bebas dari malware. Namun tugas Cyber Guardian tidak berhenti: terus perbarui sistem, lindungi akun dengan MFA, simpan backup, dan laporkan tanda serangan sejak dini.";
         public int maxLives = 3;
         [Range(1, 3)] public int quizLessonTier = 1;
 
@@ -223,17 +231,34 @@ namespace CyberGuardian
         private bool narrativeOpen;
         private bool narrativeContinueRequested;
         private bool aerialBossTransitionStarted;
+        private int relayCharge;
+        private float relayVulnerabilityTimer;
+        private bool relayWindowAnnounced;
+        private readonly List<CyberGuardianBossShieldBlock> relayClearedBlocks = new List<CyberGuardianBossShieldBlock>();
         private Sprite runtimeHeartIconSprite;
         private Sprite runtimeEnergyIconSprite;
         private Sprite runtimeMenuIconSprite;
         private Sprite runtimeGuardianIconSprite;
+        private Sprite runtimeKnowledgeChestSprite;
         private Sprite slingshotDotSprite;
         private readonly List<SpriteRenderer> slingshotTrajectoryDots = new List<SpriteRenderer>();
 
         public bool PlayerInputEnabled => mode != GameMode.Victory && mode != GameMode.Defeat && !quizOpen && !paused && !introCountdownActive && !electricShockSequenceActive && !narrativeOpen;
+        public bool SlingshotProjectileInFlight => projectileInFlight;
 
         private void Awake()
         {
+            string activeSceneName = SceneManager.GetActiveScene().name;
+            if (activeSceneName == "CyberGuardian_Level02")
+            {
+                relayBossEncounter = true;
+            }
+
+            if (activeSceneName == "CyberGuardian_Level03")
+            {
+                aerialBossEncounter = true;
+            }
+
             currentDifficultyIndex = Mathf.Clamp(PlayerPrefs.GetInt(CyberGuardianMainMenu.DifficultyKey, 1), 0, 2);
             developerMode = CyberGuardianMainMenu.IsDeveloperModeEnabled();
             EnsureAudioSources();
@@ -362,6 +387,7 @@ namespace CyberGuardian
             if (mode == GameMode.BossSlingshot)
             {
                 ClampPlayerToBossArena();
+                UpdateRelayBossEncounter();
                 if (!narrativeOpen)
                 {
                     HandleSlingshotInput();
@@ -539,6 +565,10 @@ namespace CyberGuardian
             }
 
             mode = GameMode.BossSlingshot;
+            relayCharge = 0;
+            relayVulnerabilityTimer = 0f;
+            relayWindowAnnounced = false;
+            relayClearedBlocks.Clear();
             SyncPlayerBossMovementMode();
             if (aerialBossEncounter && player != null)
             {
@@ -553,7 +583,18 @@ namespace CyberGuardian
             PlaySfx(bossWarningSfx);
             StartLoopingMusic(bossMusic);
             ShowBossDialogue();
-            SetStatus(aerialBossEncounter ? "MODE BOS UDARA: TERBANG DENGAN WASD/PANAH, TARIK INTI PATCH UNTUK MENEMBUS PERISAI" : "MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH");
+            if (aerialBossEncounter)
+            {
+                SetStatus("MODE BOS UDARA: TERBANG DENGAN WASD/PANAH, TARIK INTI PATCH UNTUK MENEMBUS PERISAI");
+            }
+            else if (relayBossEncounter)
+            {
+                SetStatus("MODE RELAY: HANCURKAN " + Mathf.Max(1, relayBlocksRequired).ToString("0") + " BLOK KUIS UNTUK MEMBUKA JENDELA OVERLOAD");
+            }
+            else
+            {
+                SetStatus("MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH");
+            }
             RefreshHud();
         }
 
@@ -1132,6 +1173,102 @@ namespace CyberGuardian
             OpenBlockQuiz(block);
         }
 
+        private bool HasOpenedBossAttackRoute()
+        {
+            if (relayBossEncounter)
+            {
+                return relayCharge >= Mathf.Max(1, relayBlocksRequired) && relayVulnerabilityTimer > 0f;
+            }
+
+            bool foundQuizBlock = false;
+            for (int i = 0; i < bossBlocks.Count; i++)
+            {
+                CyberGuardianBossShieldBlock block = bossBlocks[i];
+                if (block == null)
+                {
+                    continue;
+                }
+
+                foundQuizBlock = true;
+                if (block.cleared || !block.gameObject.activeInHierarchy)
+                {
+                    return true;
+                }
+            }
+
+            return !foundQuizBlock;
+        }
+
+        private void RegisterClearedBossBlock(CyberGuardianBossShieldBlock block)
+        {
+            if (!relayBossEncounter || block == null || relayClearedBlocks.Contains(block))
+            {
+                return;
+            }
+
+            relayClearedBlocks.Add(block);
+            relayCharge = Mathf.Min(Mathf.Max(1, relayBlocksRequired), relayCharge + 1);
+            if (relayCharge >= Mathf.Max(1, relayBlocksRequired))
+            {
+                relayVulnerabilityTimer = Mathf.Max(2f, relayVulnerabilityDuration);
+                relayWindowAnnounced = true;
+                PlaySfx(bossShieldBreakSfx != null ? bossShieldBreakSfx : shieldSfx);
+                SetStatus("RELAY OVERLOAD AKTIF " + Mathf.CeilToInt(relayVulnerabilityTimer).ToString("0") + " DETIK - TEMBAK DATA REAPER!");
+            }
+            else
+            {
+                SetStatus("MUATAN RELAY " + relayCharge.ToString("0") + "/" + Mathf.Max(1, relayBlocksRequired).ToString("0") + " - BUKA NODE BERIKUTNYA");
+            }
+        }
+
+        private void UpdateRelayBossEncounter()
+        {
+            if (!relayBossEncounter || relayVulnerabilityTimer <= 0f || quizOpen || narrativeOpen)
+            {
+                return;
+            }
+
+            relayVulnerabilityTimer = Mathf.Max(0f, relayVulnerabilityTimer - Time.deltaTime);
+            if (relayVulnerabilityTimer > 0f)
+            {
+                if (bossText != null)
+                {
+                    bossText.text = "DATA REAPER - OVERLOAD " + Mathf.CeilToInt(relayVulnerabilityTimer).ToString("0") + "s";
+                }
+
+                if (relayWindowAnnounced && Mathf.CeilToInt(relayVulnerabilityTimer) <= 3)
+                {
+                    relayWindowAnnounced = false;
+                    SetStatus("OVERLOAD HAMPIR TERTUTUP - TEMBAK SEKARANG!");
+                }
+
+                return;
+            }
+
+            ResetRelayOverload(true);
+            SetStatus("JENDELA OVERLOAD TERTUTUP - AKTIFKAN ULANG RELAY KUIS");
+        }
+
+        private void ResetRelayOverload(bool restoreBlocks)
+        {
+            relayCharge = 0;
+            relayVulnerabilityTimer = 0f;
+            relayWindowAnnounced = false;
+            if (restoreBlocks)
+            {
+                for (int i = 0; i < relayClearedBlocks.Count; i++)
+                {
+                    CyberGuardianBossShieldBlock block = relayClearedBlocks[i];
+                    if (block != null)
+                    {
+                        block.RestoreBlock();
+                    }
+                }
+            }
+
+            relayClearedBlocks.Clear();
+        }
+
         public void ProjectileHitBoss()
         {
             if (!projectileInFlight || mode != GameMode.BossSlingshot)
@@ -1141,12 +1278,30 @@ namespace CyberGuardian
 
             projectileInFlight = false;
             projectileFlightTimer = 0f;
-            SpawnProjectileHitEffect(ResolveSlingshotProjectilePosition(ResolveBossCinematicPosition()), new Vector2(0.90f, 0.90f), 22f);
-            bossHealth = Mathf.Max(0, bossHealth - GetBossHitDamage());
+            Vector3 hitPosition = ResolveSlingshotProjectilePosition(ResolveBossCinematicPosition());
+            if (!HasOpenedBossAttackRoute())
+            {
+                SpawnProjectileHitEffect(hitPosition, new Vector2(1.02f, 1.02f), 24f);
+                PlaySfx(bossShieldBreakSfx != null ? bossShieldBreakSfx : shieldSfx);
+                SetStatus(relayBossEncounter
+                    ? "DATA REAPER TERKUNCI. ISI MUATAN RELAY DENGAN JAWABAN BENAR."
+                    : "PERISAI KUIS MASIH UTUH. HANCURKAN BLOK UNTUK MEMBUKA JALAN.");
+                ResetSlingshotProjectile();
+                return;
+            }
+
+            SpawnProjectileHitEffect(hitPosition, new Vector2(1.16f, 1.16f), 24f);
+            int hitDamage = relayBossEncounter ? Mathf.Clamp(relayBossDamagePerOverload, 20, 50) : GetBossHitDamage();
+            bossHealth = Mathf.Max(0, bossHealth - hitDamage);
             AddScore(GetBossHitScoreReward());
             PlaySfx(bossHealth <= 0 ? (bossDefeatSfx != null ? bossDefeatSfx : bossDamageSfx) : (bossDamageSfx != null ? bossDamageSfx : hitSfx));
             SetStatus(bossHealth <= 0 ? "BOS DIBERSIHKAN - LEVEL SELESAI" : "BOS TERKENA. BUKA SUDUT SERANGAN LAIN.");
             ResetSlingshotProjectile();
+            if (relayBossEncounter && bossHealth > 0)
+            {
+                ResetRelayOverload(true);
+                SetStatus("OVERLOAD BERHASIL. DATA REAPER PINDAH KE RELAY BERIKUTNYA.");
+            }
             RefreshHud();
 
             if (bossHealth <= 0)
@@ -1180,6 +1335,8 @@ namespace CyberGuardian
             cinematicCameraSize = aerialBossEncounter ? Mathf.Max(6.6f, aerialBossCameraSize - 0.5f) : Mathf.Max(3.8f, bossCameraSize - 1.2f);
             yield return new WaitForSecondsRealtime(0.85f);
             SpawnBossDestructionFragments();
+            SpawnKnowledgeChestReward();
+            UnlockBossKnowledgeReward();
             yield return new WaitForSecondsRealtime(0.55f);
             ShowStory(bossDefeatTitle, bossDefeatBody, 2.6f);
             yield return new WaitForSecondsRealtime(2.7f);
@@ -1195,8 +1352,120 @@ namespace CyberGuardian
             }
             else
             {
-                SetStatus("SEMUA SEKTOR DIBERSIHKAN - KOMPUTER AMAN");
+                yield return FinalCampaignEndingSequence();
             }
+        }
+
+        private IEnumerator FinalCampaignEndingSequence()
+        {
+            SetStatus("SEMUA SEKTOR DIBERSIHKAN - MENYIAPKAN REWARD FINAL");
+            AddScore(5000);
+            SpawnFinalGuardianReward();
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.CampaignCompleteKey, 1);
+            PlayerPrefs.Save();
+            RefreshHud();
+
+            SetEducationContinueLabel("KLAIM REWARD");
+            yield return ShowEducationCardRoutine(
+                finalRewardTitle,
+                finalRewardBody + "\n\nReward tersimpan di Galeri: buku akhir, arsip respons insiden, dan kode etik Cyber Guardian.",
+                2.4f);
+
+            SetEducationContinueLabel("SELESAI");
+            yield return ShowEducationCardRoutine(
+                finalEndingTitle,
+                finalEndingBody + "\n\nTerima kasih telah melindungi dunia digital. Pengetahuan yang kamu kumpulkan adalah pertahanan yang tetap aktif setelah permainan berakhir.",
+                3.2f);
+
+            CyberGuardianMainMenu.ClearSavedProgress();
+            PlayerPrefs.SetInt(CyberGuardianMainMenu.CampaignCompleteKey, 1);
+            PlayerPrefs.Save();
+            SetEducationContinueLabel("LANJUT");
+            SetStatus("KAMPANYE SELESAI - KEMBALI KE MENU DAN BUKA GALERI");
+            yield return new WaitForSecondsRealtime(0.65f);
+            Time.timeScale = 1f;
+            SceneManager.LoadScene(menuSceneName);
+        }
+
+        private void SetEducationContinueLabel(string label)
+        {
+            if (educationContinueButton == null)
+            {
+                return;
+            }
+
+            Text buttonLabel = educationContinueButton.GetComponentInChildren<Text>(true);
+            if (buttonLabel != null)
+            {
+                buttonLabel.text = label;
+            }
+        }
+
+        private void SpawnFinalGuardianReward()
+        {
+            Vector3 center = player != null
+                ? player.transform.position + new Vector3(0f, 1.35f, 0f)
+                : ResolveBossCinematicPosition() + new Vector3(0f, 0f, 10f);
+            Sprite rewardSprite = GetKnowledgeChestSprite();
+            if (rewardSprite != null)
+            {
+                GameObject reward = new GameObject("Final Cyber Guardian Archive Reward", typeof(SpriteRenderer));
+                reward.transform.position = center;
+                SpriteRenderer renderer = reward.GetComponent<SpriteRenderer>();
+                renderer.sprite = rewardSprite;
+                renderer.color = Color.white;
+                renderer.sortingOrder = 55;
+                ScaleSpriteRendererToWorldSize(renderer, new Vector2(1.55f, 1.20f));
+
+                CyberGuardianPulseVisual pulse = reward.AddComponent<CyberGuardianPulseVisual>();
+                pulse.scaleAmplitude = 0.075f;
+                pulse.alphaAmplitude = 0.08f;
+                pulse.speed = 2.4f;
+                pulse.SetBaseScale(reward.transform.localScale);
+                Destroy(reward, 30f);
+            }
+
+            Sprite starSprite = GetSlingshotDotSprite();
+            for (int i = 0; i < 14; i++)
+            {
+                float angle = i * Mathf.PI * 2f / 14f;
+                float radius = i % 2 == 0 ? 1.35f : 1.78f;
+                GameObject star = new GameObject("Final Guardian Reward Spark " + i.ToString("00"), typeof(SpriteRenderer));
+                star.transform.position = center + new Vector3(Mathf.Cos(angle) * radius, Mathf.Sin(angle) * radius * 0.62f, 0f);
+                star.transform.localScale = Vector3.one * (i % 2 == 0 ? 0.34f : 0.22f);
+                SpriteRenderer renderer = star.GetComponent<SpriteRenderer>();
+                renderer.sprite = starSprite;
+                renderer.color = i % 3 == 0
+                    ? new Color(1f, 0.86f, 0.25f, 0.95f)
+                    : (i % 3 == 1 ? new Color(0.28f, 1f, 1f, 0.92f) : new Color(1f, 0.22f, 0.72f, 0.92f));
+                renderer.sortingOrder = 54;
+                CyberGuardianRotator rotator = star.AddComponent<CyberGuardianRotator>();
+                rotator.degreesPerSecond = i % 2 == 0 ? 120f : -95f;
+                CyberGuardianPulseVisual pulse = star.AddComponent<CyberGuardianPulseVisual>();
+                pulse.scaleAmplitude = 0.12f;
+                pulse.alphaAmplitude = 0.18f;
+                pulse.speed = 3.0f + i * 0.08f;
+                pulse.phase = angle;
+                pulse.SetBaseScale(star.transform.localScale);
+                Destroy(star, 30f);
+            }
+
+            GameObject titleObject = new GameObject("Final Guardian Reward Label", typeof(TextMesh));
+            titleObject.transform.position = center + new Vector3(0f, 1.75f, 0f);
+            TextMesh text = titleObject.GetComponent<TextMesh>();
+            text.text = "MASTER CYBER GUARDIAN";
+            text.fontSize = 72;
+            text.characterSize = 0.032f;
+            text.anchor = TextAnchor.MiddleCenter;
+            text.alignment = TextAlignment.Center;
+            text.color = new Color(0.65f, 1f, 1f, 1f);
+            MeshRenderer textRenderer = titleObject.GetComponent<MeshRenderer>();
+            if (textRenderer != null)
+            {
+                textRenderer.sortingOrder = 56;
+            }
+
+            Destroy(titleObject, 30f);
         }
 
         private void SpawnBossDestructionFragments()
@@ -1247,6 +1516,66 @@ namespace CyberGuardian
             }
         }
 
+        private void SpawnKnowledgeChestReward()
+        {
+            Sprite chestSprite = GetKnowledgeChestSprite();
+            if (chestSprite == null)
+            {
+                return;
+            }
+
+            Vector3 origin = bossVisualRoot != null ? bossVisualRoot.position : (bossCore != null ? bossCore.transform.position : new Vector3(bossArenaCenterX, 2f, 0f));
+            GameObject chest = new GameObject("Knowledge Chest Reward", typeof(SpriteRenderer));
+            chest.transform.position = origin + new Vector3(0f, aerialBossEncounter ? -1.05f : -0.48f, 0f);
+
+            SpriteRenderer renderer = chest.GetComponent<SpriteRenderer>();
+            renderer.sprite = chestSprite;
+            renderer.color = Color.white;
+            renderer.sortingOrder = 49;
+            ScaleSpriteRendererToWorldSize(renderer, new Vector2(1.18f, 0.92f));
+
+            CyberGuardianPulseVisual pulse = chest.AddComponent<CyberGuardianPulseVisual>();
+            pulse.scaleAmplitude = 0.045f;
+            pulse.alphaAmplitude = 0.04f;
+            pulse.speed = 3.2f;
+            pulse.phase = 0.2f;
+            pulse.SetBaseScale(chest.transform.localScale);
+
+            Destroy(chest, string.IsNullOrEmpty(nextSceneName) ? 30.0f : 7.0f);
+        }
+
+        private void UnlockBossKnowledgeReward()
+        {
+            int tier = Mathf.Clamp(quizLessonTier, 1, 3);
+            CyberGuardianMainMenu.UnlockKnowledgeItem(tier, GetKnowledgeChestTitle(tier), GetKnowledgeChestBody(tier));
+        }
+
+        private static string GetKnowledgeChestTitle(int tier)
+        {
+            switch (Mathf.Clamp(tier, 1, 3))
+            {
+                case 2:
+                    return "Chest Sektor 2: Persiapan Respons Insiden";
+                case 3:
+                    return "Chest Sektor 3: Ringkasan Pemulihan Sistem";
+                default:
+                    return "Chest Sektor 1: Persiapan Pertahanan Berlapis";
+            }
+        }
+
+        private static string GetKnowledgeChestBody(int tier)
+        {
+            switch (Mathf.Clamp(tier, 1, 3))
+            {
+                case 2:
+                    return "Materi untuk sektor 3: isolasi perangkat terinfeksi, kumpulkan log, pulihkan dari backup bersih, rotasi password, lalu audit jalur masuk malware.";
+                case 3:
+                    return "Ringkasan akhir: keamanan kuat dibangun dari kebiasaan aman, pertahanan berlapis, monitoring, backup, dan respons cepat saat tanda serangan muncul.";
+                default:
+                    return "Materi untuk sektor 2: backup rutin, firewall aktif, hak admin seperlunya, update keamanan, dan pemantauan alert agar serangan tidak menyebar.";
+            }
+        }
+
         public void ProjectileHitSolid()
         {
             if (!projectileInFlight)
@@ -1279,13 +1608,37 @@ namespace CyberGuardian
                 return;
             }
 
-            GameObject effect = new GameObject("Projectile Impact Pixel Burst", typeof(SpriteRenderer));
+            CreateProjectileHitEffectLayer(
+                "Projectile Impact Pixel Burst",
+                position,
+                worldSize,
+                framesPerSecond,
+                Color.white,
+                49);
+            CreateProjectileHitEffectLayer(
+                "Projectile Impact Energy Shockwave",
+                position,
+                worldSize * 1.38f,
+                framesPerSecond * 0.78f,
+                new Color(0.32f, 0.94f, 1f, 0.54f),
+                48);
+        }
+
+        private void CreateProjectileHitEffectLayer(string objectName, Vector3 position, Vector2 worldSize, float framesPerSecond, Color color, int sortingOrder)
+        {
+            Sprite[] frames = EnsureProjectileHitEffectFrames();
+            if (!HasUsableSpriteFrames(frames))
+            {
+                return;
+            }
+
+            GameObject effect = new GameObject(objectName, typeof(SpriteRenderer));
             effect.transform.position = position;
 
             SpriteRenderer renderer = effect.GetComponent<SpriteRenderer>();
             renderer.sprite = frames[0];
-            renderer.color = Color.white;
-            renderer.sortingOrder = 48;
+            renderer.color = color;
+            renderer.sortingOrder = sortingOrder;
             ScaleSpriteRendererToWorldSize(renderer, worldSize);
 
             CyberGuardianSpriteFlipbookAnimator flipbook = effect.AddComponent<CyberGuardianSpriteFlipbookAnimator>();
@@ -1316,6 +1669,29 @@ namespace CyberGuardian
             return projectileHitEffectFrames;
         }
 
+        private Sprite GetKnowledgeChestSprite()
+        {
+            if (runtimeKnowledgeChestSprite != null)
+            {
+                return runtimeKnowledgeChestSprite;
+            }
+
+#if UNITY_EDITOR
+            runtimeKnowledgeChestSprite = LoadEditorSpriteFromTopLeftRect(
+                "Assets/CyberGuardian/assets/new/coins-chests-etc-2-0-noborders.png",
+                new RectInt(256, 540, 16, 22),
+                48f,
+                "runtime_knowledge_chest");
+#endif
+
+            if (runtimeKnowledgeChestSprite == null)
+            {
+                runtimeKnowledgeChestSprite = CreateFallbackKnowledgeChestSprite();
+            }
+
+            return runtimeKnowledgeChestSprite;
+        }
+
         private static bool HasUsableSpriteFrames(Sprite[] frames)
         {
             return frames != null && frames.Length > 0 && frames[0] != null;
@@ -1338,6 +1714,32 @@ namespace CyberGuardian
         }
 
 #if UNITY_EDITOR
+        private static Sprite LoadEditorSpriteFromTopLeftRect(string assetPath, RectInt topLeftRect, float pixelsPerUnit, string spriteName)
+        {
+            string absolutePath = Path.GetFullPath(Path.Combine(Application.dataPath, "..", assetPath));
+            if (!File.Exists(absolutePath))
+            {
+                return null;
+            }
+
+            Texture2D texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+            if (!texture.LoadImage(File.ReadAllBytes(absolutePath)))
+            {
+                return null;
+            }
+
+            texture.filterMode = FilterMode.Point;
+            int y = texture.height - topLeftRect.y - topLeftRect.height;
+            if (topLeftRect.x < 0 || y < 0 || topLeftRect.x + topLeftRect.width > texture.width || y + topLeftRect.height > texture.height)
+            {
+                return null;
+            }
+
+            Sprite sprite = Sprite.Create(texture, new Rect(topLeftRect.x, y, topLeftRect.width, topLeftRect.height), new Vector2(0.5f, 0.5f), pixelsPerUnit);
+            sprite.name = spriteName;
+            return sprite;
+        }
+
         private static Sprite[] LoadEditorGridSpriteSheetFrames(string assetPath, string frameName, int columns, int rows, float pixelsPerUnit)
         {
             string absolutePath = Path.GetFullPath(Path.Combine(Application.dataPath, "..", assetPath));
@@ -1375,6 +1777,38 @@ namespace CyberGuardian
             return frames.ToArray();
         }
 #endif
+
+        private static Sprite CreateFallbackKnowledgeChestSprite()
+        {
+            const int width = 24;
+            const int height = 18;
+            Texture2D texture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    Color color = Color.clear;
+                    bool body = x >= 2 && x <= 21 && y >= 2 && y <= 13;
+                    bool lid = x >= 3 && x <= 20 && y >= 11 && y <= 16;
+                    bool edge = x <= 3 || x >= 20 || y <= 3 || y >= 14;
+                    bool lockPlate = x >= 10 && x <= 13 && y >= 6 && y <= 11;
+                    if (body || lid)
+                    {
+                        color = edge ? new Color(0.35f, 0.14f, 0.05f, 1f) : new Color(0.95f, 0.52f, 0.10f, 1f);
+                    }
+                    if (lockPlate)
+                    {
+                        color = new Color(1f, 0.86f, 0.25f, 1f);
+                    }
+
+                    texture.SetPixel(x, y, color);
+                }
+            }
+
+            texture.filterMode = FilterMode.Point;
+            texture.Apply();
+            return Sprite.Create(texture, new Rect(0f, 0f, width, height), new Vector2(0.5f, 0.5f), 48f);
+        }
 
         public Color GetCategoryColor(int category)
         {
@@ -1531,27 +1965,27 @@ namespace CyberGuardian
                 case CyberGuardianPowerUpType.Health:
                     playerHealth = Mathf.Min(100, playerHealth + Mathf.Max(1, powerUp.amount));
                     AddScore(75);
-                    PlaySfx(powerupHealthSfx != null ? powerupHealthSfx : shieldSfx);
+                    PlayPowerUpSfx(powerUp.type, powerupHealthSfx != null ? powerupHealthSfx : shieldSfx);
                     SetStatus("PATCH KESEHATAN TERPASANG");
                     break;
                 case CyberGuardianPowerUpType.Boost:
                     boostEnergy = Mathf.Min(100f, boostEnergy + Mathf.Max(1, powerUp.amount));
                     AddScore(60);
-                    PlaySfx(powerupEnergySfx != null ? powerupEnergySfx : shieldSfx);
+                    PlayPowerUpSfx(powerUp.type, powerupEnergySfx != null ? powerupEnergySfx : shieldSfx);
                     SetStatus("CACHE ENERGI DIPULIHKAN");
                     break;
                 case CyberGuardianPowerUpType.Firewall:
                     invulnerabilityTimer = Mathf.Max(invulnerabilityTimer, Mathf.Max(2f, powerUp.amount * 0.1f));
                     playerHealth = Mathf.Min(100, playerHealth + 8);
                     AddScore(100);
-                    PlaySfx(shieldSfx);
+                    PlayPowerUpSfx(powerUp.type, shieldSfx);
                     SetStatus("FIREWALL SEMENTARA AKTIF");
                     break;
                 case CyberGuardianPowerUpType.Overclock:
                     boostEnergy = 100f;
                     invulnerabilityTimer = Mathf.Max(invulnerabilityTimer, 1.25f);
                     AddScore(125);
-                    PlaySfx(shieldSfx);
+                    PlayPowerUpSfx(powerUp.type, shieldSfx);
                     SetStatus("KEMAMPUAN OVERCLOCK SIAP");
                     break;
             }
@@ -1894,67 +2328,67 @@ namespace CyberGuardian
             if (pauseButton != null)
             {
                 pauseButton.onClick.RemoveAllListeners();
-                pauseButton.onClick.AddListener(TogglePause);
+                pauseButton.onClick.AddListener(() => RunUiButtonAction(TogglePause));
             }
 
             if (menuButton != null)
             {
                 menuButton.onClick.RemoveAllListeners();
-                menuButton.onClick.AddListener(ReturnToMenu);
+                menuButton.onClick.AddListener(() => RunUiButtonAction(ReturnToMenu));
             }
 
             if (resetButton != null)
             {
                 resetButton.onClick.RemoveAllListeners();
-                resetButton.onClick.AddListener(ReloadCurrentScene);
+                resetButton.onClick.AddListener(() => RunUiButtonAction(ReloadCurrentScene));
             }
 
             if (pauseResumeButton != null)
             {
                 pauseResumeButton.onClick.RemoveAllListeners();
-                pauseResumeButton.onClick.AddListener(() => SetPaused(false));
+                pauseResumeButton.onClick.AddListener(() => RunUiButtonAction(() => SetPaused(false)));
             }
 
             if (pauseRetryButton != null)
             {
                 pauseRetryButton.onClick.RemoveAllListeners();
-                pauseRetryButton.onClick.AddListener(ReloadCurrentScene);
+                pauseRetryButton.onClick.AddListener(() => RunUiButtonAction(ReloadCurrentScene));
             }
 
             if (pauseMenuButton != null)
             {
                 pauseMenuButton.onClick.RemoveAllListeners();
-                pauseMenuButton.onClick.AddListener(ReturnToMenu);
+                pauseMenuButton.onClick.AddListener(() => RunUiButtonAction(ReturnToMenu));
             }
 
             if (gameOverRetryButton != null)
             {
                 gameOverRetryButton.onClick.RemoveAllListeners();
-                gameOverRetryButton.onClick.AddListener(ReloadCurrentScene);
+                gameOverRetryButton.onClick.AddListener(() => RunUiButtonAction(ReloadCurrentScene));
             }
 
             if (gameOverMenuButton != null)
             {
                 gameOverMenuButton.onClick.RemoveAllListeners();
-                gameOverMenuButton.onClick.AddListener(ReturnToMenu);
+                gameOverMenuButton.onClick.AddListener(() => RunUiButtonAction(ReturnToMenu));
             }
 
             if (closeQuizButton != null)
             {
                 closeQuizButton.onClick.RemoveAllListeners();
-                closeQuizButton.onClick.AddListener(CloseQuizWithoutAnswer);
+                closeQuizButton.onClick.AddListener(() => RunUiButtonAction(CloseQuizWithoutAnswer));
             }
 
             if (bossDialogueContinueButton != null)
             {
                 bossDialogueContinueButton.onClick.RemoveAllListeners();
-                bossDialogueContinueButton.onClick.AddListener(RequestNarrativeContinue);
+                bossDialogueContinueButton.onClick.AddListener(() => RunUiButtonAction(RequestNarrativeContinue));
             }
 
             if (educationContinueButton != null)
             {
                 educationContinueButton.onClick.RemoveAllListeners();
-                educationContinueButton.onClick.AddListener(RequestNarrativeContinue);
+                educationContinueButton.onClick.AddListener(() => RunUiButtonAction(RequestNarrativeContinue));
             }
 
             if (answerButtons != null)
@@ -1965,9 +2399,18 @@ namespace CyberGuardian
                     if (answerButtons[i] != null)
                     {
                         answerButtons[i].onClick.RemoveAllListeners();
-                        answerButtons[i].onClick.AddListener(() => ChooseAnswer(choice));
+                        answerButtons[i].onClick.AddListener(() => RunUiButtonAction(() => ChooseAnswer(choice)));
                     }
                 }
+            }
+        }
+
+        private void RunUiButtonAction(System.Action action)
+        {
+            CyberGuardianRuntimeAudio.PlayButtonClick();
+            if (action != null)
+            {
+                action.Invoke();
             }
         }
 
@@ -2090,6 +2533,12 @@ namespace CyberGuardian
                 return;
             }
 
+            if (relayBossEncounter)
+            {
+                HandleRelayBossAttack();
+                return;
+            }
+
             if (quizOpen || bossProjectilePrefab == null || bossProjectileSpawn == null || player == null)
             {
                 return;
@@ -2133,6 +2582,83 @@ namespace CyberGuardian
 
             PlaySfx(bossShotSfx);
             SetStatus("BOS MENYERANG LEWAT CELAH - HINDARI");
+        }
+
+        private void HandleRelayBossAttack()
+        {
+            if (quizOpen || bossProjectilePrefab == null || player == null)
+            {
+                return;
+            }
+
+            bossFireTimer -= Time.deltaTime;
+            if (bossFireTimer > 0f)
+            {
+                return;
+            }
+
+            float pressure = GetDifficultyPressure();
+            float lowHealthPressure = 1f - bossHealth / 100f;
+            bool vulnerable = HasOpenedBossAttackRoute();
+            bossFireTimer = vulnerable
+                ? Mathf.Lerp(1.85f, 1.25f, pressure)
+                : Mathf.Lerp(1.35f, 0.72f, Mathf.Clamp01(pressure + lowHealthPressure * 0.45f));
+
+            int pattern = bossAttackPatternIndex++ % 4;
+            int damage = GetBossProjectileDamage();
+            float speed = Mathf.Lerp(6.8f, 9.4f, pressure) + lowHealthPressure * 0.9f;
+            Vector2 playerTarget = (Vector2)player.transform.position + new Vector2(0f, 0.28f);
+            Vector2 primarySpawn = bossProjectileSpawn != null
+                ? (Vector2)bossProjectileSpawn.position
+                : new Vector2(bossArenaMaxX - 1.2f, 2.4f);
+
+            if (pattern == 0)
+            {
+                float[] lanes = { 1.05f, 2.45f, 3.85f };
+                for (int i = 0; i < lanes.Length; i++)
+                {
+                    Vector2 spawn = new Vector2(bossArenaMaxX + 0.65f, lanes[i]);
+                    Vector2 target = new Vector2(bossArenaMinX - 0.8f, lanes[i] + Random.Range(-0.12f, 0.12f));
+                    SpawnBossProjectile(spawn, target, speed, Mathf.Max(5, damage - 2));
+                }
+
+                SetStatus("DATA REAPER: SAPUAN TIGA RELAY - PINDAH ANTAR JALUR");
+            }
+            else if (pattern == 1)
+            {
+                int rainCount = 5 + Mathf.RoundToInt(lowHealthPressure * 2f);
+                for (int i = 0; i < rainCount; i++)
+                {
+                    float x = Mathf.Lerp(bossArenaMinX + 0.8f, bossArenaMaxX - 0.8f, rainCount <= 1 ? 0.5f : i / (float)(rainCount - 1));
+                    Vector2 spawn = new Vector2(x, cameraMax.y + 0.95f);
+                    SpawnBossProjectile(spawn, new Vector2(x + Random.Range(-0.55f, 0.55f), -0.45f), speed * 0.90f, Mathf.Max(5, damage - 3));
+                }
+
+                SetStatus("DATA REAPER: HUJAN PAKET TERENKRIPSI - AWASI ATAS");
+            }
+            else if (pattern == 2)
+            {
+                Vector2 leftSpawn = new Vector2(bossArenaMinX - 0.5f, Mathf.Clamp(player.transform.position.y + 1.15f, 1.1f, 4.3f));
+                Vector2 rightSpawn = new Vector2(bossArenaMaxX + 0.5f, Mathf.Clamp(player.transform.position.y - 0.75f, 0.8f, 4.0f));
+                SpawnBossProjectile(leftSpawn, playerTarget + new Vector2(1.0f, 0f), speed * 0.92f, Mathf.Max(5, damage - 2));
+                SpawnBossProjectile(rightSpawn, playerTarget + new Vector2(-1.0f, 0f), speed * 0.92f, Mathf.Max(5, damage - 2));
+                SetStatus("DATA REAPER: PAKET PENJEPIT - LOMPAT DI ANTARA ARUS");
+            }
+            else
+            {
+                int burst = vulnerable ? 2 : 4;
+                for (int i = 0; i < burst; i++)
+                {
+                    Vector2 offset = new Vector2(0f, (i - (burst - 1) * 0.5f) * 0.35f);
+                    SpawnBossProjectile(primarySpawn + offset * 0.18f, playerTarget + offset, speed + 0.55f, damage);
+                }
+
+                SetStatus(vulnerable
+                    ? "CORE DATA REAPER TERBUKA - SERANG SAMBIL MENGHINDAR"
+                    : "DATA REAPER: BURST TROJAN - AKTIFKAN RELAY KUIS");
+            }
+
+            PlaySfx(bossShotSfx);
         }
 
         private void HandleAerialBossAttack()
@@ -2328,6 +2854,7 @@ namespace CyberGuardian
 
             if (question != null && originalChoice == question.correctIndex)
             {
+                RegisterClearedBossBlock(activeQuizBlock);
                 activeQuizBlock.ClearBlock();
                 playerHealth = Mathf.Min(100, playerHealth + GetCorrectHealthReward());
                 AddScore(GetCorrectScoreReward());
@@ -2337,7 +2864,10 @@ namespace CyberGuardian
                     feedbackText.text = question.feedback;
                 }
 
-                SetStatus("BLOK HANCUR. CELAH SERANGAN BARU TERBUKA.");
+                if (!relayBossEncounter)
+                {
+                    SetStatus("BLOK HANCUR. CELAH SERANGAN BARU TERBUKA.");
+                }
             }
             else
             {
@@ -2451,6 +2981,11 @@ namespace CyberGuardian
             if (slingshotProjectile != null)
             {
                 slingshotProjectile.position = launchStart;
+                CyberGuardianSlingshotProjectile2D projectileLogic = slingshotProjectile.GetComponent<CyberGuardianSlingshotProjectile2D>();
+                if (projectileLogic != null)
+                {
+                    projectileLogic.ArmForLaunch(launchStart);
+                }
             }
 
             if (slingshotCollider != null)
@@ -2476,6 +3011,7 @@ namespace CyberGuardian
                 StartCoroutine(EnableSlingshotColliderAfterLaunch());
             }
 
+            SpawnProjectileHitEffect(launchStart, new Vector2(0.52f, 0.52f), 26f);
             PlaySfx(bossSlingshotLaunchSfx != null ? bossSlingshotLaunchSfx : bossShotSfx);
             SetStatus("INTI PATCH DITEMBAKKAN");
         }
@@ -2801,6 +3337,7 @@ namespace CyberGuardian
             SetNamedRectPosition("HP Icon Frame", new Vector2(-850f, 476f));
             SetNamedRectPosition("Boost Icon Frame", new Vector2(-850f, 422f));
             SetNamedRectPosition("Score Cyber Card", new Vector2(720f, 470f));
+            SetHudImageAlpha("Score Cyber Card", 0f);
             SetNamedRectPosition("Score Label", new Vector2(612f, 484f));
             SetNamedRectPosition("Score Text", new Vector2(756f, 456f));
             SetNamedRectPosition("Boss Core Icon", new Vector2(-376f, 398f));
@@ -2825,14 +3362,16 @@ namespace CyberGuardian
         {
 #if UNITY_EDITOR
             const string barSheetPath = "Assets/CyberGuardian/assets/new/Pixel UI pack 3/05.png";
-            if (!HasFrameSprites(playerHealthBarFrames))
+            Sprite[] refreshedHealthFrames = LoadEditorUiBarRowFrames(barSheetPath, "runtime_hp", 0, 8, 100f);
+            if (HasFrameSprites(refreshedHealthFrames))
             {
-                playerHealthBarFrames = LoadEditorUiBarRowFrames(barSheetPath, "runtime_hp", 0, 8, 100f);
+                playerHealthBarFrames = refreshedHealthFrames;
             }
 
-            if (!HasFrameSprites(boostEnergyBarFrames))
+            Sprite[] refreshedEnergyFrames = LoadEditorUiBarRowFrames(barSheetPath, "runtime_energy", 1, 6, 100f);
+            if (HasFrameSprites(refreshedEnergyFrames))
             {
-                boostEnergyBarFrames = LoadEditorUiBarRowFrames(barSheetPath, "runtime_energy", 1, 6, 100f);
+                boostEnergyBarFrames = refreshedEnergyFrames;
             }
 
             PrepareRuntimePixelBar(playerHealthFill, playerHealthBarFrames, new Vector2(440f, 54f));
@@ -2932,13 +3471,15 @@ namespace CyberGuardian
                 Image backImage = backRect.GetComponent<Image>();
                 if (backImage != null)
                 {
-                    backImage.color = new Color(0f, 0f, 0f, 0.96f);
+                    backImage.color = new Color(0f, 0f, 0f, 0f);
+                    backImage.enabled = false;
                     backImage.raycastTarget = false;
                     backRect.SetAsFirstSibling();
                 }
             }
 
-            SetHudImageAlpha("Cyber Bar Back", 0.96f);
+            SetHudImageAlpha("Cyber Bar Back", 0f);
+            SetHudImageAlpha("Score Cyber Card", 0f);
         }
 
         private void MoveHudBarRow(RectTransform fillRect, Vector2 targetPosition)
@@ -3383,7 +3924,16 @@ namespace CyberGuardian
 
             if (bossText != null)
             {
-                bossText.text = "BOS";
+                if (relayBossEncounter && mode == GameMode.BossSlingshot)
+                {
+                    bossText.text = HasOpenedBossAttackRoute()
+                        ? "DATA REAPER - OVERLOAD " + Mathf.CeilToInt(relayVulnerabilityTimer).ToString("0") + "s"
+                        : "RELAY " + relayCharge.ToString("0") + "/" + Mathf.Max(1, relayBlocksRequired).ToString("0");
+                }
+                else
+                {
+                    bossText.text = "BOS";
+                }
             }
 
             if (scoreText != null)
@@ -3443,6 +3993,24 @@ namespace CyberGuardian
             }
 
             float clamped = Mathf.Clamp01(percent);
+            if (frames.Length <= 6)
+            {
+                Sprite fullEnergySprite = frames[0];
+                if (fullEnergySprite == null)
+                {
+                    return false;
+                }
+
+                image.sprite = fullEnergySprite;
+                image.type = Image.Type.Filled;
+                image.fillMethod = Image.FillMethod.Horizontal;
+                image.fillOrigin = (int)Image.OriginHorizontal.Left;
+                image.fillAmount = clamped;
+                image.color = Color.white;
+                image.preserveAspect = false;
+                return true;
+            }
+
             int frameIndex = Mathf.Clamp(Mathf.RoundToInt((1f - clamped) * (frames.Length - 1)), 0, frames.Length - 1);
             Sprite sprite = frames[frameIndex];
             if (sprite == null)
@@ -3664,7 +4232,15 @@ namespace CyberGuardian
                 pauseModal.SetActive(paused);
             }
 
-            SetStatus(paused ? "JEDA" : (mode == GameMode.BossSlingshot ? "MODE BOS: KLIK ATAU TARIK DI MANA SAJA UNTUK MENARIK INTI PATCH" : "MODE PETUALANGAN"));
+            string activeMode = "MODE PETUALANGAN";
+            if (mode == GameMode.BossSlingshot)
+            {
+                activeMode = aerialBossEncounter
+                    ? "MODE BOS UDARA"
+                    : (relayBossEncounter ? "MODE SERVER RELAY OVERLOAD" : "MODE BOS DARAT");
+            }
+
+            SetStatus(paused ? "JEDA" : activeMode);
             RefreshHud();
         }
 
@@ -3693,7 +4269,7 @@ namespace CyberGuardian
             }
         }
 
-        private void PlaySfx(AudioClip clip)
+        private bool PlaySfx(AudioClip clip)
         {
             if (sfxSource != null && clip != null && CyberGuardianMainMenu.IsSfxEnabled())
             {
@@ -3701,6 +4277,17 @@ namespace CyberGuardian
                 sfxSource.mute = false;
                 sfxSource.volume = volume;
                 sfxSource.PlayOneShot(clip, volume);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void PlayPowerUpSfx(CyberGuardianPowerUpType type, AudioClip preferredClip)
+        {
+            if (!PlaySfx(preferredClip))
+            {
+                CyberGuardianRuntimeAudio.PlayPowerUp(type);
             }
         }
 

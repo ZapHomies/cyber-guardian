@@ -83,6 +83,10 @@ namespace CyberGuardian.Editor
         private const string PixelUiPack3Folder = NewAssetsFolder + "/Pixel UI pack 3";
         private const string PixelUiCheckpointButtonPath = PixelUiPack3Folder + "/00.png";
         private const string PixelUiBarPath = PixelUiPack3Folder + "/05.png";
+        private const string FantasyGalleryFramePath = NewAssetsFolder + "/Fantasy_project/game/gui/gallery.png";
+        private const string FantasyTextboxPath = NewAssetsFolder + "/Fantasy_project/game/gui/textbox.png";
+        private const string FantasyChoiceButtonPath = NewAssetsFolder + "/Fantasy_project/game/gui/button/choice_idle_background.png";
+        private const string FantasyGalleryButtonPath = NewAssetsFolder + "/Fantasy_project/game/gui/button/gallerybutton_idle_blank.png";
         private const string HpBarFolder = NewAssetsFolder + "/HP_Bar/HP_Bar";
         private const string HpBarBackPath = HpBarFolder + "/bg.png";
         private const string HpBarRedPath = HpBarFolder + "/red.png";
@@ -357,10 +361,11 @@ namespace CyberGuardian.Editor
             menu.gameplaySceneName = "CyberGuardian_Level01";
             menu.difficultySceneName = "CyberGuardian_PilihKesulitan";
 
+            menu.galleryButton = AddButton("Gallery Button", canvasObject.transform, new Vector2(-832f, 492f), new Vector2(224f, 46f), "GALERI", 17, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.creditsButton = AddButton("Credits Button", canvasObject.transform, new Vector2(-760f, -382f), new Vector2(290f, 54f), "KREDIT", 18, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.continueButton = AddButton("Continue Button", canvasObject.transform, new Vector2(-380f, -430f), new Vector2(300f, 58f), "LANJUTKAN", 19, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.startButton = AddButton("Start Button", canvasObject.transform, new Vector2(0f, -468f), new Vector2(318f, 64f), "MULAI", 27, font, Hex("08181D"), Color.white, activeButton, out _, false);
-            menu.developerButton = AddButton("Developer Mode Button", canvasObject.transform, new Vector2(0f, -382f), new Vector2(260f, 50f), "MODE DEV", 17, font, Hex("08181D"), Color.white, activeButton, out _, false);
+            menu.developerButton = AddButton("Developer Mode Button", canvasObject.transform, new Vector2(-832f, 438f), new Vector2(224f, 46f), "MODE DEV", 17, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.settingsButton = AddButton("Settings Button", canvasObject.transform, new Vector2(380f, -430f), new Vector2(300f, 58f), "PENGATURAN", 18, font, Hex("08181D"), Color.white, activeButton, out _, false);
             menu.quitButton = AddButton("Quit Button", canvasObject.transform, new Vector2(760f, -382f), new Vector2(290f, 54f), "KELUAR", 19, font, Hex("160810"), Color.white, dangerButton, out _, false);
 
@@ -493,6 +498,25 @@ namespace CyberGuardian.Editor
             menu.settingsBackButton = AddButton("Settings Back Button", settingsWindow.transform, new Vector2(0f, -246f), new Vector2(240f, 54f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
             menu.settingsPanel = settingsPanel;
             settingsPanel.SetActive(false);
+
+            GameObject galleryPanel = CreateOverlayPanel("Gallery Overlay", parent);
+            AddStretchImage("Gallery Dim", galleryPanel.transform, new Color(0f, 0f, 0f, 0.58f), panelSprite);
+            GameObject galleryWindow = AddPanel("Gallery Window", galleryPanel.transform, new Vector2(0f, 0f), new Vector2(900f, 620f), Color.black, panelSprite, 0.92f).gameObject;
+            AddText("Gallery Title", galleryWindow.transform, new Vector2(0f, 244f), new Vector2(760f, 54f), "GALERI PENGETAHUAN", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
+            AddText("Gallery Hint", galleryWindow.transform, new Vector2(0f, 204f), new Vector2(760f, 34f), "Materi belajar selalu tersedia. Chest boss membuka catatan bonus sektor berikutnya.", 15, Hex("69F7FF"), font, TextAnchor.MiddleCenter, FontStyle.Normal);
+            Sprite galleryFrameSprite = EnsureImportedSprite(FantasyGalleryFramePath, new Vector4(36f, 36f, 36f, 36f));
+            menu.galleryWindowSprite = galleryFrameSprite;
+            menu.galleryPaperSprite = EnsureImportedSprite(FantasyTextboxPath, new Vector4(34f, 34f, 34f, 34f));
+            menu.galleryChoiceSprite = EnsureImportedSprite(FantasyChoiceButtonPath, new Vector4(24f, 24f, 24f, 24f));
+            menu.galleryBookButtonSprite = EnsureImportedSprite(FantasyGalleryButtonPath, new Vector4(24f, 24f, 24f, 24f));
+            Image galleryIllustration = AddImage("Gallery Illustration", galleryWindow.transform, new Vector2(-312f, 82f), new Vector2(210f, 138f), new Color(0.45f, 1f, 1f, 0.30f), galleryFrameSprite != null ? galleryFrameSprite : panelSprite);
+            galleryIllustration.type = Image.Type.Sliced;
+            galleryIllustration.raycastTarget = false;
+            menu.galleryIllustrationImage = galleryIllustration;
+            menu.galleryBodyText = AddText("Gallery Body", galleryWindow.transform, new Vector2(112f, -20f), new Vector2(570f, 372f), "Materi galeri dimuat saat game berjalan.", 14, Color.white, font, TextAnchor.UpperLeft, FontStyle.Normal);
+            menu.galleryBackButton = AddButton("Gallery Back Button", galleryWindow.transform, new Vector2(0f, -218f), new Vector2(240f, 54f), "KEMBALI", 18, font, Hex("08181D"), Color.white, buttonSprite, out _, false);
+            menu.galleryPanel = galleryPanel;
+            galleryPanel.SetActive(false);
 
             GameObject creditsPanel = CreateOverlayPanel("Credits Overlay", parent);
             AddStretchImage("Credits Dim", creditsPanel.transform, new Color(0f, 0f, 0f, 0.58f), panelSprite);
@@ -751,6 +775,11 @@ namespace CyberGuardian.Editor
             game.slingshotDirectShotMaxSpeed = 28.0f;
             game.slingshotRestOffset = new Vector2(0f, 0.56f);
             game.projectileMaxFlightTime = 5.4f;
+            game.relayBossEncounter = true;
+            game.relayBlocksRequired = 2;
+            game.relayVulnerabilityDuration = 7.0f;
+            game.relayBossDamagePerOverload = 25;
+            game.bossAttackIntervalScale = 0.84f;
             game.cameraMin = new Vector2(-8.8f, -3.9f);
             game.cameraMax = new Vector2(288.0f, 7.8f);
             game.bossProjectilePrefab = bossProjectilePrefab;
@@ -880,6 +909,10 @@ namespace CyberGuardian.Editor
             game.bossDefeatBody = "Komputer berhasil direbut kembali. Core malware pecah karena lapisan pertahanan bekerja bersama.";
             game.bossLessonTitle = "PELAJARAN AKHIR";
             game.bossLessonBody = "Keamanan bukan satu tombol. Gabungkan kebiasaan aman, update, MFA, backup, segmentasi, monitoring, dan respons cepat. Defender menang karena memahami pola serangan sebelum celah membesar.";
+            game.finalRewardTitle = "REWARD: ARSIP MASTER CYBER GUARDIAN";
+            game.finalRewardBody = "Chest terakhir berisi Emblem Master Cyber Guardian dan buku pengetahuan final. Seluruh materi sektor 1-3 kini dapat dibaca kembali melalui Galeri.";
+            game.finalEndingTitle = "ENDING: JARINGAN KEMBALI AMAN";
+            game.finalEndingBody = "Digital Overlord hancur dan invasi malware berakhir. File yang terenkripsi dipulihkan dari backup, akun yang terdampak diamankan dengan MFA, dan seluruh node berbahaya diisolasi. Cyber Guardian kembali berjaga karena keamanan digital dibangun dari kebiasaan yang dilakukan setiap hari.";
 
             Sprite generatedBossSprite = EnsureImportedSprite(BossGeneratedSpritePath);
             Sprite generatedProjectileSprite = EnsureImportedSprite(ProjectileGeneratedSpritePath);
@@ -1196,7 +1229,7 @@ namespace CyberGuardian.Editor
                 ? playerElectricBurstFrames
                 : (projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames);
             Sprite projectileActive = PickSprite(l03ProjectileFrames, 2, projectileGeneratedSprite != null ? projectileGeneratedSprite : (projectileSprite != null ? projectileSprite : circleSprite));
-            GameObject projectile = CreateWorldSprite("L03 Patch Core Slingshot Projectile", parent, new Vector2(game.bossArenaMinX + 1.0f, 1.25f), new Vector2(0.26f, 0.26f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
+            GameObject projectile = CreateWorldSprite("L03 Patch Core Slingshot Projectile", parent, new Vector2(game.bossArenaMinX + 1.0f, 1.25f), new Vector2(0.34f, 0.34f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
             AddFlipbook(projectile.GetComponent<SpriteRenderer>(), l03ProjectileFrames, 18.0f, false);
             Rigidbody2D projectileBody = projectile.AddComponent<Rigidbody2D>();
             projectileBody.gravityScale = 0.92f;
@@ -1211,7 +1244,7 @@ namespace CyberGuardian.Editor
             projectileLogic.game = game;
             projectileLogic.animationFrames = l03ProjectileFrames;
             projectileLogic.framesPerSecond = 18f;
-            projectileLogic.visualSize = new Vector2(0.26f, 0.26f);
+            projectileLogic.visualSize = new Vector2(0.34f, 0.34f);
             game.slingshotProjectile = projectile.transform;
             game.slingshotBody = projectileBody;
             game.slingshotCollider = projectileCollider;
@@ -1921,7 +1954,7 @@ namespace CyberGuardian.Editor
             GameObject power = CreateWorldSprite(name, parent, position, visualSize, Color.white, powerSprite, 29).gameObject;
             CircleCollider2D collider = power.AddComponent<CircleCollider2D>();
             collider.isTrigger = true;
-            collider.radius = 0.44f;
+            collider.radius = GetPowerUpColliderRadius(power.transform);
             CyberGuardianPowerUp powerUp = power.AddComponent<CyberGuardianPowerUp>();
             powerUp.game = game;
             powerUp.type = type;
@@ -1935,7 +1968,8 @@ namespace CyberGuardian.Editor
             }
 
             AddPulse(renderer, 0.12f, 0.18f, 4.8f, amount * 0.03f);
-            CreateLocalSprite("Power Up Halo", power.transform, Vector3.zero, new Vector2(1.14f, 1.14f), new Color(color.r, color.g, color.b, 0.24f), circleSprite, 28);
+            SpriteRenderer halo = CreateLocalSprite("Power Up Halo", power.transform, Vector3.zero, Vector2.one, new Color(color.r, color.g, color.b, 0.24f), circleSprite, 28);
+            ScaleSpriteAsWorldSize(halo, new Vector2(1.22f, 1.22f));
         }
 
         private static Sprite[] GetPowerUpItemFrames(CyberGuardianPowerUpType type)
@@ -1958,12 +1992,23 @@ namespace CyberGuardian.Editor
             switch (type)
             {
                 case CyberGuardianPowerUpType.Boost:
-                    return new Vector2(0.72f, 0.90f);
+                    return new Vector2(0.82f, 1.16f);
                 case CyberGuardianPowerUpType.Health:
-                    return new Vector2(0.76f, 0.76f);
+                    return new Vector2(0.92f, 0.92f);
                 default:
-                    return new Vector2(0.78f, 0.78f);
+                    return new Vector2(0.96f, 0.96f);
             }
+        }
+
+        private static float GetPowerUpColliderRadius(Transform powerTransform)
+        {
+            if (powerTransform == null)
+            {
+                return 0.56f;
+            }
+
+            float scale = Mathf.Max(Mathf.Abs(powerTransform.lossyScale.x), Mathf.Abs(powerTransform.lossyScale.y), 0.01f);
+            return 0.56f / scale;
         }
 
         private static void BuildUnfairChallengeLayer(Transform parent, CyberGuardianSideScrollerGame game, Sprite squareSprite, Sprite circleSprite, Sprite metalCrateSprite, Sprite dataMossSprite, CyberHorrorAssetSprites horrorSprites, bool level2)
@@ -2346,11 +2391,37 @@ namespace CyberGuardian.Editor
             }
 
             int index = 0;
+            int shieldRows = game.relayBossEncounter ? 5 : 7;
+            float shieldColumnSpacing = game.relayBossEncounter ? 0.94f : 0.66f;
+            float shieldRowSpacing = game.relayBossEncounter ? 0.76f : 0.58f;
+            float shieldBaseY = game.relayBossEncounter ? 0.72f : 0.65f;
             for (int column = 0; column < 3; column++)
             {
-                for (int row = 0; row < 7; row++)
+                if (game.relayBossEncounter)
                 {
-                    Vector2 position = new Vector2(shieldStartX + column * 0.66f, 0.65f + row * 0.58f);
+                    float relayX = shieldStartX + column * shieldColumnSpacing;
+                    SpriteRenderer relayCore = CreateWorldSprite(
+                        "Data Reaper Relay Core " + (column + 1).ToString("0"),
+                        parent,
+                        new Vector2(relayX, 4.92f),
+                        new Vector2(0.82f, 0.82f),
+                        column == 0 ? Hex("61F7FF") : (column == 1 ? Hex("FF3B88") : Hex("FFE05B")),
+                        circleSprite,
+                        14);
+                    AddPulse(relayCore, 0.08f, 0.16f, 3.1f, column * 0.7f);
+                    CreateWorldSprite(
+                        "Data Reaper Relay Conduit " + (column + 1).ToString("0"),
+                        parent,
+                        new Vector2(relayX, 2.72f),
+                        new Vector2(0.12f, 3.85f),
+                        new Color(relayCore.color.r, relayCore.color.g, relayCore.color.b, 0.34f),
+                        squareSprite,
+                        13);
+                }
+
+                for (int row = 0; row < shieldRows; row++)
+                {
+                    Vector2 position = new Vector2(shieldStartX + column * shieldColumnSpacing, shieldBaseY + row * shieldRowSpacing);
                     int category = (index + row + column * 2) % 4;
                     Sprite quizBlockSprite = horrorSprites != null && horrorSprites.QuizBlock != null ? horrorSprites.QuizBlock : (horrorSprites != null && horrorSprites.CircuitBlock != null ? horrorSprites.CircuitBlock : (metalCrateSprite != null ? metalCrateSprite : squareSprite));
                     CyberGuardianBossShieldBlock block = CreateShieldBlock("Boss Quiz Shield Block " + index.ToString("00"), parent, game, position, category, quizBlockSprite, squareSprite, font);
@@ -2363,7 +2434,7 @@ namespace CyberGuardian.Editor
                 ? playerElectricBurstFrames
                 : (projectileFlameFrames != null && projectileFlameFrames.Length > 0 ? projectileFlameFrames : projectileDlaFrames);
             Sprite projectileActive = PickSprite(bossSlingshotProjectileFrames, 1, projectileGeneratedSprite != null ? projectileGeneratedSprite : (projectileSprite != null ? projectileSprite : circleSprite));
-            GameObject projectile = CreateWorldSprite("Patch Core Slingshot Projectile", parent, new Vector2(projectileX, 1.1f), new Vector2(0.26f, 0.26f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
+            GameObject projectile = CreateWorldSprite("Patch Core Slingshot Projectile", parent, new Vector2(projectileX, 1.1f), new Vector2(0.34f, 0.34f), new Color(0.72f, 1f, 1f, 1f), projectileActive, 30).gameObject;
             AddFlipbook(projectile.GetComponent<SpriteRenderer>(), bossSlingshotProjectileFrames, 18.0f, false);
             Rigidbody2D projectileBody = projectile.AddComponent<Rigidbody2D>();
             projectileBody.gravityScale = 1f;
@@ -2378,7 +2449,7 @@ namespace CyberGuardian.Editor
             slingshotProjectileLogic.game = game;
             slingshotProjectileLogic.animationFrames = bossSlingshotProjectileFrames;
             slingshotProjectileLogic.framesPerSecond = 18f;
-            slingshotProjectileLogic.visualSize = new Vector2(0.26f, 0.26f);
+            slingshotProjectileLogic.visualSize = new Vector2(0.34f, 0.34f);
             game.slingshotProjectile = projectile.transform;
             game.slingshotBody = projectileBody;
             game.slingshotCollider = projectileCollider;
@@ -2403,7 +2474,7 @@ namespace CyberGuardian.Editor
             Sprite menuIcon = horrorSprites.MenuLinesIcon != null ? horrorSprites.MenuLinesIcon : energyIcon;
             Sprite guardianIcon = EnsurePlayerSprite(PlayerSpriteFolder + "/idle_00.png");
 
-            AddPanel("Player Combat Bars Back", canvasObject.transform, new Vector2(-616f, 450f), new Vector2(660f, 138f), Color.black, panelFrame, 0.96f).raycastTarget = false;
+            AddPanel("Player Combat Bars Back", canvasObject.transform, new Vector2(-616f, 450f), new Vector2(660f, 138f), Color.black, panelFrame, 0f).raycastTarget = false;
             AddImage("Guardian HUD Frame", canvasObject.transform, new Vector2(-918f, 449f), new Vector2(104f, 104f), Color.white, horrorSprites.UiAlertPanel != null ? horrorSprites.UiAlertPanel : panelSprite).raycastTarget = false;
             Image guardianPortrait = AddImage("Guardian HUD Portrait", canvasObject.transform, new Vector2(-918f, 449f), new Vector2(84f, 84f), Color.white, guardianIcon != null ? guardianIcon : heartIcon);
             guardianPortrait.raycastTarget = false;
@@ -2434,7 +2505,8 @@ namespace CyberGuardian.Editor
                 : AddCyberBar(canvasObject.transform, new Vector2(-592f, 422f), new Vector2(440f, 46f), Hex("16E8FF"), barBack, boostFill, pixelBar == null);
             game.statusText = AddText("Status Text", canvasObject.transform, new Vector2(-616f, 378f), new Vector2(560f, 28f), "MODE PETUALANGAN", 13, Hex("B7F7FF"), font, TextAnchor.MiddleLeft, FontStyle.Bold);
 
-            AddImage("Score Cyber Card", canvasObject.transform, new Vector2(720f, 470f), new Vector2(320f, 64f), Color.white, horrorSprites.UiScorePanel != null ? horrorSprites.UiScorePanel : panelSprite);
+            Image scoreCard = AddImage("Score Cyber Card", canvasObject.transform, new Vector2(720f, 470f), new Vector2(320f, 64f), new Color(1f, 1f, 1f, 0f), horrorSprites.UiScorePanel != null ? horrorSprites.UiScorePanel : panelSprite);
+            scoreCard.raycastTarget = false;
             AddText("Score Label", canvasObject.transform, new Vector2(612f, 484f), new Vector2(92f, 22f), "SKOR", 14, Hex("FF5B9B"), font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.scoreText = AddText("Score Text", canvasObject.transform, new Vector2(756f, 456f), new Vector2(206f, 42f), "0", 34, Color.white, font, TextAnchor.MiddleCenter, FontStyle.Bold);
             game.pauseButton = AddButton("Menu Button", canvasObject.transform, new Vector2(910f, 470f), new Vector2(58f, 50f), string.Empty, 14, font, Hex("08181D"), Color.white, horrorSprites.UiButtonCyan != null ? horrorSprites.UiButtonCyan : buttonSprite, out Text menuLabel, false);
@@ -3565,6 +3637,25 @@ namespace CyberGuardian.Editor
 
             Vector2 spriteSize = renderer.sprite.bounds.size;
             renderer.transform.localScale = new Vector3(size.x / spriteSize.x, size.y / spriteSize.y, 1f);
+        }
+
+        private static void ScaleSpriteAsWorldSize(SpriteRenderer renderer, Vector2 size)
+        {
+            if (renderer == null || renderer.sprite == null)
+            {
+                return;
+            }
+
+            Vector2 spriteSize = renderer.sprite.bounds.size;
+            if (spriteSize.x <= 0f || spriteSize.y <= 0f)
+            {
+                return;
+            }
+
+            Vector3 parentScale = renderer.transform.parent != null ? renderer.transform.parent.lossyScale : Vector3.one;
+            float scaleX = size.x / spriteSize.x / Mathf.Max(Mathf.Abs(parentScale.x), 0.01f);
+            float scaleY = size.y / spriteSize.y / Mathf.Max(Mathf.Abs(parentScale.y), 0.01f);
+            renderer.transform.localScale = new Vector3(scaleX, scaleY, 1f);
         }
 
         private static GameObject AttachGeneratedGlbVisual(string assetPath, Transform parent, string name, Vector3 localPosition, Vector3 localScale, Vector3 localEulerAngles)

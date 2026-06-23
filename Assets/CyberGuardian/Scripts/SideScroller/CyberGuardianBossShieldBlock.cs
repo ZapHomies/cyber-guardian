@@ -30,6 +30,29 @@ namespace CyberGuardian
             gameObject.SetActive(false);
         }
 
+        public void RestoreBlock()
+        {
+            cleared = false;
+            gameObject.SetActive(true);
+            if (blockCollider == null)
+            {
+                blockCollider = GetComponent<Collider2D>();
+            }
+
+            if (blockCollider != null)
+            {
+                blockCollider.enabled = true;
+            }
+
+            if (spriteRenderer == null)
+            {
+                spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+
+            RestoreColor();
+            EmphasizeCategoryVisuals();
+        }
+
         public void PulseWrong()
         {
             if (spriteRenderer != null)

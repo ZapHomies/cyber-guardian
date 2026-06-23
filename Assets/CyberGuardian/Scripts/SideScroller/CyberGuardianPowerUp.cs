@@ -22,6 +22,9 @@ namespace CyberGuardian
         public Vector2 visualSize = new Vector2(0.54f, 0.54f);
         public float framesPerSecond = 8f;
 
+        private const float PickupWorldRadius = 0.56f;
+        private static readonly Vector2 HaloVisualSize = new Vector2(1.22f, 1.22f);
+
         private bool collected;
 
         private void Awake()
@@ -71,7 +74,7 @@ namespace CyberGuardian
             renderer.color = Color.white;
             ScaleRenderer(renderer, visualSize);
             NormalizePickupCollider();
-            ScaleChildSprite("Power Up Halo", new Vector2(1.14f, 1.14f));
+            ScaleChildSprite("Power Up Halo", HaloVisualSize);
             DisableLegacyCoreSprite();
 
             CyberGuardianSpriteFlipbookAnimator flipbook = GetComponent<CyberGuardianSpriteFlipbookAnimator>();
@@ -113,7 +116,10 @@ namespace CyberGuardian
             CircleCollider2D circle = GetComponent<CircleCollider2D>();
             if (circle != null)
             {
-                circle.radius = Mathf.Max(circle.radius, 0.44f);
+                circle.isTrigger = true;
+                circle.offset = Vector2.zero;
+                float scale = Mathf.Max(Mathf.Abs(transform.lossyScale.x), Mathf.Abs(transform.lossyScale.y), 0.01f);
+                circle.radius = PickupWorldRadius / scale;
             }
         }
 
@@ -131,7 +137,7 @@ namespace CyberGuardian
                 return;
             }
 
-            ScaleRenderer(renderer, size);
+            ScaleRenderer(renderer, size, true);
         }
 
         private static Vector2 GetVisualSize(CyberGuardianPowerUpType type)
@@ -139,15 +145,15 @@ namespace CyberGuardian
             switch (type)
             {
                 case CyberGuardianPowerUpType.Boost:
-                    return new Vector2(0.72f, 0.90f);
+                    return new Vector2(0.82f, 1.16f);
                 case CyberGuardianPowerUpType.Health:
-                    return new Vector2(0.76f, 0.76f);
+                    return new Vector2(0.92f, 0.92f);
                 default:
-                    return new Vector2(0.78f, 0.78f);
+                    return new Vector2(0.96f, 0.96f);
             }
         }
 
-        private static void ScaleRenderer(SpriteRenderer renderer, Vector2 size)
+        private static void ScaleRenderer(SpriteRenderer renderer, Vector2 size, bool compensateParentScale = false)
         {
             if (renderer == null || renderer.sprite == null)
             {
@@ -160,7 +166,21 @@ namespace CyberGuardian
                 return;
             }
 
-            renderer.transform.localScale = new Vector3(size.x / spriteSize.x, size.y / spriteSize.y, 1f);
+            float scaleX = size.x / spriteSize.x;
+            float scaleY = size.y / spriteSize.y;
+            if (compensateParentScale && renderer.transform.parent != null)
+            {
+                Vector3 parentScale = renderer.transform.parent.lossyScale;
+                scaleX /= Mathf.Max(Mathf.Abs(parentScale.x), 0.01f);
+                scaleY /= Mathf.Max(Mathf.Abs(parentScale.y), 0.01f);
+            }
+
+            renderer.transform.localScale = new Vector3(scaleX, scaleY, 1f);
+            CyberGuardianPulseVisual pulse = renderer.GetComponent<CyberGuardianPulseVisual>();
+            if (pulse != null)
+            {
+                pulse.SetBaseScale(renderer.transform.localScale);
+            }
         }
 
 #if UNITY_EDITOR

@@ -32,7 +32,7 @@ namespace CyberGuardian
             if (backButton != null)
             {
                 backButton.onClick.RemoveAllListeners();
-                backButton.onClick.AddListener(BackToMenu);
+                backButton.onClick.AddListener(() => RunButtonAction(BackToMenu));
             }
 
             if (startTransitionOverlay != null)
@@ -51,7 +51,16 @@ namespace CyberGuardian
             }
 
             button.onClick.RemoveAllListeners();
-            button.onClick.AddListener(() => SelectDifficultyAndStart(difficultyIndex));
+            button.onClick.AddListener(() => RunButtonAction(() => SelectDifficultyAndStart(difficultyIndex)));
+        }
+
+        private void RunButtonAction(System.Action action)
+        {
+            CyberGuardianRuntimeAudio.PlayButtonClick();
+            if (action != null)
+            {
+                action.Invoke();
+            }
         }
 
         private void SelectDifficultyAndStart(int difficultyIndex)

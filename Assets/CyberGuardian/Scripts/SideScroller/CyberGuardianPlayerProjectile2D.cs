@@ -23,6 +23,7 @@ namespace CyberGuardian
 
         private SpriteRenderer spriteRenderer;
         private Collider2D ownCollider;
+        private CyberGuardianProjectileVisual2D projectileVisual;
         private float animationElapsed;
         private Vector3 startPosition;
         private bool hitResolved;
@@ -34,6 +35,7 @@ namespace CyberGuardian
             ownCollider = GetComponent<Collider2D>();
             EnsureAnimationFramesLoaded();
             ApplyVisualSize();
+            EnsureProjectileVisual();
             CyberGuardianSpriteFlipbookAnimator[] flipbooks = GetComponents<CyberGuardianSpriteFlipbookAnimator>();
             for (int i = 0; i < flipbooks.Length; i++)
             {
@@ -49,6 +51,7 @@ namespace CyberGuardian
             startPosition = transform.position;
             animationElapsed = 0f;
             hitResolved = false;
+            EnsureProjectileVisual();
         }
 
         private void Update()
@@ -202,6 +205,27 @@ namespace CyberGuardian
             }
 
             transform.localScale = new Vector3(visualSize.x / spriteSize.x, visualSize.y / spriteSize.y, 1f);
+        }
+
+        private void EnsureProjectileVisual()
+        {
+            if (spriteRenderer == null)
+            {
+                return;
+            }
+
+            projectileVisual = GetComponent<CyberGuardianProjectileVisual2D>();
+            if (projectileVisual == null)
+            {
+                projectileVisual = gameObject.AddComponent<CyberGuardianProjectileVisual2D>();
+            }
+
+            projectileVisual.Configure(
+                spriteRenderer,
+                0.48f,
+                0.18f,
+                new Color(0.66f, 0.38f, 1f, 0.78f),
+                new Color(0.20f, 0.95f, 1f, 0f));
         }
 
 #if UNITY_EDITOR

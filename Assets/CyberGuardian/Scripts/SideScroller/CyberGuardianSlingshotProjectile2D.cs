@@ -14,17 +14,24 @@ namespace CyberGuardian
         public CyberGuardianSideScrollerGame game;
         public Sprite[] animationFrames;
         public float framesPerSecond = 18f;
-        public Vector2 visualSize = new Vector2(0.26f, 0.26f);
+        public Vector2 visualSize = new Vector2(0.34f, 0.34f);
 
         private SpriteRenderer spriteRenderer;
+        private Collider2D ownCollider;
+        private CyberGuardianProjectileVisual2D projectileVisual;
         private float animationElapsed;
+        private Vector3 previousPosition;
+        private bool hitResolved;
 
         private void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
+            ownCollider = GetComponent<Collider2D>();
+            visualSize = new Vector2(Mathf.Max(0.34f, visualSize.x), Mathf.Max(0.34f, visualSize.y));
             EnsureAnimationFramesLoaded();
             DisableOversizedChildVfx();
             ApplyVisualSize();
+            EnsureProjectileVisual();
             CyberGuardianSpriteFlipbookAnimator[] flipbooks = GetComponents<CyberGuardianSpriteFlipbookAnimator>();
             for (int i = 0; i < flipbooks.Length; i++)
             {
@@ -40,11 +47,38 @@ namespace CyberGuardian
             AnimateProjectile();
         }
 
+        private void FixedUpdate()
+        {
+            if (game == null || !game.SlingshotProjectileInFlight || hitResolved)
+            {
+                previousPosition = transform.position;
+                return;
+            }
+
+            ScanProjectilePath(previousPosition, transform.position);
+            previousPosition = transform.position;
+        }
+
         private void OnEnable()
         {
             animationElapsed = 0f;
+            previousPosition = transform.position;
+            hitResolved = false;
             ApplyVisualSize();
             DisableOversizedChildVfx();
+            EnsureProjectileVisual();
+        }
+
+        public void ArmForLaunch(Vector2 launchPosition)
+        {
+            previousPosition = launchPosition;
+            hitResolved = false;
+            animationElapsed = 0f;
+            if (projectileVisual != null)
+            {
+                projectileVisual.enabled = false;
+                projectileVisual.enabled = true;
+            }
         }
 
         private void OnTriggerEnter2D(Collider2D other)
@@ -59,28 +93,95 @@ namespace CyberGuardian
 
         private void TryHitTarget(Collider2D other)
         {
-            if (game == null || other == null || other.GetComponent<CyberGuardianPlayerController>() != null)
+            if (hitResolved || game == null || !game.SlingshotProjectileInFlight || other == null || other == ownCollider || other.GetComponentInParent<CyberGuardianPlayerController>() != null)
             {
                 return;
             }
 
-            CyberGuardianBossShieldBlock block = other.GetComponent<CyberGuardianBossShieldBlock>();
+            CyberGuardianBossShieldBlock block = other.GetComponentInParent<CyberGuardianBossShieldBlock>();
             if (block != null)
             {
+                hitResolved = true;
                 game.ProjectileHitShieldBlock(block);
                 return;
             }
 
-            CyberGuardianBossCore boss = other.GetComponent<CyberGuardianBossCore>();
+            CyberGuardianBossCore boss = other.GetComponentInParent<CyberGuardianBossCore>();
             if (boss != null)
             {
+                CyberGuardianBossShieldBlock blockingQuizBlock = FindBlockingQuizBlock(previousPosition, transform.position);
+                if (blockingQuizBlock != null)
+                {
+                    hitResolved = true;
+                    game.ProjectileHitShieldBlock(blockingQuizBlock);
+                    return;
+                }
+
+                hitResolved = true;
                 game.ProjectileHitBoss();
                 return;
             }
 
             if (!other.isTrigger)
             {
+                hitResolved = true;
                 game.ProjectileHitSolid();
+            }
+        }
+
+        private CyberGuardianBossShieldBlock FindBlockingQuizBlock(Vector3 from, Vector3 to)
+        {
+            Vector2 delta = to - from;
+            float distance = delta.magnitude;
+            if (distance <= 0.001f)
+            {
+                return null;
+            }
+
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(from, 0.09f, delta / distance, distance);
+            System.Array.Sort(hits, (left, right) => left.distance.CompareTo(right.distance));
+            for (int i = 0; i < hits.Length; i++)
+            {
+                Collider2D candidate = hits[i].collider;
+                if (candidate == null || candidate == ownCollider)
+                {
+                    continue;
+                }
+
+                CyberGuardianBossShieldBlock block = candidate.GetComponentInParent<CyberGuardianBossShieldBlock>();
+                if (block != null && !block.cleared && block.gameObject.activeInHierarchy)
+                {
+                    return block;
+                }
+            }
+
+            return null;
+        }
+
+        private void ScanProjectilePath(Vector3 from, Vector3 to)
+        {
+            Vector2 delta = to - from;
+            float distance = delta.magnitude;
+            if (distance <= 0.001f)
+            {
+                return;
+            }
+
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(from, 0.09f, delta / distance, distance);
+            System.Array.Sort(hits, (left, right) => left.distance.CompareTo(right.distance));
+            for (int i = 0; i < hits.Length; i++)
+            {
+                Collider2D candidate = hits[i].collider;
+                if (candidate == null || candidate == ownCollider)
+                {
+                    continue;
+                }
+
+                TryHitTarget(candidate);
+                if (hitResolved)
+                {
+                    return;
+                }
             }
         }
 
@@ -141,11 +242,29 @@ namespace CyberGuardian
             SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
             for (int i = 0; i < renderers.Length; i++)
             {
-                if (renderers[i] != null && renderers[i] != spriteRenderer)
+                if (renderers[i] != null
+                    && renderers[i] != spriteRenderer
+                    && renderers[i].name != "Runtime Projectile Energy Halo")
                 {
                     renderers[i].enabled = false;
                 }
             }
+        }
+
+        private void EnsureProjectileVisual()
+        {
+            projectileVisual = GetComponent<CyberGuardianProjectileVisual2D>();
+            if (projectileVisual == null)
+            {
+                projectileVisual = gameObject.AddComponent<CyberGuardianProjectileVisual2D>();
+            }
+
+            projectileVisual.Configure(
+                spriteRenderer,
+                0.58f,
+                0.24f,
+                new Color(0.34f, 1f, 1f, 0.78f),
+                new Color(1f, 0.16f, 0.72f, 0f));
         }
 
 #if UNITY_EDITOR

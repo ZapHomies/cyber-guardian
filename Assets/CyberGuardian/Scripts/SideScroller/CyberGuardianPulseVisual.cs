@@ -13,6 +13,12 @@ namespace CyberGuardian
         private SpriteRenderer spriteRenderer;
         private Color baseColor;
 
+        public void SetBaseScale(Vector3 scale)
+        {
+            baseScale = scale;
+            transform.localScale = scale;
+        }
+
         private void Awake()
         {
             baseScale = transform.localScale;
